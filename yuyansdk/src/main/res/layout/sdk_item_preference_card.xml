@@ -98,13 +98,4 @@
         android:visibility="gone"
         tools:visibility="visible" />
 
-    <!-- 底部缩进式极细分割线 -->
-    <View
-        android:id="@+id/card_divider"
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:layout_marginStart="70dp"
-        android:layout_marginEnd="16dp"
-        android:background="@color/settings_divider" />
-
 </LinearLayout>
