@@ -699,7 +699,7 @@ class CustomThemeActivity : AppCompatActivity() {
             previewUi.setTheme(theme, getInitialBackgroundDrawable())
         }
     }
-    private val arrowBgColorRow by lazy { createColorPickerItem("【右侧箭头】背景色", { theme.functionKeyBackgroundColor }) { color -> updateColorTheme { it.copy(functionKeyBackgroundColor = color) } } }
+    private val arrowBgColorRow by lazy { createColorPickerItem("【右侧箭头】背景色", { theme.arrowButtonBackgroundColor }) { color -> updateColorTheme { it.copy(arrowButtonBackgroundColor = color) } } }
     private val arrowTextColorRow by lazy {
         createColorPickerItem("折叠箭头颜色", { theme.arrowButtonTextColor }) { color ->
             updateColorTheme { it.copy(arrowButtonTextColor = color) }

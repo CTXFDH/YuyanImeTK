@@ -131,7 +131,14 @@ class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
         val customBg = theme.backgroundImage as? Theme.Custom.CustomBackground
         val brightness = customBg?.brightness ?: 100
         setBrightness(brightness)
-        refreshPreviewLayout()
+        if (textKeyboard == null || candidatesBarView == null) {
+            refreshPreviewLayout()
+        } else {
+            candidatesBarView?.setTheme(theme)
+            textKeyboard?.setTheme(theme)
+            applyWindowTopCornerRadius(theme.windowCornerRadiusDp)
+            invalidate()
+        }
     }
 
     fun setTheme(theme: Theme) {
@@ -139,7 +146,14 @@ class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
         val customBg = theme.backgroundImage as? Theme.Custom.CustomBackground
         val brightness = customBg?.brightness ?: 100
         setBrightness(brightness)
-        refreshPreviewLayout()
+        if (textKeyboard == null || candidatesBarView == null) {
+            refreshPreviewLayout()
+        } else {
+            candidatesBarView?.setTheme(theme)
+            textKeyboard?.setTheme(theme)
+            applyWindowTopCornerRadius(theme.windowCornerRadiusDp)
+            invalidate()
+        }
         layoutParams?.width = instance.skbWidth
         layoutParams?.height = instance.skbHeight + instance.heightForCandidatesArea
     }
