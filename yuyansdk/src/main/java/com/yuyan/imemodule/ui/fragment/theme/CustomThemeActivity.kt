@@ -157,8 +157,7 @@ class CustomThemeActivity : AppCompatActivity() {
     private lateinit var previewUi: KeyboardPreviewView
 
     private fun getThemeTextColor(): Int {
-        val isDarkMode = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES || (::customTheme.isInitialized && customTheme.isDark)
-        return if (isDarkMode) Color.parseColor("#E2E8F0") else Color.parseColor("#1E293B")
+        return Color.parseColor("#1E293B")
     }
 
     private fun createTextView(@StringRes string: Int? = null, ripple: Boolean = false) = textView {
@@ -1308,7 +1307,7 @@ class CustomThemeActivity : AppCompatActivity() {
             backgroundStates.apply {
                 srcImageFile = s
             }
-            customTheme = ThemePreset.TransparentDark.deriveCustomBackground(n, s.path)
+            customTheme = ThemePreset.TransparentLight.deriveCustomBackground(n, s.path)
         }
 
         previewUi = KeyboardPreviewView(this).apply {
@@ -1853,16 +1852,14 @@ class CustomThemeActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        if (!newCreated) {
-            menu.add(R.string.delete).apply {
-                icon = drawable(R.drawable.ic_menu_delete)!!.apply {
-                    setTint(styledColor(android.R.attr.colorControlNormal))
-                }
-                setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-                setOnMenuItemClickListener {
-                    promptDelete()
-                    true
-                }
+        menu.add(R.string.delete).apply {
+            icon = drawable(R.drawable.ic_menu_delete)!!.apply {
+                setTint(styledColor(android.R.attr.colorControlNormal))
+            }
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+            setOnMenuItemClickListener {
+                promptDelete()
+                true
             }
         }
         menu.add(R.string.save).apply {
