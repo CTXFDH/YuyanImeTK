@@ -126,19 +126,25 @@ abstract class ManagedPreferenceCategory(
 
     override fun createUi(screen: PreferenceScreen) {
         val ctx = screen.context
-        val categoryObj = PreferenceCategory(ctx).apply {
-            setTitle(this@ManagedPreferenceCategory.title)
-            isIconSpaceReserved = false
-            layoutResource = R.layout.sdk_item_category_card
-        }
-        screen.addPreference(categoryObj)
+        var activeCategory: PreferenceCategory? = null
 
         managedPreferencesUi.forEach { ui ->
             try {
-                val pref = ui.createUi(ctx).apply {
-                    isEnabled = ui.isEnabled()
+                if (ui is ManagedPreferenceUi.Category) {
+                    val cat = PreferenceCategory(ctx).apply {
+                        setTitle(ui.title)
+                        isIconSpaceReserved = false
+                        layoutResource = R.layout.sdk_item_category_card
+                    }
+                    screen.addPreference(cat)
+                    activeCategory = cat
+                } else {
+                    val targetGroup = activeCategory ?: screen
+                    val pref = ui.createUi(ctx).apply {
+                        isEnabled = ui.isEnabled()
+                    }
+                    targetGroup.addPreference(pref)
                 }
-                categoryObj.addPreference(pref)
             } catch (e: Exception) {
                 android.util.Log.e("PreferenceCategory", "Error adding preference: ${e.message}")
             }

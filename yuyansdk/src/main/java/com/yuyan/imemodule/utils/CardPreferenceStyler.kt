@@ -21,6 +21,8 @@ import com.yuyan.imemodule.view.preference.TwinSeekBarPreference
 
 object CardPreferenceStyler {
 
+    val expandedStates = mutableMapOf<String, Boolean>()
+
     fun stylePreferenceScreen(screen: PreferenceScreen) {
         for (i in 0 until screen.preferenceCount) {
             val p = screen.getPreference(i)
@@ -176,7 +178,12 @@ open class CardListPreference @JvmOverloads constructor(
 ) : ListPreference(context, attrs, defStyleAttr), ICardPreferenceItem {
     override var isFirstInGroup: Boolean = false
     override var isLastInGroup: Boolean = false
-    var isExpanded: Boolean = false
+
+    private val prefKey: String get() = key ?: title?.toString() ?: ""
+
+    var isExpanded: Boolean
+        get() = CardPreferenceStyler.expandedStates[prefKey] ?: false
+        set(value) { CardPreferenceStyler.expandedStates[prefKey] = value }
 
     init {
         layoutResource = R.layout.sdk_item_preference_card_single
