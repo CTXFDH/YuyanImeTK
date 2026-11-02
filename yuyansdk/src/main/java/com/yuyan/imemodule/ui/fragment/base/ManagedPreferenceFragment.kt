@@ -36,7 +36,7 @@ abstract class ManagedPreferenceFragment(private vararg val preferenceProvider: 
                     provider.createUi(screen)
                 }
                 onPreferenceUiCreated(screen)
-                com.yuyan.imemodule.utils.XimePreferenceStyler.stylePreferenceScreen(screen)
+                com.yuyan.imemodule.utils.CardPreferenceStyler.stylePreferenceScreen(screen)
             }
     }
 

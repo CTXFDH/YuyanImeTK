@@ -19,13 +19,13 @@ import com.yuyan.imemodule.view.preference.EditTextIntPreference
 import com.yuyan.imemodule.view.preference.ImeSwitchPreference
 import com.yuyan.imemodule.view.preference.TwinSeekBarPreference
 
-object XimePreferenceStyler {
+object CardPreferenceStyler {
 
     fun stylePreferenceScreen(screen: PreferenceScreen) {
         for (i in 0 until screen.preferenceCount) {
             val p = screen.getPreference(i)
             if (p is PreferenceCategory) {
-                p.layoutResource = R.layout.sdk_item_category_xime
+                p.layoutResource = R.layout.sdk_item_category_card
                 styleGroup(p)
             } else if (p is PreferenceGroup) {
                 styleGroup(p)
@@ -53,18 +53,18 @@ object XimePreferenceStyler {
     }
 
     private fun styleSingleItem(pref: Preference, isFirst: Boolean, isLast: Boolean) {
-        if (pref is IXimeCardItem) {
+        if (pref is ICardPreferenceItem) {
             pref.isFirstInGroup = isFirst
             pref.isLastInGroup = isLast
         }
     }
 }
 
-interface IXimeCardItem {
+interface ICardPreferenceItem {
     var isFirstInGroup: Boolean
     var isLastInGroup: Boolean
 
-    fun bindXimeCardViewHolder(holder: PreferenceViewHolder, pref: Preference) {
+    fun bindCardViewHolder(holder: PreferenceViewHolder, pref: Preference) {
         val context = holder.itemView.context
         val cardRoot = holder.findViewById(R.id.card_item_root)
         val cardDivider = holder.findViewById(R.id.card_divider)
@@ -105,110 +105,110 @@ interface IXimeCardItem {
     }
 }
 
-open class XimePreference @JvmOverloads constructor(
+open class CardPreference @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : Preference(context, attrs, defStyleAttr), IXimeCardItem {
+) : Preference(context, attrs, defStyleAttr), ICardPreferenceItem {
     override var isFirstInGroup: Boolean = false
     override var isLastInGroup: Boolean = false
 
     init {
-        layoutResource = R.layout.sdk_item_preference_xime
+        layoutResource = R.layout.sdk_item_preference_card
         isIconSpaceReserved = false
         isSingleLineTitle = false
     }
 
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
-        bindXimeCardViewHolder(holder, this)
+        bindCardViewHolder(holder, this)
     }
 }
 
-open class XimeSwitchPreference(context: Context) : ImeSwitchPreference(context), IXimeCardItem {
+open class CardSwitchPreference(context: Context) : ImeSwitchPreference(context), ICardPreferenceItem {
     override var isFirstInGroup: Boolean = false
     override var isLastInGroup: Boolean = false
 
     init {
-        layoutResource = R.layout.sdk_item_preference_xime
+        layoutResource = R.layout.sdk_item_preference_card
         isIconSpaceReserved = false
         isSingleLineTitle = false
     }
 
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
-        bindXimeCardViewHolder(holder, this)
+        bindCardViewHolder(holder, this)
     }
 }
 
-open class XimeListPreference @JvmOverloads constructor(
+open class CardListPreference @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : ListPreference(context, attrs, defStyleAttr), IXimeCardItem {
+) : ListPreference(context, attrs, defStyleAttr), ICardPreferenceItem {
     override var isFirstInGroup: Boolean = false
     override var isLastInGroup: Boolean = false
 
     init {
-        layoutResource = R.layout.sdk_item_preference_xime
+        layoutResource = R.layout.sdk_item_preference_card
         isIconSpaceReserved = false
         isSingleLineTitle = false
     }
 
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
-        bindXimeCardViewHolder(holder, this)
+        bindCardViewHolder(holder, this)
     }
 }
 
-open class XimeEditTextIntPreference(context: Context) : EditTextIntPreference(context), IXimeCardItem {
+open class CardEditTextIntPreference(context: Context) : EditTextIntPreference(context), ICardPreferenceItem {
     override var isFirstInGroup: Boolean = false
     override var isLastInGroup: Boolean = false
 
     init {
-        layoutResource = R.layout.sdk_item_preference_xime
+        layoutResource = R.layout.sdk_item_preference_card
         isIconSpaceReserved = false
         isSingleLineTitle = false
     }
 
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
-        bindXimeCardViewHolder(holder, this)
+        bindCardViewHolder(holder, this)
     }
 }
 
-open class XimeDialogSeekBarPreference @JvmOverloads constructor(
+open class CardDialogSeekBarPreference @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : DialogSeekBarPreference(context, attrs, defStyleAttr), IXimeCardItem {
+) : DialogSeekBarPreference(context, attrs, defStyleAttr), ICardPreferenceItem {
     override var isFirstInGroup: Boolean = false
     override var isLastInGroup: Boolean = false
 
     init {
-        layoutResource = R.layout.sdk_item_preference_xime
+        layoutResource = R.layout.sdk_item_preference_card
         isIconSpaceReserved = false
         isSingleLineTitle = false
     }
 
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
-        bindXimeCardViewHolder(holder, this)
+        bindCardViewHolder(holder, this)
     }
 }
 
-open class XimeTwinSeekBarPreference(context: Context) : TwinSeekBarPreference(context), IXimeCardItem {
+open class CardTwinSeekBarPreference(context: Context) : TwinSeekBarPreference(context), ICardPreferenceItem {
     override var isFirstInGroup: Boolean = false
     override var isLastInGroup: Boolean = false
 
     init {
-        layoutResource = R.layout.sdk_item_preference_xime
+        layoutResource = R.layout.sdk_item_preference_card
         isIconSpaceReserved = false
         isSingleLineTitle = false
     }
 
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
-        bindXimeCardViewHolder(holder, this)
+        bindCardViewHolder(holder, this)
     }
 }

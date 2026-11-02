@@ -26,7 +26,7 @@ fun PreferenceGroup.addPreference(
     @DrawableRes icon: Int? = null,
     onClick: (() -> Unit)? = null
 ) {
-    addPreference(XimePreference(context).apply {
+    addPreference(CardPreference(context).apply {
         isSingleLineTitle = false
         setTitle(title)
         isCopyingEnabled = true

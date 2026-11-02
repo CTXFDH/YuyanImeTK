@@ -113,7 +113,7 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                     R.id.action_settingsFragment_to_aboutFragment
                 )
             }
-            com.yuyan.imemodule.utils.XimePreferenceStyler.stylePreferenceScreen(this)
+            com.yuyan.imemodule.utils.CardPreferenceStyler.stylePreferenceScreen(this)
         }
     }
 }
