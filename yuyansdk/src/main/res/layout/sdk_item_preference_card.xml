@@ -86,6 +86,18 @@
             tools:visibility="visible" />
     </LinearLayout>
 
+    <!-- 内联展开选项容器 (不弹窗，直接展开) -->
+    <LinearLayout
+        android:id="@+id/inline_expand_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="12dp"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
     <!-- 底部缩进式极细分割线 -->
     <View
         android:id="@+id/card_divider"

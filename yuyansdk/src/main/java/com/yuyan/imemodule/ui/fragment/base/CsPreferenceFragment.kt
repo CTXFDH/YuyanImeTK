@@ -36,6 +36,9 @@ abstract class CsPreferenceFragment : PreferenceFragmentCompat() {
     @Suppress("DEPRECATION")
     @SuppressLint("RestrictedApi")
     override fun onDisplayPreferenceDialog(preference: Preference) {
+        if (preference is com.yuyan.imemodule.utils.CardListPreference) {
+            return
+        }
 
         var handled = false
         if (callbackFragment is OnPreferenceDisplayDialogCallback) {

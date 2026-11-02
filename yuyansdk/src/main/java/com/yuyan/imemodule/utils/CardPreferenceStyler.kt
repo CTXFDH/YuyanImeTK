@@ -173,6 +173,7 @@ open class CardListPreference @JvmOverloads constructor(
 ) : ListPreference(context, attrs, defStyleAttr), ICardPreferenceItem {
     override var isFirstInGroup: Boolean = false
     override var isLastInGroup: Boolean = false
+    var isExpanded: Boolean = false
 
     init {
         layoutResource = R.layout.sdk_item_preference_card
@@ -180,9 +181,60 @@ open class CardListPreference @JvmOverloads constructor(
         isSingleLineTitle = false
     }
 
+    override fun onClick() {
+        isExpanded = !isExpanded
+        notifyChanged()
+    }
+
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
         bindCardViewHolder(holder, this)
+
+        val inlineContainer = holder.findViewById(R.id.inline_expand_container) as? android.widget.LinearLayout
+        val arrowRight = holder.findViewById(R.id.arrow_right) as? ImageView
+
+        if (arrowRight != null) {
+            arrowRight.isVisible = true
+            arrowRight.animate().rotation(if (isExpanded) 90f else 0f).setDuration(150).start()
+        }
+
+        if (inlineContainer != null) {
+            inlineContainer.removeAllViews()
+            if (isExpanded && entries != null && entryValues != null) {
+                inlineContainer.isVisible = true
+                val currentVal = value
+                entries.forEachIndexed { index, entryText ->
+                    val entryVal = entryValues[index].toString()
+                    val isSelected = (entryVal == currentVal)
+
+                    val itemTv = android.widget.TextView(context).apply {
+                        text = if (isSelected) "✓  $entryText" else "    $entryText"
+                        textSize = 14f
+                        val textColor = if (isSelected) {
+                            ContextCompat.getColor(context, R.color.settings_icon_tint)
+                        } else {
+                            ContextCompat.getColor(context, R.color.settings_title_text)
+                        }
+                        setTextColor(textColor)
+                        typeface = if (isSelected) android.graphics.Typeface.DEFAULT_BOLD else android.graphics.Typeface.DEFAULT
+                        setPadding(0, 20, 0, 20)
+                        isClickable = true
+                        isFocusable = true
+                        background = ContextCompat.getDrawable(context, android.R.attr.selectableItemBackground)
+                        setOnClickListener {
+                            if (callChangeListener(entryVal)) {
+                                value = entryVal
+                            }
+                            isExpanded = false
+                            notifyChanged()
+                        }
+                    }
+                    inlineContainer.addView(itemTv)
+                }
+            } else {
+                inlineContainer.isVisible = false
+            }
+        }
     }
 }
 
