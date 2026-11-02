@@ -41,12 +41,14 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
             addCategory(R.string.input_methods) {
                 isIconSpaceReserved = false
 
-                addDestinationPreference(
+                addPreference(
                     R.string.enable_ime,
                     "在系统设置中启用语燕输入法",
-                    R.drawable.ic_menu_language,
-                    R.id.action_settingsFragment_to_setupActivity
-                )
+                    R.drawable.ic_menu_language
+                ) {
+                    val intent = Intent(android.provider.Settings.ACTION_INPUT_METHOD_SETTINGS)
+                    startActivity(intent)
+                }
                 addPreference(
                     "选择输入法",
                     "将语燕输入法设为当前输入法",

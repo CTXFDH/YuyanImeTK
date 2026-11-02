@@ -56,6 +56,12 @@ object CardPreferenceStyler {
         if (pref is ICardPreferenceItem) {
             pref.isFirstInGroup = isFirst
             pref.isLastInGroup = isLast
+            pref.layoutResource = when {
+                isFirst && isLast -> R.layout.sdk_item_preference_card_single
+                isFirst -> R.layout.sdk_item_preference_card_top
+                isLast -> R.layout.sdk_item_preference_card_bottom
+                else -> R.layout.sdk_item_preference_card_middle
+            }
         }
     }
 }
@@ -68,7 +74,6 @@ interface ICardPreferenceItem {
         val context = holder.itemView.context
         val cardRoot = holder.findViewById(R.id.card_item_root)
         val cardContent = holder.findViewById(R.id.card_item_content)
-        val cardDivider = holder.findViewById(R.id.card_divider)
         val iconBox = holder.findViewById(R.id.icon_box)
         val iconView = holder.findViewById(android.R.id.icon) as? ImageView
         val arrowRight = holder.findViewById(R.id.arrow_right) as? ImageView
@@ -105,10 +110,6 @@ interface ICardPreferenceItem {
             }
         }
 
-        if (cardDivider != null) {
-            cardDivider.isVisible = !isLast
-        }
-
         if (iconBox != null) {
             if (pref.icon != null) {
                 iconBox.isVisible = true
@@ -139,7 +140,7 @@ open class CardPreference @JvmOverloads constructor(
     override var isLastInGroup: Boolean = false
 
     init {
-        layoutResource = R.layout.sdk_item_preference_card
+        layoutResource = R.layout.sdk_item_preference_card_single
         isIconSpaceReserved = false
         isSingleLineTitle = false
     }
@@ -155,7 +156,7 @@ open class CardSwitchPreference(context: Context) : ImeSwitchPreference(context)
     override var isLastInGroup: Boolean = false
 
     init {
-        layoutResource = R.layout.sdk_item_preference_card
+        layoutResource = R.layout.sdk_item_preference_card_single
         isIconSpaceReserved = false
         isSingleLineTitle = false
     }
@@ -176,7 +177,7 @@ open class CardListPreference @JvmOverloads constructor(
     var isExpanded: Boolean = false
 
     init {
-        layoutResource = R.layout.sdk_item_preference_card
+        layoutResource = R.layout.sdk_item_preference_card_single
         isIconSpaceReserved = false
         isSingleLineTitle = false
     }
@@ -246,7 +247,7 @@ open class CardEditTextIntPreference(context: Context) : EditTextIntPreference(c
     override var isLastInGroup: Boolean = false
 
     init {
-        layoutResource = R.layout.sdk_item_preference_card
+        layoutResource = R.layout.sdk_item_preference_card_single
         isIconSpaceReserved = false
         isSingleLineTitle = false
     }
@@ -266,7 +267,7 @@ open class CardDialogSeekBarPreference @JvmOverloads constructor(
     override var isLastInGroup: Boolean = false
 
     init {
-        layoutResource = R.layout.sdk_item_preference_card
+        layoutResource = R.layout.sdk_item_preference_card_single
         isIconSpaceReserved = false
         isSingleLineTitle = false
     }
@@ -282,7 +283,7 @@ open class CardTwinSeekBarPreference(context: Context) : TwinSeekBarPreference(c
     override var isLastInGroup: Boolean = false
 
     init {
-        layoutResource = R.layout.sdk_item_preference_card
+        layoutResource = R.layout.sdk_item_preference_card_single
         isIconSpaceReserved = false
         isSingleLineTitle = false
     }
