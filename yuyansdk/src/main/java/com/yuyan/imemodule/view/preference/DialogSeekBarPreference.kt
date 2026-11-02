@@ -32,7 +32,7 @@ import splitties.views.textAppearance
  *  than 1, 1 will be used as step.
  * @property unit The unit to show after the value. Set to an empty string to disable this feature.
  */
-class DialogSeekBarPreference @JvmOverloads constructor(
+open class DialogSeekBarPreference @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = androidx.preference.R.attr.preferenceStyle

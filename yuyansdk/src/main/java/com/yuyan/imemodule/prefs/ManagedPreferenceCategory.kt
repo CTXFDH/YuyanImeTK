@@ -134,5 +134,6 @@ abstract class ManagedPreferenceCategory(
                 android.util.Log.e("PreferenceCategory", "Error adding preference: ${e.message}")
             }
         }
+        com.yuyan.imemodule.utils.XimePreferenceStyler.stylePreferenceScreen(screen)
     }
 }

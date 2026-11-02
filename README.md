@@ -82,6 +82,7 @@
 | **预设主题背景** | `yuyansdk/src/main/res/drawable/skb_background_*.xml` (共6项) | 基础背景梯度 | 重绘更新红、黄、粉、紫、蓝、深红预设主题背景 Drawable 渐变 |
 | **微信符号与Emoji顺序** | `yuyansdk/src/main/java/com/yuyan/imemodule/data/emojicon/EmojiconData.kt` | 原版基础符号与Emoji排列 | **完全对齐微信输入法官方分类与排列顺序**（中文/英文标点、数学、括号、序号/标号、特殊图形、表情/人物/自然/食物/活动/符号/旗帜），零体积增加 |
 | **微信全屏特效触发** | `yuyansdk/src/main/java/com/yuyan/imemodule/keyboard/container/SymbolContainer.kt` | 点击微信表情仅提交提示文本，且Emoji底部Tab数量不匹配 | **智能映射与底栏对齐**：点击“💥炸弹”、“🎇烟花”、“🎉庆祝”提交官方指令 `[炸弹]`、`[烟花]`、`[庆祝]`，100% 触发微信全屏动画；底部 Emoji 分类 Tab（最近、表情、自然、食物、活动、符号、旗帜、微信、热门）与 `ViewPager2` 1-to-1 精确对齐 |
+| **曦码风格设置界面** | `yuyansdk/src/main/java/com/yuyan/imemodule/utils/XimePreferenceStyler.kt`<br>`yuyansdk/src/main/res/layout/sdk_item_preference_xime.xml` | 原版基础列表布局 | **曦码输入法现代卡片架构**：重绘圆角白色分组卡片、淡紫色高颜值图标盒、粗体主标题与清晰描述副标题，100% 重现曦码输入法极简美学 |
 | **工程通用工具类** | `yuyansdk/src/main/java/com/yuyan/imemodule/utils/*.kt`<br>`yuyansdk/src/main/java/com/yuyan/imemodule/service/*.kt`<br>`yuyansdk/src/main/java/com/yuyan/imemodule/keyboard/*.kt` | 基础工具与键盘视图类 | 配合主题缓存、离线词库、多窗口尺寸计算及系统服务进行兼容优化 |
 
 ---

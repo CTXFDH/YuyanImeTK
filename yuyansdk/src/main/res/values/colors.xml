@@ -8,4 +8,14 @@
     <color name="x_recycler_color_loading_color1">#55777777</color>
     <color name="x_recycler_color_loading_color2">#B1777777</color>
     <color name="x_recycler_color_loading_color3">#FF777777</color>
+
+    <!-- 曦码风格设置界面色彩定义 (Light) -->
+    <color name="settings_page_bg">#F4F5F7</color>
+    <color name="settings_card_bg">#FFFFFF</color>
+    <color name="settings_icon_box_bg">#F3E8FF</color>
+    <color name="settings_icon_tint">#7C3AED</color>
+    <color name="settings_title_text">#18181B</color>
+    <color name="settings_summary_text">#71717A</color>
+    <color name="settings_divider">#F1F5F9</color>
+    <color name="settings_category_title">#7C3AED</color>
 </resources>

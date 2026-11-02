@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_item_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:background="@drawable/sdk_bg_settings_card_middle"
+    android:clipToPadding="false"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/card_item_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:minHeight="68dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
+
+        <!-- 左侧图标外框容器 -->
+        <FrameLayout
+            android:id="@+id/icon_box"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginEnd="14dp"
+            android:background="@drawable/sdk_bg_icon_box"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@android:id/icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                app:tint="@color/settings_icon_tint"
+                tools:src="@drawable/ic_menu_theme" />
+        </FrameLayout>
+
+        <!-- 中间标题与描述文案 -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@android:id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/settings_title_text"
+                android:textSize="15.5sp"
+                android:textStyle="bold"
+                tools:text="按键效果" />
+
+            <TextView
+                android:id="@android:id/summary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2.5dp"
+                android:textColor="@color/settings_summary_text"
+                android:textSize="12.5sp"
+                tools:text="按键音效和振动反馈" />
+        </LinearLayout>
+
+        <!-- 右侧 Switch / Widget 容器或跳转箭头 -->
+        <LinearLayout
+            android:id="@android:id/widget_frame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" />
+
+        <ImageView
+            android:id="@+id/arrow_right"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="6dp"
+            android:src="@drawable/ic_jump_arrow"
+            app:tint="#A1A1AA"
+            android:visibility="gone"
+            tools:visibility="visible" />
+    </LinearLayout>
+
+    <!-- 底部极细分割线 -->
+    <View
+        android:id="@+id/card_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginStart="72dp"
+        android:layout_marginEnd="16dp"
+        android:background="@color/settings_divider" />
+
+</LinearLayout>

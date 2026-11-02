@@ -31,7 +31,7 @@ import splitties.views.dsl.core.wrapContent
 import splitties.views.textAppearance
 
 
-class TwinSeekBarPreference @JvmOverloads constructor(
+open class TwinSeekBarPreference @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
 ) : DialogPreference(context, attrs) {

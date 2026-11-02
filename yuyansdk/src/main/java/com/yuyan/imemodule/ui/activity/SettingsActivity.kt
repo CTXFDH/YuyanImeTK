@@ -45,7 +45,7 @@ open class SettingsActivity : AppCompatActivity() {
 
         val appBarConfiguration = AppBarConfiguration(
             // 设置不显示返回箭头的界面
-            topLevelDestinationIds = setOf(R.id.privacyPolicyFragment)
+            topLevelDestinationIds = setOf(R.id.settingsFragment, R.id.privacyPolicyFragment)
         )
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment?
         navController = navHostFragment!!.navController
@@ -68,6 +68,10 @@ open class SettingsActivity : AppCompatActivity() {
         }
         navController.addOnDestinationChangedListener { _, dest, _ ->
             when (dest.id) {
+                R.id.settingsFragment -> {
+                    viewModel.enableToolbarShadow()
+                    binding.toolbar.title = "语燕输入法设置"
+                }
                 R.id.themeFragment -> viewModel.disableToolbarShadow()
                 else -> viewModel.enableToolbarShadow()
             }

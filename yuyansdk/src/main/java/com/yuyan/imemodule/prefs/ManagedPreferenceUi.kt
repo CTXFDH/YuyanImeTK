@@ -1,4 +1,3 @@
-
 package com.yuyan.imemodule.prefs
 
 import android.content.Context
@@ -7,6 +6,11 @@ import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
+import com.yuyan.imemodule.utils.XimeDialogSeekBarPreference
+import com.yuyan.imemodule.utils.XimeEditTextIntPreference
+import com.yuyan.imemodule.utils.XimeListPreference
+import com.yuyan.imemodule.utils.XimeSwitchPreference
+import com.yuyan.imemodule.utils.XimeTwinSeekBarPreference
 import com.yuyan.imemodule.view.preference.DialogSeekBarPreference
 import com.yuyan.imemodule.view.preference.EditTextIntPreference
 import com.yuyan.imemodule.view.preference.ImeSwitchPreference
@@ -43,7 +47,7 @@ abstract class ManagedPreferenceUi<T : Preference>(
         enableUiOn: (() -> Boolean)? = null,
         val pref: ManagedPreference.PBool? = null
     ) : ManagedPreferenceUi<ImeSwitchPreference>(key, enableUiOn) {
-        override fun createUi(context: Context) = ImeSwitchPreference(context).apply {
+        override fun createUi(context: Context) = XimeSwitchPreference(context).apply {
             key = this@Switch.key
             isIconSpaceReserved = false
             isSingleLineTitle = false
@@ -71,7 +75,7 @@ abstract class ManagedPreferenceUi<T : Preference>(
         val entryLabels: List<Int>,
         enableUiOn: (() -> Boolean)? = null
     ) : ManagedPreferenceUi<ListPreference>(key, enableUiOn) {
-        override fun createUi(context: Context) = ListPreference(context).apply {
+        override fun createUi(context: Context) = XimeListPreference(context).apply {
             key = this@StringList.key
             isIconSpaceReserved = false
             isSingleLineTitle = false
@@ -94,7 +98,7 @@ abstract class ManagedPreferenceUi<T : Preference>(
         val unit: String = "",
         enableUiOn: (() -> Boolean)? = null
     ) : ManagedPreferenceUi<EditTextPreference>(key, enableUiOn) {
-        override fun createUi(context: Context) = EditTextIntPreference(context).apply {
+        override fun createUi(context: Context) = XimeEditTextIntPreference(context).apply {
             key = this@EditTextInt.key
             isIconSpaceReserved = false
             isSingleLineTitle = false
@@ -121,7 +125,7 @@ abstract class ManagedPreferenceUi<T : Preference>(
         val defaultLabel: Int? = null,
         enableUiOn: (() -> Boolean)? = null
     ) : ManagedPreferenceUi<DialogSeekBarPreference>(key, enableUiOn) {
-        override fun createUi(context: Context) = DialogSeekBarPreference(context).apply {
+        override fun createUi(context: Context) = XimeDialogSeekBarPreference(context).apply {
             key = this@SeekBarInt.key
             isIconSpaceReserved = false
             isSingleLineTitle = false
@@ -156,7 +160,7 @@ abstract class ManagedPreferenceUi<T : Preference>(
         val defaultLabel: Int? = null,
         enableUiOn: (() -> Boolean)? = null
     ) : ManagedPreferenceUi<TwinSeekBarPreference>(key, enableUiOn) {
-        override fun createUi(context: Context) = TwinSeekBarPreference(context).apply {
+        override fun createUi(context: Context) = XimeTwinSeekBarPreference(context).apply {
             setTitle(this@TwinSeekBarInt.title)
             setDialogTitle(this@TwinSeekBarInt.title)
             label = context.getString(this@TwinSeekBarInt.label)

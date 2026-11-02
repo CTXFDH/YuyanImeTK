@@ -1,4 +1,3 @@
-
 package com.yuyan.imemodule.view.preference
 
 import android.content.Context
@@ -9,7 +8,7 @@ import android.text.method.DigitsKeyListener
 import androidx.preference.EditTextPreference
 import java.util.Locale
 
-class EditTextIntPreference(context: Context) : EditTextPreference(context) {
+open class EditTextIntPreference(context: Context) : EditTextPreference(context) {
 
     private var value = 0
     var min: Int = Int.MIN_VALUE

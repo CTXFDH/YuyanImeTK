@@ -1,14 +1,11 @@
 package com.yuyan.imemodule.utils
 
-import android.R
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceGroup
 import androidx.preference.PreferenceScreen
 import splitties.resources.drawable
-import splitties.resources.styledColor
 
 fun PreferenceScreen.addCategory(title: String, block: PreferenceCategory.() -> Unit) {
     val category = PreferenceCategory(context).apply {
@@ -29,7 +26,7 @@ fun PreferenceGroup.addPreference(
     @DrawableRes icon: Int? = null,
     onClick: (() -> Unit)? = null
 ) {
-    addPreference(Preference(context).apply {
+    addPreference(XimePreference(context).apply {
         isSingleLineTitle = false
         setTitle(title)
         isCopyingEnabled = true
@@ -37,9 +34,7 @@ fun PreferenceGroup.addPreference(
         if (icon == null) {
             isIconSpaceReserved = false
         } else {
-            setIcon(context.drawable(icon)?.apply {
-                setTint(context.styledColor(R.attr.colorControlNormal))
-            })
+            setIcon(context.drawable(icon))
         }
         onClick?.also {
             setOnPreferenceClickListener { _ ->
@@ -52,20 +47,20 @@ fun PreferenceGroup.addPreference(
 
 fun PreferenceGroup.addPreference(
     @StringRes title: Int,
-    summary: String,
+    summaryStr: String,
     @DrawableRes icon: Int? = null,
     onClick: (() -> Unit)? = null
 ) {
     val ctx = context
-    addPreference(ctx.getString(title), summary, icon, onClick)
+    addPreference(ctx.getString(title), summaryStr, icon, onClick)
 }
 
 fun PreferenceGroup.addPreference(
     @StringRes title: Int,
-    @StringRes summary: Int? = null,
+    @StringRes summaryRes: Int? = null,
     @DrawableRes icon: Int? = null,
     onClick: (() -> Unit)? = null
 ) {
     val ctx = context
-    addPreference(ctx.getString(title), summary?.let(ctx::getString), icon, onClick)
+    addPreference(ctx.getString(title), summaryRes?.let(ctx::getString), icon, onClick)
 }
