@@ -108,9 +108,9 @@ abstract class DataBaseKT : RoomDatabase() {
             }
             if(instance.skbFunDao().getAllMenu().isEmpty()) {
                 val skbFuns = listOf(
-                    SkbFun(name = SkbMenuMode.ClipBoard.name, isKeep = 1, position = 0),
+                    SkbFun(name = SkbMenuMode.SwitchKeyboard.name, isKeep = 1, position = 0),
                     SkbFun(name = SkbMenuMode.Emojicon.name, isKeep = 1, position = 1),
-                    SkbFun(name = SkbMenuMode.SwitchKeyboard.name, isKeep = 1, position = 2),
+                    SkbFun(name = SkbMenuMode.ClipBoard.name, isKeep = 1, position = 2),
                     SkbFun(name = SkbMenuMode.Phrases.name, isKeep = 0, position = 0),          // 1. 常用语
                     SkbFun(name = SkbMenuMode.Settings.name, isKeep = 0, position = 1),         // 2. 设置
                     SkbFun(name = SkbMenuMode.KeyboardHeight.name, isKeep = 0, position = 2),   // 3. 键盘调节
