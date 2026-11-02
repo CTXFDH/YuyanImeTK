@@ -1,6 +1,7 @@
 package com.yuyan.imemodule.ui.fragment.base
 
 import android.annotation.SuppressLint
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.view.widget.applyNavBarInsetsBottomPadding
 
@@ -30,12 +32,26 @@ abstract class CsPreferenceFragment : PreferenceFragmentCompat() {
         listView.setBackgroundColor(pageBgColor)
     }
 
+    override fun onCreateRecyclerView(
+        inflater: LayoutInflater,
+        parent: ViewGroup,
+        savedInstanceState: Bundle?
+    ): RecyclerView {
+        val recyclerView = super.onCreateRecyclerView(inflater, parent, savedInstanceState)
+        val pageBgColor = ContextCompat.getColor(requireContext(), R.color.settings_page_bg)
+        recyclerView.setBackgroundColor(pageBgColor)
+        return recyclerView
+    }
+
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val pageBgColor = ContextCompat.getColor(requireContext(), R.color.settings_page_bg)
         view.setBackgroundColor(pageBgColor)
         listView.setBackgroundColor(pageBgColor)
+        // 彻底禁掉 PreferenceFragmentCompat 的分割线
+        setDivider(ColorDrawable(0x00000000))
+        setDividerHeight(0)
     }
 
     @Suppress("DEPRECATION")

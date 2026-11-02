@@ -56,11 +56,13 @@ object CardPreferenceStyler {
         if (pref is ICardPreferenceItem) {
             pref.isFirstInGroup = isFirst
             pref.isLastInGroup = isLast
-            pref.layoutResource = when {
-                isFirst && isLast -> R.layout.sdk_item_preference_card_single
-                isFirst -> R.layout.sdk_item_preference_card_top
-                isLast -> R.layout.sdk_item_preference_card_bottom
-                else -> R.layout.sdk_item_preference_card_middle
+            if (pref !is TestInputBoxPreference) {
+                pref.layoutResource = when {
+                    isFirst && isLast -> R.layout.sdk_item_preference_card_single
+                    isFirst -> R.layout.sdk_item_preference_card_top
+                    isLast -> R.layout.sdk_item_preference_card_bottom
+                    else -> R.layout.sdk_item_preference_card_middle
+                }
             }
         }
     }

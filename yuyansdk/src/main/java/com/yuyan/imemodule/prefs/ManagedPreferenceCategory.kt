@@ -1,9 +1,10 @@
-
 package com.yuyan.imemodule.prefs
 
 import android.content.SharedPreferences
 import androidx.annotation.StringRes
+import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceScreen
+import com.yuyan.imemodule.R
 import com.yuyan.imemodule.view.preference.ManagedPreference
 
 abstract class ManagedPreferenceCategory(
@@ -125,11 +126,19 @@ abstract class ManagedPreferenceCategory(
 
     override fun createUi(screen: PreferenceScreen) {
         val ctx = screen.context
-        managedPreferencesUi.forEach {
+        val categoryObj = PreferenceCategory(ctx).apply {
+            setTitle(this@ManagedPreferenceCategory.title)
+            isIconSpaceReserved = false
+            layoutResource = R.layout.sdk_item_category_card
+        }
+        screen.addPreference(categoryObj)
+
+        managedPreferencesUi.forEach { ui ->
             try {
-                screen.addPreference(it.createUi(ctx).apply {
-                    isEnabled = it.isEnabled()
-                })
+                val pref = ui.createUi(ctx).apply {
+                    isEnabled = ui.isEnabled()
+                }
+                categoryObj.addPreference(pref)
             } catch (e: Exception) {
                 android.util.Log.e("PreferenceCategory", "Error adding preference: ${e.message}")
             }
