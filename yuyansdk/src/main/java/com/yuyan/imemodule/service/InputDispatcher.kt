@@ -6,12 +6,9 @@ import com.yuyan.inputmethod.RimeEngine
 
 object InputDispatcher {
 
-    // 初始化输入法（若 Schema 相同则直接跳过，避免重复触发耗时 3 秒的 C++ 引擎重载）
+    // 初始化输入法
     @Synchronized
     fun initImeSchema(schema: String) {
-        if (schema.isNotEmpty() && getCurrentRimeSchema() == schema) {
-            return
-        }
         RimeEngine.selectSchema(schema)
         nativeUpdateImeOption()
     }

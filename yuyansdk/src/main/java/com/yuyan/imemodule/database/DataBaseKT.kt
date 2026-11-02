@@ -131,7 +131,9 @@ abstract class DataBaseKT : RoomDatabase() {
                 instance.skbFunDao().insertAll(skbFuns)
             } else {
                 val currentBarMenu = instance.skbFunDao().getALlBarMenu()
-                if (currentBarMenu.any { it.name == SkbMenuMode.TextEdit.name } || currentBarMenu.none { it.name == SkbMenuMode.SwitchKeyboard.name }) {
+                val expectedNames = listOf(SkbMenuMode.SwitchKeyboard.name, SkbMenuMode.Emojicon.name, SkbMenuMode.ClipBoard.name)
+                val currentNames = currentBarMenu.map { it.name }
+                if (currentNames != expectedNames) {
                     instance.skbFunDao().deleteAllBarMenu()
                     instance.skbFunDao().insert(SkbFun(name = SkbMenuMode.SwitchKeyboard.name, isKeep = 1, position = 0))
                     instance.skbFunDao().insert(SkbFun(name = SkbMenuMode.Emojicon.name, isKeep = 1, position = 1))
