@@ -48,6 +48,9 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
         val soundOnKeyPress = int("key_press_vibration_amplitude",0)     //按键音量
         val vibrationAmplitude = int("key_press_sound_volume", 0)     //触感强度
+        val soundTimeRangeEnable = bool("sound_time_range_enable", false)  // 是否启用按键音时间段限制
+        val soundStartTime = string("sound_start_time", "11:00")            // 按键音开启起始时间
+        val soundEndTime = string("sound_end_time", "15:00")              // 按键音开启结束时间
 
         val soundEffectStandard = string("sound_effect_standard", "默认")
         val soundEffectSpaceBar = string("sound_effect_spacebar", "默认")

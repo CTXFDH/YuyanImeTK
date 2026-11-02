@@ -15,6 +15,31 @@ object InputFeedbacks {
 
     private val soundOnKeyPress by AppPrefs.getInstance().internal.soundOnKeyPress
     private val vibrationAmplitude by AppPrefs.getInstance().internal.vibrationAmplitude
+    private val soundTimeRangeEnable by AppPrefs.getInstance().internal.soundTimeRangeEnable
+    private val soundStartTime by AppPrefs.getInstance().internal.soundStartTime
+    private val soundEndTime by AppPrefs.getInstance().internal.soundEndTime
+
+    private fun isCurrentTimeInSoundRange(): Boolean {
+        if (!soundTimeRangeEnable) return true
+        return try {
+            val calendar = java.util.Calendar.getInstance()
+            val currentMinutes = calendar[java.util.Calendar.HOUR_OF_DAY] * 60 + calendar[java.util.Calendar.MINUTE]
+
+            val startParts = soundStartTime.split(":")
+            val startMinutes = startParts[0].toInt() * 60 + startParts[1].toInt()
+
+            val endParts = soundEndTime.split(":")
+            val endMinutes = endParts[0].toInt() * 60 + endParts[1].toInt()
+
+            if (startMinutes <= endMinutes) {
+                currentMinutes in startMinutes..endMinutes
+            } else {
+                currentMinutes >= startMinutes || currentMinutes <= endMinutes
+            }
+        } catch (_: Exception) {
+            true
+        }
+    }
 
     private val soundEffectStandardPref = AppPrefs.getInstance().internal.soundEffectStandard
     private val soundEffectSpaceBarPref = AppPrefs.getInstance().internal.soundEffectSpaceBar
@@ -77,6 +102,8 @@ object InputFeedbacks {
     }
 
     fun soundEffect(effect: SoundEffect) {
+        if (!isCurrentTimeInSoundRange()) return
+
         val volume = when {
             soundOnKeyPress < 5 -> -1f
             soundOnKeyPress < 10 -> return

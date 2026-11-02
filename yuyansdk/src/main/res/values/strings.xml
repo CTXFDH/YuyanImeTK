@@ -107,6 +107,9 @@
     <string name="keyboard_one_handed_mod_right">右手模式</string>
     <string name="whether_reset_switch_preference">是否要将此设置重置为默认值？</string>
     <string name="button_sound_volume">按键音量</string>
+    <string name="sound_time_range_title">按键音开启时段</string>
+    <string name="sound_start_time">开始时间</string>
+    <string name="sound_end_time">结束时间</string>
     <string name="sound_effect_category">按键音效</string>
     <string name="sound_effect_standard">标准按键音</string>
     <string name="sound_effect_spacebar">空格键音效</string>

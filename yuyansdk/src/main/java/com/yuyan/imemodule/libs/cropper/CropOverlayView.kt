@@ -5,10 +5,13 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.RectF
+import com.yuyan.imemodule.singleton.EnvironmentSingleton
+import com.yuyan.imemodule.utils.DevicesUtils
 import android.graphics.Region
 import android.os.Build
 import android.os.Build.VERSION.SDK_INT
@@ -732,6 +735,16 @@ internal class CropOverlayView @JvmOverloads constructor(
     }
   }
 
+  private val mDashedBorderPaint by lazy {
+    Paint().apply {
+      color = Color.WHITE
+      style = Paint.Style.STROKE
+      strokeWidth = DevicesUtils.dip2px(1.5f).toFloat()
+      pathEffect = DashPathEffect(floatArrayOf(15f, 10f), 0f)
+      isAntiAlias = true
+    }
+  }
+
   /** Draw borders of the crop area. */
   private fun drawBorders(canvas: Canvas) {
     if (mBorderPaint != null) {
@@ -744,7 +757,30 @@ internal class CropOverlayView @JvmOverloads constructor(
         CropShape.RECTANGLE_VERTICAL_ONLY,
         CropShape.RECTANGLE_HORIZONTAL_ONLY,
         CropShape.RECTANGLE,
-        -> canvas.drawRect(rect, mBorderPaint!!)
+        -> {
+          val env = EnvironmentSingleton.instance
+          val hMain = (env.skbHeight + env.heightForCandidatesArea).toFloat()
+          val hFull = env.heightForFullDisplayBar.toFloat()
+
+          if (hFull > 0 && hMain > 0) {
+            val ratioMain = hMain / (hMain + hFull)
+            val mainBottomY = rect.top + rect.height() * ratioMain
+
+            // 1. 实线矩形框（代表主键盘区域：按键 + 候选词栏）
+            canvas.drawRect(rect.left, rect.top, rect.right, mainBottomY, mBorderPaint!!)
+
+            // 2. 虚线矩形框（代表全面屏多功能键盘下方延伸区域）
+            val dashedPath = Path().apply {
+              moveTo(rect.left, mainBottomY)
+              lineTo(rect.left, rect.bottom)
+              lineTo(rect.right, rect.bottom)
+              lineTo(rect.right, mainBottomY)
+            }
+            canvas.drawPath(dashedPath, mDashedBorderPaint)
+          } else {
+            canvas.drawRect(rect, mBorderPaint!!)
+          }
+        }
         // Draw circular crop window border
         CropShape.OVAL -> canvas.drawOval(rect, mBorderPaint!!)
         else -> throw IllegalStateException("Unrecognized crop shape")

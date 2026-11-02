@@ -331,18 +331,28 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         val env = EnvironmentSingleton.instance
         val isKeyBorder = ThemeManager.prefs.keyBorder.getValue()
         val background = activeTheme.backgroundDrawable(isKeyBorder)
-        if (::mLlMainKeyboardCard.isInitialized) {
-            if (background is BitmapDrawable) {
-                val scaledBitmap = background.bitmap.scale(env.skbWidth, env.inputAreaHeight)
-                mLlMainKeyboardCard.background = scaledBitmap.toDrawable(context.resources).apply {
-                    colorFilter = background.colorFilter
-                }
-            } else {
+        val fullDisplayEnable = appPrefs.internal.fullDisplayKeyboardEnable.getValue()
+
+        if (background is BitmapDrawable) {
+            val totalH = env.inputAreaHeight + if (fullDisplayEnable && !env.isLandscape) env.heightForFullDisplayBar else 0
+            val scaledBitmap = background.bitmap.scale(env.skbWidth, totalH)
+            val drawable = scaledBitmap.toDrawable(context.resources).apply {
+                colorFilter = background.colorFilter
+            }
+
+            mSkbRoot.background = drawable
+            if (::mLlMainKeyboardCard.isInitialized) {
+                mLlMainKeyboardCard.setBackgroundResource(android.R.color.transparent)
+            }
+            mLlKeyboardBottomHolder.setBackgroundResource(android.R.color.transparent)
+        } else {
+            mSkbRoot.background = null
+            if (::mLlMainKeyboardCard.isInitialized) {
                 mLlMainKeyboardCard.background = background
             }
+            mLlKeyboardBottomHolder.setBackgroundColor(activeTheme.keyboardColor)
         }
-        mLlKeyboardBottomHolder.setBackgroundColor(activeTheme.keyboardColor)
-        mSkbRoot.background = null
+
         mSkbCandidatesBarView.updateTheme(keyTextColor)
         if (::mOnehandHoderLayout.isInitialized) {
             (mOnehandHoderLayout[0] as ImageButton).drawable?.setTint(keyTextColor)

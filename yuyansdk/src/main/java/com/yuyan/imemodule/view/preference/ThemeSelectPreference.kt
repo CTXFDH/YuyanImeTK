@@ -4,17 +4,31 @@ package com.yuyan.imemodule.view.preference
 import android.content.Context
 import androidx.appcompat.app.AlertDialog
 import androidx.preference.Preference
+import androidx.preference.PreferenceViewHolder
+import com.yuyan.imemodule.R
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.displayName
 import com.yuyan.imemodule.ui.fragment.theme.ResponsiveThemeListView
 import com.yuyan.imemodule.ui.fragment.theme.SimpleThemeListAdapter
+import com.yuyan.imemodule.utils.ICardPreferenceItem
 
 class ThemeSelectPreference(context: Context, private val defaultTheme: Theme) :
-    Preference(context) {
+    Preference(context), ICardPreferenceItem {
+
+    override var isFirstInGroup: Boolean = false
+    override var isLastInGroup: Boolean = false
 
     init {
         setDefaultValue(defaultTheme.name)
+        layoutResource = R.layout.sdk_item_preference_card_single
+        isIconSpaceReserved = false
+        isSingleLineTitle = false
+    }
+
+    override fun onBindViewHolder(holder: PreferenceViewHolder) {
+        super.onBindViewHolder(holder)
+        bindCardViewHolder(holder, this)
     }
 
     private val currentThemeName

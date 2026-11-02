@@ -460,25 +460,35 @@ open class CardTwinSeekBarPreference(context: Context) : TwinSeekBarPreference(c
             if (isExpanded) {
                 inlineContainer.isVisible = true
 
+                val titleTextColor = ContextCompat.getColor(context, R.color.settings_title_text)
                 val accentColor = ContextCompat.getColor(context, R.color.settings_icon_tint)
                 val iconBoxBgColor = ContextCompat.getColor(context, R.color.settings_icon_box_bg)
 
                 val countStep = (max - min).coerceAtLeast(1)
 
-                // 1. Primary SeekBar Row
+                // 1. Primary SeekBar Row (按键横向间距)
+                val titleTv1 = android.widget.TextView(context).apply {
+                    text = label.ifEmpty { context.getString(R.string.key_horizontal_margin) }
+                    textSize = 14f
+                    typeface = android.graphics.Typeface.DEFAULT_BOLD
+                    setTextColor(titleTextColor)
+                    setPadding(0, 12, 0, 4)
+                }
+
                 val rowLayout1 = android.widget.LinearLayout(context).apply {
                     orientation = android.widget.LinearLayout.HORIZONTAL
                     gravity = android.view.Gravity.CENTER_VERTICAL
-                    setPadding(0, 12, 0, 8)
+                    setPadding(0, 4, 0, 12)
                 }
 
+                val defVal1 = default ?: 5
                 val btnDefault1 = android.widget.TextView(context).apply {
-                    text = label.ifEmpty { "默认" }
+                    text = "默认"
                     textSize = 13f
                     typeface = android.graphics.Typeface.DEFAULT_BOLD
                     setTextColor(accentColor)
                     gravity = android.view.Gravity.CENTER
-                    setPadding(32, 16, 32, 16)
+                    setPadding(32, 14, 32, 14)
                     background = android.graphics.drawable.GradientDrawable().apply {
                         shape = android.graphics.drawable.GradientDrawable.RECTANGLE
                         cornerRadius = 32f
@@ -516,6 +526,13 @@ open class CardTwinSeekBarPreference(context: Context) : TwinSeekBarPreference(c
                     })
                 }
 
+                btnDefault1.setOnClickListener {
+                    seekBar1.setProgress(defVal1.toFloat())
+                    preferenceDataStore?.putInt(key, defVal1) ?: sharedPreferences?.edit { putInt(key, defVal1) }
+                    summaryTv?.text = "$defVal1 $unit / $secondaryValue $unit"
+                    callChangeListener(defVal1 to secondaryValue)
+                }
+
                 rowLayout1.addView(btnDefault1, android.widget.LinearLayout.LayoutParams(
                     android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
                     android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
@@ -528,20 +545,29 @@ open class CardTwinSeekBarPreference(context: Context) : TwinSeekBarPreference(c
                     1f
                 ))
 
-                // 2. Secondary SeekBar Row
+                // 2. Secondary SeekBar Row (按键纵向间距)
+                val titleTv2 = android.widget.TextView(context).apply {
+                    text = secondaryLabel.ifEmpty { context.getString(R.string.key_vertical_margin) }
+                    textSize = 14f
+                    typeface = android.graphics.Typeface.DEFAULT_BOLD
+                    setTextColor(titleTextColor)
+                    setPadding(0, 12, 0, 4)
+                }
+
                 val rowLayout2 = android.widget.LinearLayout(context).apply {
                     orientation = android.widget.LinearLayout.HORIZONTAL
                     gravity = android.view.Gravity.CENTER_VERTICAL
-                    setPadding(0, 8, 0, 12)
+                    setPadding(0, 4, 0, 12)
                 }
 
+                val defVal2 = secondaryDefault ?: 17
                 val btnDefault2 = android.widget.TextView(context).apply {
-                    text = secondaryLabel.ifEmpty { "横屏" }
+                    text = "默认"
                     textSize = 13f
                     typeface = android.graphics.Typeface.DEFAULT_BOLD
                     setTextColor(accentColor)
                     gravity = android.view.Gravity.CENTER
-                    setPadding(32, 16, 32, 16)
+                    setPadding(32, 14, 32, 14)
                     background = android.graphics.drawable.GradientDrawable().apply {
                         shape = android.graphics.drawable.GradientDrawable.RECTANGLE
                         cornerRadius = 32f
@@ -579,6 +605,13 @@ open class CardTwinSeekBarPreference(context: Context) : TwinSeekBarPreference(c
                     })
                 }
 
+                btnDefault2.setOnClickListener {
+                    seekBar2.setProgress(defVal2.toFloat())
+                    preferenceDataStore?.putInt(secondaryKey, defVal2) ?: sharedPreferences?.edit { putInt(secondaryKey, defVal2) }
+                    summaryTv?.text = "$value $unit / $defVal2 $unit"
+                    callChangeListener(value to defVal2)
+                }
+
                 rowLayout2.addView(btnDefault2, android.widget.LinearLayout.LayoutParams(
                     android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
                     android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
@@ -591,7 +624,9 @@ open class CardTwinSeekBarPreference(context: Context) : TwinSeekBarPreference(c
                     1f
                 ))
 
+                inlineContainer.addView(titleTv1)
                 inlineContainer.addView(rowLayout1)
+                inlineContainer.addView(titleTv2)
                 inlineContainer.addView(rowLayout2)
             } else {
                 inlineContainer.isVisible = false

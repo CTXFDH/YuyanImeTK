@@ -52,6 +52,7 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.SeekBar
 import android.widget.TextView
+import com.yuyan.imemodule.view.widget.seekbar.SignSeekBar
 import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.manager.InputModeSwitcher
 import com.yuyan.imemodule.prefs.AppPrefs
@@ -157,6 +158,7 @@ class CustomThemeActivity : AppCompatActivity() {
     }
 
     private lateinit var previewUi: KeyboardPreviewView
+    private lateinit var previewScaleContainer: FrameLayout
 
     private fun getThemeTextColor(): Int {
         return ContextCompat.getColor(this@CustomThemeActivity, R.color.settings_title_text)
@@ -187,14 +189,23 @@ class CustomThemeActivity : AppCompatActivity() {
         }
     }
     private val brightnessLabel by lazy {
-        createTextView(R.string.brightness)
+        createTextView().apply {
+            text = "背景亮度变暗"
+            textSize = 14f
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            setTextColor(getThemeTextColor())
+        }
     }
     private val brightnessValue by lazy {
         createTextView()
     }
     private val brightnessSeekBar by lazy {
-        seekBar {
-            max = 100
+        SignSeekBar(this).apply {
+            getConfigBuilder()
+                .min(0f)
+                .max(100f)
+                .progress(50f)
+                .build()
         }
     }
 
@@ -218,15 +229,15 @@ class CustomThemeActivity : AppCompatActivity() {
     private fun createCapsuleButton(defaultText: String, onClick: (View) -> Unit): TextView {
         return TextView(this).apply {
             text = defaultText
-            textSize = 12f
+            textSize = 12.5f
             typeface = android.graphics.Typeface.DEFAULT_BOLD
-            setTextColor(Color.WHITE)
+            setTextColor(Color.parseColor("#047857"))
             gravity = Gravity.CENTER
             val bg = GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
                 cornerRadius = dp(16f)
-                setColor(Color.parseColor("#3B434B"))
-                setStroke(dp(1), Color.parseColor("#505A64"))
+                setColor(Color.parseColor("#E6F7F0"))
+                setStroke(dp(1), Color.parseColor("#10B981"))
             }
             background = bg
             setOnClickListener { onClick(this) }
@@ -293,9 +304,8 @@ class CustomThemeActivity : AppCompatActivity() {
             customTheme = previousTheme
 
             val initBrightness = theme.backgroundImage?.brightness ?: 100
-            brightnessSeekBar.progress = initBrightness
-            blurSeekBar.progress = theme.backgroundBlurRadius
-            blurLabel.text = "壁纸高斯模糊度：${theme.backgroundBlurRadius}%"
+            brightnessSeekBar.setProgress(initBrightness.toFloat())
+            blurSeekBar.setProgress(theme.backgroundBlurRadius.toFloat())
             variantSwitch.isChecked = theme.isDark
 
             val drawable = getInitialBackgroundDrawable().mutate()
@@ -373,31 +383,35 @@ class CustomThemeActivity : AppCompatActivity() {
         }
 
         val label = textView {
-            text = "【按键透明度】：${(getAlpha() * 100 / 255)}%"
-            textSize = 13.5f
+            text = "按键透明度"
+            textSize = 14f
             typeface = android.graphics.Typeface.DEFAULT_BOLD
             setTextColor(getThemeTextColor())
-            horizontalPadding = dp(16)
+            setPadding(0, dp(4), 0, dp(4))
         }
 
-        val bar = seekBar {
-            max = 100
-            progress = (getAlpha() * 100 / 255).coerceIn(0, 100)
-            setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+        val currentPercent = (getAlpha() * 100 / 255).coerceIn(0, 100)
+        val bar = SignSeekBar(this).apply {
+            getConfigBuilder()
+                .min(0f)
+                .max(100f)
+                .progress(currentPercent.toFloat())
+                .build()
+
+            setOnProgressChangedListener(object : SignSeekBar.OnProgressChangedListener {
+                override fun onProgressChanged(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float, fromUser: Boolean) {
                     if (fromUser) {
-                        label.text = "【按键透明度】：$progress%"
                         val alpha = (progress * 255 / 100).coerceIn(0, 255)
                         onAlphaChanged(alpha)
                     }
                 }
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+                override fun getProgressOnActionUp(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float) {}
+                override fun getProgressOnFinally(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float, fromUser: Boolean) {}
             })
         }
 
         container.addView(label, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
-            setMargins(0, 0, 0, dp(6))
+            setMargins(0, 0, 0, dp(4))
         })
         container.addView(bar, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
         return container
@@ -406,18 +420,18 @@ class CustomThemeActivity : AppCompatActivity() {
     private fun createRoundedRectButton(defaultText: String, onClick: (View) -> Unit): TextView {
         return TextView(this).apply {
             text = defaultText
-            textSize = 13f
+            textSize = 13.5f
             typeface = android.graphics.Typeface.DEFAULT_BOLD
-            setTextColor(Color.parseColor("#389F70"))
+            setTextColor(Color.parseColor("#047857"))
             gravity = Gravity.CENTER
             setPadding(dp(12), dp(10), dp(12), dp(10))
             isClickable = true
             isFocusable = true
             val bg = GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
-                cornerRadius = dp(10f)
-                setColor(Color.parseColor("#1E293B"))
-                setStroke(dp(1), Color.parseColor("#389F70"))
+                cornerRadius = dp(12f)
+                setColor(Color.parseColor("#E6F7F0"))
+                setStroke(dp(1), Color.parseColor("#10B981"))
             }
             background = bg
             setOnClickListener { v ->
@@ -535,16 +549,34 @@ class CustomThemeActivity : AppCompatActivity() {
     }
 
     private fun setConsoleBarContent(title: String, vararg views: View) {
-        tvSelectedKeyTitle.text = title
+        val cleanTitle = title.replace("[", "").replace("]", "").trim()
+        tvSelectedKeyTitle.text = cleanTitle
         while (selectedKeyConsoleBar.childCount > 1) {
             selectedKeyConsoleBar.removeViewAt(1)
         }
+
+        val cardContainer = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(16), dp(12), dp(16), dp(12))
+            background = ContextCompat.getDrawable(context, R.drawable.sdk_bg_settings_card_single)
+            clipToOutline = true
+            outlineProvider = android.view.ViewOutlineProvider.BACKGROUND
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, dp(8), 0, dp(16))
+            }
+        }
+
         for (v in views) {
             v.isVisible = true
             (v.parent as? ViewGroup)?.removeView(v)
-            selectedKeyConsoleBar.addView(v)
+            cardContainer.addView(v)
         }
-        switchThemeTab(0)
+
+        selectedKeyConsoleBar.addView(cardContainer)
+        themeViewPager.setCurrentItem(0, true)
     }
 
     private fun handleKeySelectionInEditMode(key: SoftKey) {
@@ -745,48 +777,56 @@ class CustomThemeActivity : AppCompatActivity() {
 
     private val cornerRadiusLabel by lazy {
         createTextView().apply {
-            text = "圆角半径（dp）：${theme.windowCornerRadiusDp} dp"
+            text = "窗口圆角半径"
+            textSize = 14f
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            setTextColor(getThemeTextColor())
         }
     }
 
     private val cornerRadiusSeekBar by lazy {
-        seekBar {
-            max = 60
-            progress = theme.windowCornerRadiusDp
-            setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+        SignSeekBar(this).apply {
+            getConfigBuilder()
+                .min(0f)
+                .max(60f)
+                .progress(theme.windowCornerRadiusDp.toFloat())
+                .build()
+            setOnProgressChangedListener(object : SignSeekBar.OnProgressChangedListener {
+                override fun onProgressChanged(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float, fromUser: Boolean) {
                     if (fromUser) {
-                        cornerRadiusLabel.text = "圆角半径（dp）：$progress dp"
                         updateColorTheme { it.copy(windowCornerRadiusDp = progress) }
                     }
                 }
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+                override fun getProgressOnActionUp(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float) {}
+                override fun getProgressOnFinally(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float, fromUser: Boolean) {}
             })
         }
     }
 
-
-
     private val blurLabel by lazy {
         createTextView().apply {
-            text = "壁纸高斯模糊度：${theme.backgroundBlurRadius}%"
+            text = "壁纸高斯模糊度"
+            textSize = 14f
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            setTextColor(getThemeTextColor())
         }
     }
 
     private val blurSeekBar by lazy {
-        seekBar {
-            max = 100
-            progress = theme.backgroundBlurRadius
-            setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+        SignSeekBar(this).apply {
+            getConfigBuilder()
+                .min(0f)
+                .max(100f)
+                .progress(theme.backgroundBlurRadius.toFloat())
+                .build()
+            setOnProgressChangedListener(object : SignSeekBar.OnProgressChangedListener {
+                override fun onProgressChanged(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float, fromUser: Boolean) {
                     if (fromUser) {
-                        blurLabel.text = "壁纸高斯模糊度：$progress%"
                         updateColorTheme { it.copy(backgroundBlurRadius = progress) }
                     }
                 }
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+                override fun getProgressOnActionUp(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float) {}
+                override fun getProgressOnFinally(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float, fromUser: Boolean) {}
             })
         }
     }
@@ -808,7 +848,8 @@ class CustomThemeActivity : AppCompatActivity() {
                     val bytes = contentResolver.openInputStream(uri)?.use { it.readBytes() }
                     if (bytes != null && isSrcImageFileInitialized()) {
                         srcImageFile.writeBytes(bytes)
-                        launchCrop(EnvironmentSingleton.instance.skbWidth, EnvironmentSingleton.instance.inputAreaHeight)
+                        val totalH = EnvironmentSingleton.instance.inputAreaHeight + EnvironmentSingleton.instance.heightForFullDisplayBar
+                        launchCrop(EnvironmentSingleton.instance.skbWidth, totalH)
                     }
                 }
             } catch (_: Exception) {
@@ -833,7 +874,8 @@ class CustomThemeActivity : AppCompatActivity() {
                 changeWallpaperImageLauncher.launch("image/*")
             }
             val btnReCrop = createRoundedRectButton("✂️ 重新截取") {
-                backgroundStates.launchCrop(EnvironmentSingleton.instance.skbWidth, EnvironmentSingleton.instance.inputAreaHeight)
+                val totalH = EnvironmentSingleton.instance.inputAreaHeight + EnvironmentSingleton.instance.heightForFullDisplayBar
+                backgroundStates.launchCrop(EnvironmentSingleton.instance.skbWidth, totalH)
             }
 
             addView(btnChange, lp1)
@@ -987,20 +1029,42 @@ class CustomThemeActivity : AppCompatActivity() {
         LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             visibility = View.VISIBLE // 默认显示背景设置 Tab 页
-            setPadding(0, dp(4), 0, dp(4))
+
+            val card1 = LinearLayout(this@CustomThemeActivity).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(dp(16), dp(12), dp(16), dp(12))
+                background = ContextCompat.getDrawable(context, R.drawable.sdk_bg_settings_card_single)
+                clipToOutline = true
+                outlineProvider = android.view.ViewOutlineProvider.BACKGROUND
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    setMargins(0, dp(8), 0, dp(12))
+                }
+            }
 
             candidateTextColorRow.isVisible = true
-            safeAddView(this, candidateTextColorRow)
-            safeAddView(this, keyboardColorRow)
-            safeAddView(this, wallpaperButtonsRow, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
-                setMargins(0, dp(12), 0, dp(14))
+            safeAddView(card1, candidateTextColorRow)
+            safeAddView(card1, keyboardColorRow)
+            safeAddView(card1, wallpaperButtonsRow, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                setMargins(0, dp(8), 0, dp(4))
             })
-            safeAddView(this, cornerRadiusLabel, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
-                setMargins(0, dp(14), 0, dp(6))
-            })
-            safeAddView(this, cornerRadiusSeekBar, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
-                setMargins(0, 0, 0, dp(14))
-            })
+            addView(card1)
+
+            val card2 = LinearLayout(this@CustomThemeActivity).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(dp(16), dp(12), dp(16), dp(12))
+                background = ContextCompat.getDrawable(context, R.drawable.sdk_bg_settings_card_single)
+                clipToOutline = true
+                outlineProvider = android.view.ViewOutlineProvider.BACKGROUND
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    setMargins(0, dp(4), 0, dp(16))
+                }
+            }
 
             val rowVariant = LinearLayout(this@CustomThemeActivity).apply {
                 orientation = LinearLayout.HORIZONTAL
@@ -1008,137 +1072,64 @@ class CustomThemeActivity : AppCompatActivity() {
                 safeAddView(this, variantLabel, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
                 safeAddView(this, variantSwitch)
                 layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
-                    setMargins(0, dp(14), 0, dp(14))
+                    setMargins(0, dp(4), 0, dp(12))
                 }
             }
-            safeAddView(this, rowVariant)
+            safeAddView(card2, rowVariant)
 
-            val rowBrightnessHeader = LinearLayout(this@CustomThemeActivity).apply {
-                orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.CENTER_VERTICAL
-                safeAddView(this, brightnessLabel, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
-                safeAddView(this, brightnessValue)
-                layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
-                    setMargins(0, dp(14), 0, dp(6))
-                }
-            }
-            safeAddView(this, rowBrightnessHeader)
-            safeAddView(this, brightnessSeekBar, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
-                setMargins(0, 0, 0, dp(14))
+            safeAddView(card2, cornerRadiusLabel, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                setMargins(0, dp(8), 0, dp(4))
+            })
+            safeAddView(card2, cornerRadiusSeekBar, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                setMargins(0, 0, 0, dp(12))
             })
 
-            val rowBlurHeader = LinearLayout(this@CustomThemeActivity).apply {
-                orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.CENTER_VERTICAL
-                safeAddView(this, blurLabel, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f))
-                layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
-                    setMargins(0, dp(14), 0, dp(6))
-                }
-            }
-            safeAddView(this, rowBlurHeader)
-            safeAddView(this, blurSeekBar, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
-                setMargins(0, 0, 0, dp(14))
+            safeAddView(card2, brightnessLabel, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                setMargins(0, dp(8), 0, dp(4))
             })
+            safeAddView(card2, brightnessSeekBar, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                setMargins(0, 0, 0, dp(12))
+            })
+
+            safeAddView(card2, blurLabel, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                setMargins(0, dp(8), 0, dp(4))
+            })
+            safeAddView(card2, blurSeekBar, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                setMargins(0, 0, 0, dp(8))
+            })
+
+            addView(card2)
             updateSection2Visibility()
         }
     }
 
     private var activeThemeTabIndex = 0 // 0: 选中区域设置 (左), 1: 背景设置 (右)
 
-    private val tabSelectedRegionTitle by lazy {
-        TextView(this).apply {
-            text = "选中区域设置"
-            textSize = 14.5f
-            gravity = Gravity.CENTER
-            setPadding(0, dp(10), 0, dp(10))
-            setTextColor(Color.parseColor("#389F70"))
-            typeface = android.graphics.Typeface.DEFAULT_BOLD
+    private val themeTabLayout: com.google.android.material.tabs.TabLayout by lazy {
+        com.google.android.material.tabs.TabLayout(this).apply {
+            val activeColor = ContextCompat.getColor(this@CustomThemeActivity, R.color.settings_icon_tint)
+            val inactiveColor = ContextCompat.getColor(this@CustomThemeActivity, R.color.settings_summary_text)
+            setSelectedTabIndicatorColor(activeColor)
+            setTabTextColors(inactiveColor, activeColor)
+            tabMode = com.google.android.material.tabs.TabLayout.MODE_FIXED
+            background = null
+            elevation = 0f
+
+            addTab(newTab().setText("选中区域设置"))
+            addTab(newTab().setText("背景设置"))
+
+            addOnTabSelectedListener(object : com.google.android.material.tabs.TabLayout.OnTabSelectedListener {
+                override fun onTabSelected(tab: com.google.android.material.tabs.TabLayout.Tab?) {
+                    tab?.position?.let { pos ->
+                        if (themeViewPager.currentItem != pos) {
+                            themeViewPager.setCurrentItem(pos, true)
+                        }
+                    }
+                }
+                override fun onTabUnselected(tab: com.google.android.material.tabs.TabLayout.Tab?) {}
+                override fun onTabReselected(tab: com.google.android.material.tabs.TabLayout.Tab?) {}
+            })
         }
-    }
-
-    private val tabIndicatorSelectedRegion by lazy {
-        View(this).apply {
-            layoutParams = FrameLayout.LayoutParams(dp(88), dp(3)).apply {
-                gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-            }
-            backgroundColor = Color.parseColor("#389F70")
-            visibility = View.VISIBLE
-        }
-    }
-
-    private val tabLayoutSelectedRegion by lazy {
-        FrameLayout(this).apply {
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-            addView(tabSelectedRegionTitle)
-            addView(tabIndicatorSelectedRegion)
-            setOnClickListener { switchThemeTab(0) }
-        }
-    }
-
-    private val tabBackgroundTitle by lazy {
-        TextView(this).apply {
-            text = "背景设置"
-            textSize = 14.5f
-            gravity = Gravity.CENTER
-            setPadding(0, dp(10), 0, dp(10))
-            setTextColor(Color.parseColor("#94A3B8"))
-            typeface = android.graphics.Typeface.DEFAULT
-        }
-    }
-
-    private val tabIndicatorBackground by lazy {
-        View(this).apply {
-            layoutParams = FrameLayout.LayoutParams(dp(72), dp(3)).apply {
-                gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-            }
-            backgroundColor = Color.parseColor("#389F70")
-            visibility = View.GONE
-        }
-    }
-
-    private val tabLayoutBackground by lazy {
-        FrameLayout(this).apply {
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-            addView(tabBackgroundTitle)
-            addView(tabIndicatorBackground)
-            setOnClickListener { switchThemeTab(1) }
-        }
-    }
-
-    private val themeTabBar by lazy {
-        LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            addView(tabLayoutSelectedRegion) // 左侧：选中区域设置
-            addView(tabLayoutBackground)     // 右侧：背景设置
-        }
-    }
-
-    private val tabBarDivider by lazy {
-        View(this).apply {
-            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(1))
-            backgroundColor = Color.parseColor("#334155")
-        }
-    }
-
-    private fun updateTabBarUi(index: Int) {
-        activeThemeTabIndex = index
-        val activeColor = ContextCompat.getColor(this, R.color.settings_icon_tint)
-        val inactiveColor = ContextCompat.getColor(this, R.color.settings_summary_text)
-
-        tabSelectedRegionTitle.setTextColor(if (index == 0) activeColor else inactiveColor)
-        tabSelectedRegionTitle.typeface = if (index == 0) android.graphics.Typeface.DEFAULT_BOLD else android.graphics.Typeface.DEFAULT
-        tabIndicatorSelectedRegion.visibility = if (index == 0) View.VISIBLE else View.GONE
-        tabIndicatorSelectedRegion.setBackgroundColor(activeColor)
-
-        tabBackgroundTitle.setTextColor(if (index != 0) activeColor else inactiveColor)
-        tabBackgroundTitle.typeface = if (index != 0) android.graphics.Typeface.DEFAULT_BOLD else android.graphics.Typeface.DEFAULT
-        tabIndicatorBackground.visibility = if (index != 0) View.VISIBLE else View.GONE
-        tabIndicatorBackground.setBackgroundColor(activeColor)
-    }
-
-    private fun switchThemeTab(index: Int) {
-        themeViewPager.setCurrentItem(index, true)
     }
 
     private val themeViewPager by lazy {
@@ -1181,7 +1172,10 @@ class CustomThemeActivity : AppCompatActivity() {
             }
             registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
-                    updateTabBarUi(position)
+                    val tab = themeTabLayout.getTabAt(position)
+                    if (tab != null && !tab.isSelected) {
+                        tab.select()
+                    }
                 }
             })
         }
@@ -1189,9 +1183,13 @@ class CustomThemeActivity : AppCompatActivity() {
 
     private val ui by lazy {
         val itemMargin = dp(16)
-        val totalHeight = EnvironmentSingleton.instance.heightForCandidatesArea + EnvironmentSingleton.instance.skbHeight
-        val visualBottomOffset = (totalHeight * 0.18f).toInt()
-        val gap = dp(10)
+        val gap = dp(8)
+
+        val origWidth = EnvironmentSingleton.instance.skbWidth
+        val origHeight = EnvironmentSingleton.instance.skbHeight + EnvironmentSingleton.instance.heightForCandidatesArea
+        val scaleRatio = 0.82f
+        val scaledWidth = (origWidth * scaleRatio).toInt()
+        val scaledHeight = (origHeight * scaleRatio).toInt()
 
         constraintLayout {
             setBackgroundColor(ContextCompat.getColor(this@CustomThemeActivity, R.color.settings_page_bg))
@@ -1201,28 +1199,22 @@ class CustomThemeActivity : AppCompatActivity() {
             })
             // 0. 顶部 3 胶囊控制栏
             add(capsuleBarLayout, lParams(matchConstraints, wrapContent) {
-                below(toolbar, dp(10))
+                below(toolbar, dp(6))
                 centerHorizontally(itemMargin)
             })
-            // 1区：预览图区
-            add(previewUi, lParams(wrapContent, totalHeight) {
+            // 1区：预览图区 (尺寸为精确定高 scaledWidth x scaledHeight，居中对齐)
+            add(previewScaleContainer, lParams(scaledWidth, scaledHeight) {
                 below(capsuleBarLayout, gap)
                 centerHorizontally()
             })
-            // 2区：Tab 选项卡栏 (选中区域设置 | 背景设置)
-            add(themeTabBar, lParams(matchConstraints, wrapContent) {
-                below(previewUi, gap - visualBottomOffset)
+            // 2区：Tab 选项卡栏 (标准 TabLayout)
+            add(themeTabLayout, lParams(matchParent, wrapContent) {
+                below(previewScaleContainer, gap)
                 centerHorizontally(itemMargin)
             })
-            // Tab 栏底部分割线
-            tabBarDivider.visibility = View.GONE
-            add(tabBarDivider, lParams(matchConstraints, dp(0)) {
-                below(themeTabBar, dp(0))
-                centerHorizontally(itemMargin)
-            })
-            // 3区：ViewPager2 页面容器 (覆盖下半屏所有区域，确保包含空白处均支持左右手势滑动切页)
+            // 3区：ViewPager2 页面容器
             add(themeViewPager, lParams(matchConstraints, matchConstraints) {
-                below(themeTabBar, dp(4))
+                below(themeTabLayout, dp(2))
                 bottomOfParent()
                 centerHorizontally()
             })
@@ -1306,12 +1298,19 @@ class CustomThemeActivity : AppCompatActivity() {
             customTheme = ThemePreset.TransparentLight.deriveCustomBackground(n, s.path)
         }
 
+        val origWidth = EnvironmentSingleton.instance.skbWidth
+        val origHeight = EnvironmentSingleton.instance.skbHeight + EnvironmentSingleton.instance.heightForCandidatesArea
+        val scaleRatio = 0.82f
+        val scaledWidth = (origWidth * scaleRatio).toInt()
+        val scaledHeight = (origHeight * scaleRatio).toInt()
+        val leftOffset = ((origWidth - scaledWidth) / 2)
+
         previewUi = KeyboardPreviewView(this).apply {
-            pivotX = EnvironmentSingleton.instance.skbWidth * 0.5f
+            pivotX = origWidth * 0.5f
             pivotY = 0f
-            scaleX = 0.82f
-            scaleY = 0.82f
-            isInteractiveMode = false // 整个编辑主题页面直接默认为编辑模式！
+            scaleX = scaleRatio
+            scaleY = scaleRatio
+            isInteractiveMode = false
             elevation = dp(4f)
             onKeySelectedListener = { key ->
                 handleKeySelectionInEditMode(key)
@@ -1319,6 +1318,15 @@ class CustomThemeActivity : AppCompatActivity() {
             onToolbarSelectedListener = {
                 handleToolbarSelectionInEditMode()
             }
+        }
+
+        previewScaleContainer = FrameLayout(this).apply {
+            clipChildren = false
+            layoutParams = ViewGroup.LayoutParams(scaledWidth, scaledHeight)
+            val lp = FrameLayout.LayoutParams(origWidth, origHeight).apply {
+                leftMargin = -leftOffset
+            }
+            addView(previewUi, lp)
         }
 
         val initialDrawable = getInitialBackgroundDrawable()
@@ -1348,7 +1356,7 @@ class CustomThemeActivity : AppCompatActivity() {
         }
         setContentView(ui)
         val initBrightness = theme.backgroundImage?.brightness ?: 100
-        brightnessSeekBar.progress = initBrightness
+        brightnessSeekBar.setProgress(initBrightness.toFloat())
         previewUi.setBrightness(initBrightness)
         if (newCreated) {
             customTheme = theme.copy(isDark = false)
@@ -1385,7 +1393,8 @@ class CustomThemeActivity : AppCompatActivity() {
                 }
             }
             cropLabel.setOnClickListener {
-                launchCrop(EnvironmentSingleton.instance.skbWidth, EnvironmentSingleton.instance.inputAreaHeight)
+                val totalH = EnvironmentSingleton.instance.inputAreaHeight + EnvironmentSingleton.instance.heightForFullDisplayBar
+                launchCrop(EnvironmentSingleton.instance.skbWidth, totalH)
             }
             variantLabel.setOnClickListener {
                 variantSwitch.isChecked = !variantSwitch.isChecked
@@ -1405,12 +1414,8 @@ class CustomThemeActivity : AppCompatActivity() {
                 previewUi.setTheme(theme, getInitialBackgroundDrawable().mutate())
                 previewUi.invalidate()
             }
-            brightnessSeekBar.setOnSeekBarChangeListener(object :
-                SeekBar.OnSeekBarChangeListener {
-                override fun onStartTrackingTouch(bar: SeekBar) {}
-                override fun onStopTrackingTouch(bar: SeekBar) {}
-
-                override fun onProgressChanged(bar: SeekBar, progress: Int, fromUser: Boolean) {
+            brightnessSeekBar.setOnProgressChangedListener(object : SignSeekBar.OnProgressChangedListener {
+                override fun onProgressChanged(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float, fromUser: Boolean) {
                     if (fromUser) {
                         brightnessValue.text = "$progress%"
                         updateColorTheme {
@@ -1420,13 +1425,16 @@ class CustomThemeActivity : AppCompatActivity() {
                         }
                     }
                 }
+                override fun getProgressOnActionUp(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float) {}
+                override fun getProgressOnFinally(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float, fromUser: Boolean) {}
             })
         }
 
         if (newCreated) {
             cropLabel.visibility = View.GONE
             whenHasBackground {
-                launchCrop(EnvironmentSingleton.instance.skbWidth, EnvironmentSingleton.instance.inputAreaHeight)
+                val totalH = EnvironmentSingleton.instance.inputAreaHeight + EnvironmentSingleton.instance.heightForFullDisplayBar
+                launchCrop(EnvironmentSingleton.instance.skbWidth, totalH)
             }
         } else {
             whenHasBackground {
@@ -1674,8 +1682,8 @@ class CustomThemeActivity : AppCompatActivity() {
         }
 
         val titleTv = textView {
-            text = title
-            textSize = 13.5f
+            text = title.replace(Regex("【.*?】"), "").trim()
+            textSize = 14f
             typeface = android.graphics.Typeface.DEFAULT_BOLD
             setTextColor(getThemeTextColor())
             val params = RelativeLayout.LayoutParams(
@@ -1714,15 +1722,16 @@ class CustomThemeActivity : AppCompatActivity() {
             val bgDrawable = GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
                 cornerRadius = dp(13f)
-                setColor(Color.parseColor("#3B434B"))
-                setStroke(dp(2), Color.parseColor("#389F70"))
+                setColor(Color.parseColor("#E6F7F0"))
+                setStroke(dp(1), Color.parseColor("#10B981"))
             }
             background = bgDrawable
 
             val plusTv = textView {
                 text = "+"
-                setTextColor(Color.WHITE)
-                textSize = 14f
+                setTextColor(Color.parseColor("#047857"))
+                textSize = 15f
+                typeface = android.graphics.Typeface.DEFAULT_BOLD
                 gravity = Gravity.CENTER
             }
             addView(plusTv, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))

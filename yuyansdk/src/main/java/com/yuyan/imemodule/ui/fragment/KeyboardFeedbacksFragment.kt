@@ -54,6 +54,10 @@ class KeyboardFeedbacksFragment : Fragment() {
         val soundOnKeyPress by AppPrefs.getInstance().internal.soundOnKeyPress
         val vibrationAmplitude by AppPrefs.getInstance().internal.vibrationAmplitude
 
+        val soundTimeRangeEnablePref = AppPrefs.getInstance().internal.soundTimeRangeEnable
+        val soundStartTimePref = AppPrefs.getInstance().internal.soundStartTime
+        val soundEndTimePref = AppPrefs.getInstance().internal.soundEndTime
+
         val soundEffectStandardPref = AppPrefs.getInstance().internal.soundEffectStandard
         val soundEffectSpaceBarPref = AppPrefs.getInstance().internal.soundEffectSpaceBar
         val soundEffectDeletePref = AppPrefs.getInstance().internal.soundEffectDelete
@@ -326,6 +330,98 @@ class KeyboardFeedbacksFragment : Fragment() {
             gravity = gravityVerticalCenter
         }
 
+        val soundTimeRangeTitle = textView {
+            setText(R.string.sound_time_range_title)
+            textSize = 15.5f
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            setTextColor(titleTextColor)
+            gravity = gravityVerticalCenter
+        }
+
+        val soundTimeRangeSwitch = switch {
+            isChecked = soundTimeRangeEnablePref.getValue()
+        }
+
+        val startTimeLabel = textView {
+            setText(R.string.sound_start_time)
+            textSize = 13.5f
+            setTextColor(summaryTextColor)
+        }
+        val startTimeValTv = textView {
+            text = soundStartTimePref.getValue()
+            textSize = 14f
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            setTextColor(accentColor)
+        }
+        val startTimeBtn = horizontalLayout {
+            setPadding(dp(12), dp(10), dp(12), dp(10))
+            background = createCapsuleDrawable(iconBoxBgColor, 12f)
+            gravity = gravityCenter
+            add(startTimeLabel, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+            add(startTimeValTv, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { leftMargin = dp(8) })
+        }
+
+        val endTimeLabel = textView {
+            setText(R.string.sound_end_time)
+            textSize = 13.5f
+            setTextColor(summaryTextColor)
+        }
+        val endTimeValTv = textView {
+            text = soundEndTimePref.getValue()
+            textSize = 14f
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            setTextColor(accentColor)
+        }
+        val endTimeBtn = horizontalLayout {
+            setPadding(dp(12), dp(10), dp(12), dp(10))
+            background = createCapsuleDrawable(iconBoxBgColor, 12f)
+            gravity = gravityCenter
+            add(endTimeLabel, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+            add(endTimeValTv, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { leftMargin = dp(8) })
+        }
+
+        val timePickerLayout = horizontalLayout {
+            weightSum = 2f
+            setPadding(0, 0, 0, dp(12))
+            add(startTimeBtn, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { rightMargin = dp(6) })
+            add(endTimeBtn, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply { leftMargin = dp(6) })
+        }
+
+        fun updateTimePickerState(enabled: Boolean) {
+            timePickerLayout.visibility = if (enabled) View.VISIBLE else View.GONE
+        }
+
+        updateTimePickerState(soundTimeRangeEnablePref.getValue())
+
+        soundTimeRangeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            soundTimeRangeEnablePref.setValue(isChecked)
+            updateTimePickerState(isChecked)
+        }
+
+        startTimeBtn.setOnClickListener {
+            val curTime = soundStartTimePref.getValue()
+            val parts = curTime.split(":")
+            val curHour = parts.getOrNull(0)?.toIntOrNull() ?: 11
+            val curMin = parts.getOrNull(1)?.toIntOrNull() ?: 0
+            android.app.TimePickerDialog(requireContext(), { _, h, m ->
+                val formatted = String.format(java.util.Locale.getDefault(), "%02d:%02d", h, m)
+                soundStartTimePref.setValue(formatted)
+                startTimeValTv.text = formatted
+            }, curHour, curMin, true).show()
+        }
+
+        endTimeBtn.setOnClickListener {
+            val curTime = soundEndTimePref.getValue()
+            val parts = curTime.split(":")
+            val curHour = parts.getOrNull(0)?.toIntOrNull() ?: 15
+            val curMin = parts.getOrNull(1)?.toIntOrNull() ?: 0
+            android.app.TimePickerDialog(requireContext(), { _, h, m ->
+                val formatted = String.format("%02d:%02d", h, m)
+                soundEndTimePref.setValue(formatted)
+                endTimeValTv.text = formatted
+            }, curHour, curMin, true).show()
+        }
+
         val vibrationTitle = textView {
             setText(R.string.button_vibration_amplitude)
             textSize = 15.5f
@@ -359,13 +455,30 @@ class KeyboardFeedbacksFragment : Fragment() {
                 below(soundTitle)
                 startOfParent(itemMargin)
                 endOfParent(itemMargin)
+                above(soundTimeRangeTitle)
+            })
+
+            add(soundTimeRangeTitle, lParams(matchConstraints, lineHeight) {
+                below(soundSeekBar)
+                startOfParent(itemMargin)
+                before(soundTimeRangeSwitch)
+                above(timePickerLayout)
+            })
+            add(soundTimeRangeSwitch, lParams(matchConstraints, lineHeight) {
+                topToTopOf(soundTimeRangeTitle)
+                endOfParent(itemMargin)
+            })
+            add(timePickerLayout, lParams(width = matchParent, height = wrapContent) {
+                below(soundTimeRangeTitle)
+                startOfParent(itemMargin)
+                endOfParent(itemMargin)
                 above(vibrationTitle)
             })
 
             add(vibrationTitle, lParams(matchConstraints, lineHeight) {
-                below(soundSeekBar)
+                below(timePickerLayout)
                 startOfParent(itemMargin)
-                topToTopOf(soundSeekBar, itemMargin)
+                before(vibrationSwitch)
                 above(vibrateSeekBar)
             })
             add(vibrationSwitch, lParams(matchConstraints, lineHeight) {

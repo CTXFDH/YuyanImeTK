@@ -101,13 +101,13 @@ android {
     }
     android.applicationVariants.configureEach { variant ->
         variant.outputs.configureEach {
-            outputFileName = "语燕输入法K-K${getKVersionCode()}_${versionCodeDate()}.apk"
+            outputFileName = "YuyanImeK-K${getKVersionCode()}_${versionCodeDate()}.apk"
         }
     }
 }
 
 static def getKVersionCode() {
-    return 24 // K版当前版本号: K24
+    return 30 // K版当前版本号: K30
 }
 
 static def versionCodeDate() {

@@ -125,20 +125,22 @@ class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
         invalidate()
     }
 
+    fun reloadKeyboardLayout(theme: Theme? = currentTheme) {
+        if (theme != null) {
+            currentTheme = theme
+        }
+        instance.initData()
+        KeyboardLoaderUtil.instance.clearKeyboardMap()
+        refreshPreviewLayout()
+    }
+
     fun setTheme(theme: Theme, backgroundDrawable: Drawable) {
         currentTheme = theme
         backgroundLayer?.background = backgroundDrawable
         val customBg = theme.backgroundImage as? Theme.Custom.CustomBackground
         val brightness = customBg?.brightness ?: 100
         setBrightness(brightness)
-        if (textKeyboard == null || candidatesBarView == null) {
-            refreshPreviewLayout()
-        } else {
-            candidatesBarView?.setTheme(theme)
-            textKeyboard?.setTheme(theme)
-            applyWindowTopCornerRadius(theme.windowCornerRadiusDp)
-            invalidate()
-        }
+        reloadKeyboardLayout(theme)
     }
 
     fun setTheme(theme: Theme) {
@@ -146,14 +148,7 @@ class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
         val customBg = theme.backgroundImage as? Theme.Custom.CustomBackground
         val brightness = customBg?.brightness ?: 100
         setBrightness(brightness)
-        if (textKeyboard == null || candidatesBarView == null) {
-            refreshPreviewLayout()
-        } else {
-            candidatesBarView?.setTheme(theme)
-            textKeyboard?.setTheme(theme)
-            applyWindowTopCornerRadius(theme.windowCornerRadiusDp)
-            invalidate()
-        }
+        reloadKeyboardLayout(theme)
         layoutParams?.width = instance.skbWidth
         layoutParams?.height = instance.skbHeight + instance.heightForCandidatesArea
     }
@@ -508,5 +503,27 @@ class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
             previewContainer?.removeView(it)
             popupWindowView = null
         }
+    }
+
+    private val prefChangeListener = com.yuyan.imemodule.view.preference.ManagedPreference.OnChangeListener<Any> { _, _ ->
+        post {
+            reloadKeyboardLayout()
+        }
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        ThemeManager.prefs.managedPreferences.forEach { entry ->
+            entry.value.registerOnChangeListener(prefChangeListener)
+        }
+        AppPrefs.getInstance().keyboardSetting.abcNumberLine.registerOnChangeListener(prefChangeListener)
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        ThemeManager.prefs.managedPreferences.forEach { entry ->
+            entry.value.unregisterOnChangeListener(prefChangeListener)
+        }
+        AppPrefs.getInstance().keyboardSetting.abcNumberLine.unregisterOnChangeListener(prefChangeListener)
     }
 }

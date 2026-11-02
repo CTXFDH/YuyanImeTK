@@ -12,6 +12,7 @@ import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.Html;
@@ -103,6 +104,7 @@ public class SignSeekBar extends View {
 
     private final Rect valueSignBounds;
     private final RectF roundRectangleBounds;
+    private final RectF mCapsuleRect = new RectF();
     private int mSignArrowHeight;   //提示框箭头的高度
     private int mSignArrowWidth;   //提示框箭头的宽度
     private int mSignRound;      //提示框的圆角大小
@@ -181,6 +183,18 @@ public class SignSeekBar extends View {
         if (mProgress > mMax) {
             mProgress = mMax;
         }
+        if (mTrackSize <= 0) {
+            mTrackSize = DevicesUtils.dip2px(2f);
+        }
+        if (mSecondTrackSize <= 0) {
+            mSecondTrackSize = DevicesUtils.dip2px(2.5f);
+        }
+        if (mThumbRadius <= 0) {
+            mThumbRadius = DevicesUtils.dip2px(10f);
+        }
+        if (mThumbRadiusOnDragging <= 0) {
+            mThumbRadiusOnDragging = DevicesUtils.dip2px(12f);
+        }
         if (mSecondTrackSize < mTrackSize) {
             mSecondTrackSize = mTrackSize + DevicesUtils.dip2px(2);
         }
@@ -238,14 +252,13 @@ public class SignSeekBar extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int height = mThumbRadiusOnDragging * 2; // 默认高度为拖动时thumb圆的直径
+        int height = Math.max(mThumbRadiusOnDragging * 2 + DevicesUtils.dip2px(8), DevicesUtils.dip2px(36));
         if (isShowThumbText) {
             mPaint.setTextSize(mThumbTextSize);
             mPaint.getTextBounds("j", 0, 1, mRectText); // “j”是字母和阿拉伯数字中最高的
             height += mRectText.height(); // 如果显示实时进度，则原来基础上加上进度文字高度和间隔
         }
         if (isShowSectionText && mSectionTextPosition >= TextPosition.BOTTOM_SIDES) { // 如果Section值在track之下显示，比较取较大值
-            //测量节点文字的高度，如果有lable，测量真实的lable高度，如果没有表示显示的进度是数字，就用“j”代替测量高度
             String measuretext = isSidesLabels ? mSidesLabels[0] : "j";
             mPaint.setTextSize(mSectionTextSize);
             mPaint.getTextBounds(measuretext, 0, measuretext.length(), mRectText);
@@ -389,24 +402,82 @@ public class SignSeekBar extends View {
             drawThumbText(canvas, yTop);
         }
 
-        // draw track
-        mPaint.setColor(isEnabled() ? mSecondTrackColor : mTrackColor);
-        mPaint.setStrokeWidth(mSecondTrackSize);
+        // draw track (selected - left, green)
+        int activeColor = (mSecondTrackColor != 0) ? mSecondTrackColor : 0xFF22C55E;
+        int inactiveColor = (mTrackColor != 0) ? mTrackColor : 0xFF4B5563;
+        float trackHeight = DevicesUtils.dip2px(2.5f);
+
+        mPaint.reset();
+        mPaint.setAntiAlias(true);
+        mPaint.setColor(isEnabled() ? activeColor : inactiveColor);
+        mPaint.setStrokeWidth(trackHeight);
+        mPaint.setStrokeCap(Paint.Cap.ROUND);
+        mPaint.setStyle(Paint.Style.STROKE);
         canvas.drawLine(xLeft, yTop, mThumbCenterX, yTop, mPaint);
 
-        // draw second track
-        mPaint.setColor(mTrackColor);
-        mPaint.setStrokeWidth(mTrackSize);
+        // draw track (unselected - right, gray)
+        mPaint.setColor(inactiveColor);
         canvas.drawLine(mThumbCenterX, yTop, xRight, yTop, mPaint);
 
-        // draw thumb
-        mPaint.setColor(isEnabled() ? mThumbColor : mTrackColor);
-        //draw thumb shadow
-        if (isShowThumbShadow && isEnabled()) {
-            canvas.drawCircle(mThumbCenterX, yTop, isThumbOnDragging ? mThumbRadiusOnDragging * mThumbRatio : mThumbRadius * mThumbRatio, mPaint);
-            mPaint.setColor(getColorWithAlpha(mThumbColor, mThumbBgAlpha));
+        // format progress value text
+        String progressText;
+        if (isFloatType || mSectionValue < 1.0f) {
+            float floatVal = getProgressFloat();
+            if (mFormat != null) {
+                progressText = mFormat.format(floatVal);
+            } else {
+                progressText = String.format(java.util.Locale.getDefault(), "%.1f", floatVal);
+            }
+        } else {
+            int intVal = getProgress();
+            if (mFormat != null) {
+                progressText = mFormat.format(intVal);
+            } else {
+                progressText = String.valueOf(intVal);
+            }
         }
-        canvas.drawCircle(mThumbCenterX, yTop, isThumbOnDragging ? mThumbRadiusOnDragging : mThumbRadius, mPaint);
+
+        // capsule geometry
+        mPaint.reset();
+        mPaint.setAntiAlias(true);
+        mPaint.setTextSize(DevicesUtils.sp2px(11));
+        mPaint.setTypeface(Typeface.DEFAULT_BOLD);
+        float textWidth = mPaint.measureText(progressText);
+
+        float capsuleHeight = DevicesUtils.dip2px(20);
+        float capsuleWidth = Math.max(DevicesUtils.dip2px(42), textWidth + DevicesUtils.dip2px(16));
+        float capsuleRadius = capsuleHeight / 2f;
+
+        float capsuleLeft = mThumbCenterX - capsuleWidth / 2f;
+        float capsuleTop = yTop - capsuleHeight / 2f;
+        float capsuleRight = mThumbCenterX + capsuleWidth / 2f;
+        float capsuleBottom = yTop + capsuleHeight / 2f;
+
+        if (capsuleLeft < getPaddingLeft()) {
+            float offset = getPaddingLeft() - capsuleLeft;
+            capsuleLeft += offset;
+            capsuleRight += offset;
+        }
+        if (capsuleRight > getMeasuredWidth() - getPaddingRight()) {
+            float offset = capsuleRight - (getMeasuredWidth() - getPaddingRight());
+            capsuleLeft -= offset;
+            capsuleRight -= offset;
+        }
+
+        // draw capsule thumb background
+        mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setColor(isEnabled() ? activeColor : inactiveColor);
+        mCapsuleRect.set(capsuleLeft, capsuleTop, capsuleRight, capsuleBottom);
+        canvas.drawRoundRect(mCapsuleRect, capsuleRadius, capsuleRadius, mPaint);
+
+        // draw value text inside capsule
+        mPaint.setColor(Color.WHITE);
+        mPaint.setTextAlign(Paint.Align.CENTER);
+        Paint.FontMetrics fontMetrics = mPaint.getFontMetrics();
+        float distance = (fontMetrics.bottom - fontMetrics.top) / 2f - fontMetrics.bottom;
+        float baseline = capsuleTop + capsuleHeight / 2f + distance;
+
+        canvas.drawText(progressText, mCapsuleRect.centerX(), baseline, mPaint);
 
         //draw progress text
         //drawProgressText(canvas);

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewOutlineProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -55,16 +54,34 @@ class ThemeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        previewUi.setTheme(activeTheme)
+        previewUi.reloadKeyboardLayout(activeTheme)
         ThemeManager.addOnChangedListener(onThemeChangeListener)
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View = with(requireContext()) {
+        val origWidth = EnvironmentSingleton.instance.skbWidth
+        val origHeight = EnvironmentSingleton.instance.skbHeight + EnvironmentSingleton.instance.heightForCandidatesArea
+        val scaleRatio = 0.82f
+        val scaledWidth = (origWidth * scaleRatio).toInt()
+        val scaledHeight = (origHeight * scaleRatio).toInt()
+        val leftOffset = ((origWidth - scaledWidth) / 2)
+
         previewUi = KeyboardPreviewView(this).apply {
-            scaleX = 0.5f
-            scaleY = 0.5f
-            outlineProvider = ViewOutlineProvider.BOUNDS
-            elevation = dp(0.5f)
+            pivotX = origWidth * 0.5f
+            pivotY = 0f
+            scaleX = scaleRatio
+            scaleY = scaleRatio
+            isInteractiveMode = false
+            elevation = dp(4f)
         }
+
+        val previewScaleContainer = android.widget.FrameLayout(this).apply {
+            clipChildren = false
+            val lp = android.widget.FrameLayout.LayoutParams(origWidth, origHeight).apply {
+                leftMargin = -leftOffset
+            }
+            addView(previewUi, lp)
+        }
+
         tabLayout = TabLayout(this)
         viewPager = ViewPager2(this).apply {
             adapter = object : FragmentStateAdapter(this@ThemeFragment) {
@@ -83,14 +100,15 @@ class ThemeFragment : Fragment() {
                 }
             )
         }.attach()
+
         val previewWrapper = constraintLayout {
-            add(previewUi, lParams(EnvironmentSingleton.instance.skbWidth, EnvironmentSingleton.instance.inputAreaHeight) {
-                topOfParent(dp(-52))
-                startOfParent()
-                endOfParent()
+            add(previewScaleContainer, lParams(scaledWidth, scaledHeight) {
+                topOfParent(dp(12))
+                centerHorizontally()
             })
             add(tabLayout, lParams(matchParent, wrapContent) {
                 centerHorizontally()
+                below(previewScaleContainer, dp(8))
                 bottomOfParent()
             })
             backgroundColor = styledColor(android.R.attr.colorPrimary)
