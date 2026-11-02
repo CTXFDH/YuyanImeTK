@@ -64,6 +64,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.graphics.scale
 import androidx.core.graphics.toColorInt
@@ -149,15 +150,16 @@ class CustomThemeActivity : AppCompatActivity() {
 
     private val toolbar by lazy {
         view(::Toolbar) {
-            backgroundColor = styledColor(android.R.attr.colorPrimary)
-            elevation = dp(4f)
+            backgroundColor = ContextCompat.getColor(this@CustomThemeActivity, R.color.settings_page_bg)
+            elevation = 0f
+            setTitleTextColor(ContextCompat.getColor(this@CustomThemeActivity, R.color.settings_title_text))
         }
     }
 
     private lateinit var previewUi: KeyboardPreviewView
 
     private fun getThemeTextColor(): Int {
-        return Color.parseColor("#1E293B")
+        return ContextCompat.getColor(this@CustomThemeActivity, R.color.settings_title_text)
     }
 
     private fun createTextView(@StringRes string: Int? = null, ripple: Boolean = false) = textView {
@@ -1121,26 +1123,18 @@ class CustomThemeActivity : AppCompatActivity() {
 
     private fun updateTabBarUi(index: Int) {
         activeThemeTabIndex = index
-        val activeColor = Color.parseColor("#389F70")
-        val inactiveColor = Color.parseColor("#94A3B8")
+        val activeColor = ContextCompat.getColor(this, R.color.settings_icon_tint)
+        val inactiveColor = ContextCompat.getColor(this, R.color.settings_summary_text)
 
-        if (index == 0) { // 左侧：选中区域设置
-            tabSelectedRegionTitle.setTextColor(activeColor)
-            tabSelectedRegionTitle.typeface = android.graphics.Typeface.DEFAULT_BOLD
-            tabIndicatorSelectedRegion.visibility = View.VISIBLE
+        tabSelectedRegionTitle.setTextColor(if (index == 0) activeColor else inactiveColor)
+        tabSelectedRegionTitle.typeface = if (index == 0) android.graphics.Typeface.DEFAULT_BOLD else android.graphics.Typeface.DEFAULT
+        tabIndicatorSelectedRegion.visibility = if (index == 0) View.VISIBLE else View.GONE
+        tabIndicatorSelectedRegion.setBackgroundColor(activeColor)
 
-            tabBackgroundTitle.setTextColor(inactiveColor)
-            tabBackgroundTitle.typeface = android.graphics.Typeface.DEFAULT
-            tabIndicatorBackground.visibility = View.GONE
-        } else { // 右侧：背景设置
-            tabBackgroundTitle.setTextColor(activeColor)
-            tabBackgroundTitle.typeface = android.graphics.Typeface.DEFAULT_BOLD
-            tabIndicatorBackground.visibility = View.VISIBLE
-
-            tabSelectedRegionTitle.setTextColor(inactiveColor)
-            tabSelectedRegionTitle.typeface = android.graphics.Typeface.DEFAULT
-            tabIndicatorSelectedRegion.visibility = View.GONE
-        }
+        tabBackgroundTitle.setTextColor(if (index != 0) activeColor else inactiveColor)
+        tabBackgroundTitle.typeface = if (index != 0) android.graphics.Typeface.DEFAULT_BOLD else android.graphics.Typeface.DEFAULT
+        tabIndicatorBackground.visibility = if (index != 0) View.VISIBLE else View.GONE
+        tabIndicatorBackground.setBackgroundColor(activeColor)
     }
 
     private fun switchThemeTab(index: Int) {
@@ -1200,6 +1194,7 @@ class CustomThemeActivity : AppCompatActivity() {
         val gap = dp(10)
 
         constraintLayout {
+            setBackgroundColor(ContextCompat.getColor(this@CustomThemeActivity, R.color.settings_page_bg))
             add(toolbar, lParams(matchParent, wrapContent) {
                 topOfParent()
                 centerHorizontally()
@@ -1220,13 +1215,14 @@ class CustomThemeActivity : AppCompatActivity() {
                 centerHorizontally(itemMargin)
             })
             // Tab 栏底部分割线
-            add(tabBarDivider, lParams(matchConstraints, dp(1)) {
-                below(themeTabBar, dp(4))
+            tabBarDivider.visibility = View.GONE
+            add(tabBarDivider, lParams(matchConstraints, dp(0)) {
+                below(themeTabBar, dp(0))
                 centerHorizontally(itemMargin)
             })
             // 3区：ViewPager2 页面容器 (覆盖下半屏所有区域，确保包含空白处均支持左右手势滑动切页)
             add(themeViewPager, lParams(matchConstraints, matchConstraints) {
-                below(tabBarDivider, dp(4))
+                below(themeTabBar, dp(4))
                 bottomOfParent()
                 centerHorizontally()
             })

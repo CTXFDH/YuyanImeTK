@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -19,7 +18,6 @@ import com.yuyan.imemodule.prefs.InputFeedbacks
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.view.widget.seekbar.SignSeekBar
 import splitties.dimensions.dp
-import splitties.resources.styledColor
 import splitties.views.dsl.appcompat.switch
 import splitties.views.dsl.constraintlayout.above
 import splitties.views.dsl.constraintlayout.before
@@ -45,6 +43,14 @@ import splitties.views.gravityVerticalCenter
 class KeyboardFeedbacksFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View = with(requireContext()) {
 
+        val pageBgColor = ContextCompat.getColor(requireContext(), R.color.settings_page_bg)
+        val cardBgColor = ContextCompat.getColor(requireContext(), R.color.settings_card_bg)
+        val accentColor = ContextCompat.getColor(requireContext(), R.color.settings_icon_tint)
+        val titleTextColor = ContextCompat.getColor(requireContext(), R.color.settings_title_text)
+        val summaryTextColor = ContextCompat.getColor(requireContext(), R.color.settings_summary_text)
+        val iconBoxBgColor = ContextCompat.getColor(requireContext(), R.color.settings_icon_box_bg)
+        val grayColor = ContextCompat.getColor(requireContext(), R.color.color_gray)
+
         val soundOnKeyPress by AppPrefs.getInstance().internal.soundOnKeyPress
         val vibrationAmplitude by AppPrefs.getInstance().internal.vibrationAmplitude
 
@@ -52,11 +58,6 @@ class KeyboardFeedbacksFragment : Fragment() {
         val soundEffectSpaceBarPref = AppPrefs.getInstance().internal.soundEffectSpaceBar
         val soundEffectDeletePref = AppPrefs.getInstance().internal.soundEffectDelete
         val soundEffectReturnPref = AppPrefs.getInstance().internal.soundEffectReturn
-
-        val accentColor = styledColor(android.R.attr.colorAccent)
-        val grayColor = ContextCompat.getColor(requireContext(), R.color.color_gray)
-        val textSecondaryColor = styledColor(android.R.attr.textColorSecondary)
-        val primaryTextColor = styledColor(android.R.attr.textColorPrimary)
 
         val soundSeekBar = SignSeekBar(requireContext())
         soundSeekBar.getConfigBuilder()
@@ -72,7 +73,7 @@ class KeyboardFeedbacksFragment : Fragment() {
             .showThumbShadow(false)
             .showSectionText()
             .sectionTextPosition(SignSeekBar.TextPosition.BELOW_SECTION_MARK)
-            .sectionTextColor(textSecondaryColor)
+            .sectionTextColor(summaryTextColor)
             .sectionTextSize(12)
             .bottomSidesLabels(resources.getStringArray(R.array.sound_labels))
             .autoAdjustSectionMark()
@@ -93,14 +94,13 @@ class KeyboardFeedbacksFragment : Fragment() {
             .showThumbShadow(false)
             .showSectionText()
             .sectionTextPosition(SignSeekBar.TextPosition.BELOW_SECTION_MARK)
-            .sectionTextColor(textSecondaryColor)
+            .sectionTextColor(summaryTextColor)
             .sectionTextSize(12)
             .bottomSidesLabels(resources.getStringArray(R.array.vibrate_labels))
             .autoAdjustSectionMark()
             .touchToSeek()
             .build()
 
-        // Tab state and sound configurations
         var selectedTab = 0 // 0: 标准, 1: 空格, 2: 删除, 3: 回车
 
         val tabsInfo = listOf(
@@ -148,13 +148,7 @@ class KeyboardFeedbacksFragment : Fragment() {
         }
 
         val optionsContainer = verticalLayout {
-            setPadding(dp(16), dp(16), dp(16), dp(16))
-            background = GradientDrawable().apply {
-                shape = GradientDrawable.RECTANGLE
-                cornerRadius = dp(12f).toFloat()
-                setStroke(dp(1), grayColor)
-                setColor(styledColor(android.R.attr.colorBackgroundFloating))
-            }
+            setPadding(dp(12), dp(12), dp(12), dp(12))
         }
 
         fun renderTabsAndOptions(enabled: Boolean) {
@@ -173,12 +167,12 @@ class KeyboardFeedbacksFragment : Fragment() {
                     val bgCol = when {
                         !enabled -> grayColor
                         isTabSelected -> accentColor
-                        else -> ContextCompat.getColor(context, R.color.color_gray)
+                        else -> iconBoxBgColor
                     }
                     val textCol = when {
-                        !enabled -> textSecondaryColor
+                        !enabled -> summaryTextColor
                         isTabSelected -> Color.WHITE
-                        else -> primaryTextColor
+                        else -> titleTextColor
                     }
 
                     background = createCapsuleDrawable(bgCol, 16f)
@@ -217,28 +211,25 @@ class KeyboardFeedbacksFragment : Fragment() {
                 val isOptionSelected = (optionText == selectedOptionValue)
                 val optionChip = textView {
                     text = optionText
-                    textSize = 13f
+                    textSize = 13.5f
                     gravity = gravityCenter
                     setPadding(dp(12), dp(10), dp(12), dp(10))
 
                     val chipBgCol = when {
-                        !enabled -> ContextCompat.getColor(context, R.color.color_gray)
+                        !enabled -> grayColor
                         isOptionSelected -> accentColor
-                        else -> styledColor(android.R.attr.colorBackground)
+                        else -> iconBoxBgColor
                     }
                     val chipTextCol = when {
-                        !enabled -> textSecondaryColor
+                        !enabled -> summaryTextColor
                         isOptionSelected -> Color.WHITE
-                        else -> primaryTextColor
+                        else -> titleTextColor
                     }
 
                     background = GradientDrawable().apply {
                         shape = GradientDrawable.RECTANGLE
                         cornerRadius = dp(16f).toFloat()
                         setColor(chipBgCol)
-                        if (!isOptionSelected && enabled) {
-                            setStroke(dp(1), grayColor)
-                        }
                     }
                     setTextColor(chipTextCol)
                     isEnabled = enabled
@@ -263,7 +254,6 @@ class KeyboardFeedbacksFragment : Fragment() {
                 })
             }
 
-            // Fill remaining weight in row if odd number of items
             if (options.size % 2 == 1 && currentRow != null) {
                 val dummyView = View(context)
                 currentRow?.add(dummyView, LinearLayout.LayoutParams(0, 0, 1f))
@@ -330,26 +320,31 @@ class KeyboardFeedbacksFragment : Fragment() {
 
         val soundTitle = textView {
             setText(R.string.button_sound_volume)
-            textSize = 16f
+            textSize = 15.5f
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            setTextColor(titleTextColor)
             gravity = gravityVerticalCenter
         }
 
         val vibrationTitle = textView {
             setText(R.string.button_vibration_amplitude)
-            textSize = 16f
+            textSize = 15.5f
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            setTextColor(titleTextColor)
             gravity = gravityVerticalCenter
         }
 
         val soundEffectsCategoryTitle = textView {
             setText(R.string.sound_effect_category)
-            textSize = 14f
+            textSize = 13.5f
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
             setTextColor(accentColor)
-            setPadding(dp(24), dp(16), dp(24), dp(8))
+            setPadding(dp(22), dp(18), dp(22), dp(8))
         }
 
-        val mainContentLayout = constraintLayout {
+        val mainContentCard = constraintLayout {
             val lineHeight = dp(48)
-            val itemMargin = dp(24)
+            val itemMargin = dp(16)
             add(soundTitle, lParams(matchConstraints, lineHeight) {
                 topOfParent()
                 startOfParent(itemMargin)
@@ -384,14 +379,38 @@ class KeyboardFeedbacksFragment : Fragment() {
             })
         }
 
+        val mainCardContainer = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(0, dp(8), 0, dp(16))
+            background = ContextCompat.getDrawable(context, R.drawable.sdk_bg_settings_card_single)
+            clipToOutline = true
+            outlineProvider = android.view.ViewOutlineProvider.BACKGROUND
+            addView(mainContentCard, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+        }
+
+        val soundEffectsCardContainer = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(16), dp(16), dp(16), dp(16))
+            background = ContextCompat.getDrawable(context, R.drawable.sdk_bg_settings_card_single)
+            clipToOutline = true
+            outlineProvider = android.view.ViewOutlineProvider.BACKGROUND
+            addView(tabsLayout, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+            addView(optionsContainer, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(8) })
+        }
+
         val soundEffectsLayout = verticalLayout {
-            setPadding(dp(24), dp(8), dp(24), dp(24))
-            add(tabsLayout, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
-            add(optionsContainer, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(12) })
+            setPadding(dp(16), 0, dp(16), dp(24))
+            add(soundEffectsCardContainer, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+        }
+
+        val mainCardWrapper = verticalLayout {
+            setPadding(dp(16), dp(16), dp(16), 0)
+            add(mainCardContainer, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
         }
 
         val contentLayout = verticalLayout {
-            add(mainContentLayout, lParams(matchParent, wrapContent))
+            setBackgroundColor(pageBgColor)
+            add(mainCardWrapper, lParams(matchParent, wrapContent))
             add(soundEffectsCategoryTitle, lParams(matchParent, wrapContent))
             add(soundEffectsLayout, lParams(matchParent, wrapContent))
         }

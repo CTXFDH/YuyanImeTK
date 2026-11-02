@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import androidx.core.view.isVisible
 import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
@@ -18,6 +19,7 @@ import com.yuyan.imemodule.view.preference.DialogSeekBarPreference
 import com.yuyan.imemodule.view.preference.EditTextIntPreference
 import com.yuyan.imemodule.view.preference.ImeSwitchPreference
 import com.yuyan.imemodule.view.preference.TwinSeekBarPreference
+import com.yuyan.imemodule.view.widget.seekbar.SignSeekBar
 
 object CardPreferenceStyler {
 
@@ -128,7 +130,6 @@ interface ICardPreferenceItem {
             cardRoot.outlineProvider = android.view.ViewOutlineProvider.BACKGROUND
 
             if (cardContent != null) {
-                cardContent.setBackgroundResource(bgRes)
                 cardContent.clipToOutline = true
                 cardContent.outlineProvider = android.view.ViewOutlineProvider.BACKGROUND
             }
@@ -295,15 +296,128 @@ open class CardDialogSeekBarPreference @JvmOverloads constructor(
     override var isFirstInGroup: Boolean = false
     override var isLastInGroup: Boolean = false
 
+    private val prefKey: String get() = key ?: title?.toString() ?: ""
+
+    var isExpanded: Boolean
+        get() = CardPreferenceStyler.expandedStates[prefKey] ?: false
+        set(value) { CardPreferenceStyler.expandedStates[prefKey] = value }
+
     init {
         layoutResource = R.layout.sdk_item_preference_card_single
         isIconSpaceReserved = false
         isSingleLineTitle = false
     }
 
+    override fun onClick() {
+        isExpanded = !isExpanded
+        notifyChanged()
+    }
+
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
         bindCardViewHolder(holder, this)
+
+        val inlineContainer = holder.findViewById(R.id.inline_expand_container) as? android.widget.LinearLayout
+        val arrowRight = holder.findViewById(R.id.arrow_right) as? ImageView
+        val summaryTv = holder.findViewById(android.R.id.summary) as? android.widget.TextView
+
+        if (arrowRight != null) {
+            arrowRight.isVisible = true
+            arrowRight.animate().rotation(if (isExpanded) 90f else 0f).setDuration(150).start()
+        }
+
+        if (inlineContainer != null) {
+            inlineContainer.removeAllViews()
+            if (isExpanded) {
+                inlineContainer.isVisible = true
+
+                val rowLayout = android.widget.LinearLayout(context).apply {
+                    orientation = android.widget.LinearLayout.HORIZONTAL
+                    gravity = android.view.Gravity.CENTER_VERTICAL
+                    setPadding(0, 12, 0, 8)
+                }
+
+                val accentColor = ContextCompat.getColor(context, R.color.settings_icon_tint)
+                val iconBoxBgColor = ContextCompat.getColor(context, R.color.settings_icon_box_bg)
+
+                val btnDefault = android.widget.TextView(context).apply {
+                    text = "默认"
+                    textSize = 13f
+                    typeface = android.graphics.Typeface.DEFAULT_BOLD
+                    setTextColor(accentColor)
+                    gravity = android.view.Gravity.CENTER
+                    setPadding(32, 16, 32, 16)
+                    background = android.graphics.drawable.GradientDrawable().apply {
+                        shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                        cornerRadius = 32f
+                        setColor(iconBoxBgColor)
+                    }
+                    isClickable = true
+                    isFocusable = true
+                    setOnClickListener {
+                        default?.let { defVal ->
+                            if (callChangeListener(defVal)) {
+                                persistInt(defVal)
+                                isExpanded = false
+                                notifyChanged()
+                            }
+                        }
+                    }
+                }
+
+                val currentVal = getPersistedInt(min)
+                val countStep = (max - min).coerceAtLeast(1)
+                val seekBar = SignSeekBar(context).apply {
+                    getConfigBuilder()
+                        .min(min.toFloat())
+                        .max(max.toFloat())
+                        .progress(currentVal.toFloat())
+                        .sectionCount(countStep)
+                        .trackSize(2)
+                        .secondTrackSize(2)
+                        .trackColor(ContextCompat.getColor(context, R.color.settings_divider))
+                        .secondTrackColor(accentColor)
+                        .thumbColor(accentColor)
+                        .thumbRadius(8)
+                        .thumbRadiusOnDragging(10)
+                        .showThumbShadow(false)
+                        .touchToSeek()
+                        .build()
+
+                    setOnProgressChangedListener(object : SignSeekBar.OnProgressChangedListener {
+                        override fun onProgressChanged(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float, fromUser: Boolean) {
+                            if (fromUser) {
+                                summaryTv?.text = "$progress $unit"
+                                persistInt(progress)
+                                callChangeListener(progress)
+                            }
+                        }
+                        override fun getProgressOnActionUp(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float) {
+                            persistInt(progress)
+                            callChangeListener(progress)
+                        }
+                        override fun getProgressOnFinally(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float, fromUser: Boolean) {}
+                    })
+                }
+
+                rowLayout.addView(btnDefault, android.widget.LinearLayout.LayoutParams(
+                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
+                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    rightMargin = 16
+                })
+
+                rowLayout.addView(seekBar, android.widget.LinearLayout.LayoutParams(
+                    0,
+                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
+                    1f
+                ))
+
+                inlineContainer.addView(rowLayout)
+            } else {
+                inlineContainer.isVisible = false
+            }
+        }
     }
 }
 
@@ -311,15 +425,178 @@ open class CardTwinSeekBarPreference(context: Context) : TwinSeekBarPreference(c
     override var isFirstInGroup: Boolean = false
     override var isLastInGroup: Boolean = false
 
+    private val prefKey: String get() = key ?: title?.toString() ?: ""
+
+    var isExpanded: Boolean
+        get() = CardPreferenceStyler.expandedStates[prefKey] ?: false
+        set(value) { CardPreferenceStyler.expandedStates[prefKey] = value }
+
     init {
         layoutResource = R.layout.sdk_item_preference_card_single
         isIconSpaceReserved = false
         isSingleLineTitle = false
     }
 
+    override fun onClick() {
+        isExpanded = !isExpanded
+        notifyChanged()
+    }
+
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
         bindCardViewHolder(holder, this)
+
+        val inlineContainer = holder.findViewById(R.id.inline_expand_container) as? android.widget.LinearLayout
+        val arrowRight = holder.findViewById(R.id.arrow_right) as? ImageView
+        val summaryTv = holder.findViewById(android.R.id.summary) as? android.widget.TextView
+
+        if (arrowRight != null) {
+            arrowRight.isVisible = true
+            arrowRight.animate().rotation(if (isExpanded) 90f else 0f).setDuration(150).start()
+        }
+
+        if (inlineContainer != null) {
+            inlineContainer.removeAllViews()
+            if (isExpanded) {
+                inlineContainer.isVisible = true
+
+                val accentColor = ContextCompat.getColor(context, R.color.settings_icon_tint)
+                val iconBoxBgColor = ContextCompat.getColor(context, R.color.settings_icon_box_bg)
+
+                val countStep = (max - min).coerceAtLeast(1)
+
+                // 1. Primary SeekBar Row
+                val rowLayout1 = android.widget.LinearLayout(context).apply {
+                    orientation = android.widget.LinearLayout.HORIZONTAL
+                    gravity = android.view.Gravity.CENTER_VERTICAL
+                    setPadding(0, 12, 0, 8)
+                }
+
+                val btnDefault1 = android.widget.TextView(context).apply {
+                    text = label.ifEmpty { "默认" }
+                    textSize = 13f
+                    typeface = android.graphics.Typeface.DEFAULT_BOLD
+                    setTextColor(accentColor)
+                    gravity = android.view.Gravity.CENTER
+                    setPadding(32, 16, 32, 16)
+                    background = android.graphics.drawable.GradientDrawable().apply {
+                        shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                        cornerRadius = 32f
+                        setColor(iconBoxBgColor)
+                    }
+                }
+
+                val seekBar1 = SignSeekBar(context).apply {
+                    getConfigBuilder()
+                        .min(min.toFloat())
+                        .max(max.toFloat())
+                        .progress(value.toFloat())
+                        .sectionCount(countStep)
+                        .trackSize(2)
+                        .secondTrackSize(2)
+                        .trackColor(ContextCompat.getColor(context, R.color.settings_divider))
+                        .secondTrackColor(accentColor)
+                        .thumbColor(accentColor)
+                        .thumbRadius(8)
+                        .thumbRadiusOnDragging(10)
+                        .showThumbShadow(false)
+                        .touchToSeek()
+                        .build()
+
+                    setOnProgressChangedListener(object : SignSeekBar.OnProgressChangedListener {
+                        override fun onProgressChanged(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float, fromUser: Boolean) {
+                            if (fromUser) {
+                                preferenceDataStore?.putInt(key, progress) ?: sharedPreferences?.edit { putInt(key, progress) }
+                                summaryTv?.text = "$progress $unit / $secondaryValue $unit"
+                                callChangeListener(progress to secondaryValue)
+                            }
+                        }
+                        override fun getProgressOnActionUp(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float) {}
+                        override fun getProgressOnFinally(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float, fromUser: Boolean) {}
+                    })
+                }
+
+                rowLayout1.addView(btnDefault1, android.widget.LinearLayout.LayoutParams(
+                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
+                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    rightMargin = 16
+                })
+                rowLayout1.addView(seekBar1, android.widget.LinearLayout.LayoutParams(
+                    0,
+                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
+                    1f
+                ))
+
+                // 2. Secondary SeekBar Row
+                val rowLayout2 = android.widget.LinearLayout(context).apply {
+                    orientation = android.widget.LinearLayout.HORIZONTAL
+                    gravity = android.view.Gravity.CENTER_VERTICAL
+                    setPadding(0, 8, 0, 12)
+                }
+
+                val btnDefault2 = android.widget.TextView(context).apply {
+                    text = secondaryLabel.ifEmpty { "横屏" }
+                    textSize = 13f
+                    typeface = android.graphics.Typeface.DEFAULT_BOLD
+                    setTextColor(accentColor)
+                    gravity = android.view.Gravity.CENTER
+                    setPadding(32, 16, 32, 16)
+                    background = android.graphics.drawable.GradientDrawable().apply {
+                        shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                        cornerRadius = 32f
+                        setColor(iconBoxBgColor)
+                    }
+                }
+
+                val seekBar2 = SignSeekBar(context).apply {
+                    getConfigBuilder()
+                        .min(min.toFloat())
+                        .max(max.toFloat())
+                        .progress(secondaryValue.toFloat())
+                        .sectionCount(countStep)
+                        .trackSize(2)
+                        .secondTrackSize(2)
+                        .trackColor(ContextCompat.getColor(context, R.color.settings_divider))
+                        .secondTrackColor(accentColor)
+                        .thumbColor(accentColor)
+                        .thumbRadius(8)
+                        .thumbRadiusOnDragging(10)
+                        .showThumbShadow(false)
+                        .touchToSeek()
+                        .build()
+
+                    setOnProgressChangedListener(object : SignSeekBar.OnProgressChangedListener {
+                        override fun onProgressChanged(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float, fromUser: Boolean) {
+                            if (fromUser) {
+                                preferenceDataStore?.putInt(secondaryKey, progress) ?: sharedPreferences?.edit { putInt(secondaryKey, progress) }
+                                summaryTv?.text = "$value $unit / $progress $unit"
+                                callChangeListener(value to progress)
+                            }
+                        }
+                        override fun getProgressOnActionUp(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float) {}
+                        override fun getProgressOnFinally(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float, fromUser: Boolean) {}
+                    })
+                }
+
+                rowLayout2.addView(btnDefault2, android.widget.LinearLayout.LayoutParams(
+                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
+                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    rightMargin = 16
+                })
+                rowLayout2.addView(seekBar2, android.widget.LinearLayout.LayoutParams(
+                    0,
+                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
+                    1f
+                ))
+
+                inlineContainer.addView(rowLayout1)
+                inlineContainer.addView(rowLayout2)
+            } else {
+                inlineContainer.isVisible = false
+            }
+        }
     }
 }
 
