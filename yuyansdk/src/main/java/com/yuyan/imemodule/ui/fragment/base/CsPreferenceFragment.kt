@@ -1,7 +1,6 @@
 package com.yuyan.imemodule.ui.fragment.base
 
 import android.annotation.SuppressLint
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -40,6 +39,9 @@ abstract class CsPreferenceFragment : PreferenceFragmentCompat() {
         val recyclerView = super.onCreateRecyclerView(inflater, parent, savedInstanceState)
         val pageBgColor = ContextCompat.getColor(requireContext(), R.color.settings_page_bg)
         recyclerView.setBackgroundColor(pageBgColor)
+        for (i in (recyclerView.itemDecorationCount - 1) downTo 0) {
+            recyclerView.removeItemDecorationAt(i)
+        }
         return recyclerView
     }
 
@@ -49,9 +51,11 @@ abstract class CsPreferenceFragment : PreferenceFragmentCompat() {
         val pageBgColor = ContextCompat.getColor(requireContext(), R.color.settings_page_bg)
         view.setBackgroundColor(pageBgColor)
         listView.setBackgroundColor(pageBgColor)
-        // 彻底禁掉 PreferenceFragmentCompat 的分割线
-        setDivider(ColorDrawable(0x00000000))
+        setDivider(null)
         setDividerHeight(0)
+        for (i in (listView.itemDecorationCount - 1) downTo 0) {
+            listView.removeItemDecorationAt(i)
+        }
     }
 
     @Suppress("DEPRECATION")
