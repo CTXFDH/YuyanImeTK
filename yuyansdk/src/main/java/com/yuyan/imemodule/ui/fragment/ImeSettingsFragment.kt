@@ -11,6 +11,8 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceGroup
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.CustomConstant
+import com.yuyan.imemodule.utils.InputMethodUtil
+import com.yuyan.imemodule.utils.TestInputBoxPreference
 import com.yuyan.imemodule.utils.addCategory
 import com.yuyan.imemodule.utils.addPreference
 
@@ -35,30 +37,30 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceScreen = preferenceManager.createPreferenceScreen(requireContext()).apply {
+            // 1. 输入法
             addCategory(R.string.input_methods) {
                 isIconSpaceReserved = false
 
                 addDestinationPreference(
                     R.string.enable_ime,
-                    "切换与启用语燕输入法",
+                    "在系统设置中启用语燕输入法",
                     R.drawable.ic_menu_language,
                     R.id.action_settingsFragment_to_setupActivity
                 )
-                addDestinationPreference(
-                    R.string.setting_ime_input,
-                    "拼音、双拼方案与出词习惯",
-                    R.drawable.ic_menu_language,
-                    R.id.action_settingsFragment_to_inputSettingsFragment
-                )
-                addDestinationPreference(
-                    R.string.ime_settings_handwriting,
-                    "手写识别与笔画轨迹设置",
-                    R.drawable.ic_menu_handwriting,
-                    R.id.action_settingsFragment_to_handwritingSettingsFragment
-                )
+                addPreference(
+                    "选择输入法",
+                    "将语燕输入法设为当前输入法",
+                    R.drawable.ic_menu_keyboard_switcher
+                ) {
+                    InputMethodUtil.showPicker()
+                }
+                addPreference(TestInputBoxPreference(requireContext()))
             }
+
+            // 2. 键盘
             addCategory(R.string.keyboard) {
                 isIconSpaceReserved = false
+
                 addDestinationPreference(
                     R.string.theme,
                     "皮肤壁纸、按键配色与外观定制",
@@ -83,7 +85,6 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                     R.drawable.ic_menu_clipboard,
                     R.id.action_settingsFragment_to_clipboardSettingsFragment
                 )
-
                 addDestinationPreference(
                     R.string.full_display_keyboard,
                     "底部边距与全面屏适配",
@@ -91,8 +92,29 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                     R.id.action_settingsFragment_to_fullDisplayKeyboardFragment
                 )
             }
+
+            // 3. 输入方案 (新设大分类)
+            addCategory("输入方案") {
+                isIconSpaceReserved = false
+
+                addDestinationPreference(
+                    R.string.setting_ime_input,
+                    "拼音、双拼方案与出词习惯",
+                    R.drawable.ic_menu_language,
+                    R.id.action_settingsFragment_to_inputSettingsFragment
+                )
+                addDestinationPreference(
+                    R.string.ime_settings_handwriting,
+                    "手写识别与笔画轨迹设置",
+                    R.drawable.ic_menu_handwriting,
+                    R.id.action_settingsFragment_to_handwritingSettingsFragment
+                )
+            }
+
+            // 4. 高级
             addCategory(R.string.advanced) {
                 isIconSpaceReserved = false
+
                 addDestinationPreference(
                     R.string.setting_ime_other,
                     "备份恢复、词库导出与高级参数",

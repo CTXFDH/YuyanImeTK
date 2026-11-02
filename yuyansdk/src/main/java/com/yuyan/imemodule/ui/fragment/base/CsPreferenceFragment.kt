@@ -24,13 +24,18 @@ abstract class CsPreferenceFragment : PreferenceFragmentCompat() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ) = super.onCreateView(inflater, container, savedInstanceState).apply {
+        val pageBgColor = ContextCompat.getColor(requireContext(), R.color.settings_page_bg)
+        setBackgroundColor(pageBgColor)
         listView.applyNavBarInsetsBottomPadding()
+        listView.setBackgroundColor(pageBgColor)
     }
 
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        listView.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.settings_page_bg))
+        val pageBgColor = ContextCompat.getColor(requireContext(), R.color.settings_page_bg)
+        view.setBackgroundColor(pageBgColor)
+        listView.setBackgroundColor(pageBgColor)
     }
 
     @Suppress("DEPRECATION")

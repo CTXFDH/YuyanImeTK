@@ -1742,8 +1742,8 @@ class CustomThemeActivity : AppCompatActivity() {
         val colors = intArrayOf(
             Color.parseColor("#FFFFFF"), Color.parseColor("#F8FAFC"), Color.parseColor("#F1F5F9"), Color.parseColor("#E2E8F0"), Color.parseColor("#CBD5E1"),
             Color.parseColor("#94A3B8"), Color.parseColor("#64748B"), Color.parseColor("#334155"), Color.parseColor("#1E293B"), Color.parseColor("#2C3238"), Color.parseColor("#000000"),
-            Color.parseColor("#007AFF"), Color.parseColor("#2563EB"), Color.parseColor("#1E40AF"), Color.parseColor("#10B981"), Color.parseColor("#0D9488"), Color.parseColor("#0284C7"),
-            Color.parseColor("#7C3AED"), Color.parseColor("#6366F1"), Color.parseColor("#E11D48"), Color.parseColor("#D97706"), Color.parseColor("#C2410C"), Color.parseColor("#059669")
+            Color.parseColor("#007AFF"), Color.parseColor("#2563EB"), Color.parseColor("#1E40AF"), Color.parseColor("#07C160"), Color.parseColor("#0D9488"), Color.parseColor("#0284C7"),
+            Color.parseColor("#10B981"), Color.parseColor("#34D399"), Color.parseColor("#E11D48"), Color.parseColor("#D97706"), Color.parseColor("#C2410C"), Color.parseColor("#059669")
         )
 
         val allItems = mutableListOf<View>()

@@ -292,3 +292,19 @@ open class CardTwinSeekBarPreference(context: Context) : TwinSeekBarPreference(c
         bindCardViewHolder(holder, this)
     }
 }
+
+open class TestInputBoxPreference(context: Context) : Preference(context), ICardPreferenceItem {
+    override var isFirstInGroup: Boolean = false
+    override var isLastInGroup: Boolean = true
+
+    init {
+        layoutResource = R.layout.sdk_item_test_input_box
+        isIconSpaceReserved = false
+        isSingleLineTitle = false
+    }
+
+    override fun onBindViewHolder(holder: PreferenceViewHolder) {
+        super.onBindViewHolder(holder)
+        bindCardViewHolder(holder, this)
+    }
+}
