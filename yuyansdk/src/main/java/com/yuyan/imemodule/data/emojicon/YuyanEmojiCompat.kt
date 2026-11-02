@@ -53,6 +53,10 @@ object YuyanEmojiCompat {
         isQQChatInput = isQQChatInput(editorInfo)
     }
 
+    fun clearEditorInfo() {
+        this.mEditorInfo = null
+    }
+
     private fun isWechatInput(editorInfo: EditorInfo?): Boolean {
         if(editorInfo == null || editorInfo.packageName != "com.tencent.mm") return  false
         return editorInfo.extras?.getBoolean("IS_CHAT_EDITOR") == true

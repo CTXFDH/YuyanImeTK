@@ -25,7 +25,7 @@ android {
     namespace 'com.yuyan.imemodule'
     defaultConfig {
         minSdk 23
-        targetSdk 35
+        targetSdk 36
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         ndk {
             abiFilters 'arm64-v8a', 'armeabi-v7a', "x86", "x86_64"

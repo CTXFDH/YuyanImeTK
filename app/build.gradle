@@ -29,7 +29,7 @@ android {
         }
     }
     
-    packagingOptions {
+    packaging {
         jniLibs {
             useLegacyPackaging true
         }
@@ -107,7 +107,7 @@ android {
 }
 
 static def getKVersionCode() {
-    return 30 // K版当前版本号: K30
+    return 31 // K版当前版本号: K31
 }
 
 static def versionCodeDate() {

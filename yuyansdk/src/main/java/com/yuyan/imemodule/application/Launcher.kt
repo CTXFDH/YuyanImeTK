@@ -27,7 +27,6 @@ class Launcher {
     private fun currentInit() {
         AppPrefs.init(PreferenceManager.getDefaultSharedPreferences(context))
         ThemeManager.init(context.resources.configuration)
-        DataBaseKT.instance.sideSymbolDao().getAllSideSymbolPinyin()  //操作一次查询，提前创建数据库，避免使用时才创建数据库
         ClipboardHelper.init()
     }
 
@@ -36,6 +35,7 @@ class Launcher {
      */
     private fun onInitDataChildThread() {
         ThreadPoolUtils.executeSingleton {
+            DataBaseKT.instance.sideSymbolDao().getAllSideSymbolPinyin()  // 提前在子线程创建并初始化数据库
             // 复制词库文件
             val dataDictVersion = AppPrefs.getInstance().internal.dataDictVersion.getValue()
             if (dataDictVersion < CustomConstant.CURRENT_RIME_DICT_DATA_VERSIOM) {

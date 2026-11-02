@@ -51,7 +51,7 @@ object DevicesUtils {
      */
 	@JvmStatic
 	fun tryVibrate(view: View?) {
-        hapticFeedback(view!!)
+        view?.let { hapticFeedback(it) }
     }
 
 

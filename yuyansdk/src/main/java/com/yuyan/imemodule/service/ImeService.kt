@@ -91,7 +91,7 @@ class ImeService : InputMethodService() {
     override fun onCreateCandidatesView(): View {
         if(!::candidateView.isInitialized)candidateView = CandidateView(baseContext, this)
         if(isHardwareKeyboard) mInputView = candidateView
-        currentInputConnection.requestCursorUpdates(InputConnection.CURSOR_UPDATE_MONITOR)
+        currentInputConnection?.requestCursorUpdates(InputConnection.CURSOR_UPDATE_MONITOR)
         return candidateView
     }
 
@@ -140,6 +140,7 @@ class ImeService : InputMethodService() {
 
     override fun onFinishInput() {
         android.util.Log.w("ImeLifecycle", "onFinishInput")
+        YuyanEmojiCompat.clearEditorInfo()
         super.onFinishInput()
     }
 
@@ -201,12 +202,10 @@ class ImeService : InputMethodService() {
 
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
-        System.gc()
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        System.gc()
     }
 
 
@@ -251,7 +250,7 @@ class ImeService : InputMethodService() {
     }
 
     override fun onWindowShown() {
-        mInputView.onWindowShown()
+        if (::mInputView.isInitialized) mInputView.onWindowShown()
         super.onWindowShown()
     }
 
@@ -366,7 +365,7 @@ class ImeService : InputMethodService() {
     }
 
     fun sendUpKeyEvent(eventTime: Long, keyEventCode: Int, metaState: Int = 0) {
-        currentInputConnection.sendKeyEvent(
+        currentInputConnection?.sendKeyEvent(
             KeyEvent(eventTime, SystemClock.uptimeMillis(), KeyEvent.ACTION_UP, keyEventCode, 0, metaState,
                 KeyCharacterMap.VIRTUAL_KEYBOARD, keyEventCode, KeyEvent.FLAG_SOFT_KEYBOARD or KeyEvent.FLAG_KEEP_TOUCH_MODE)
         )
@@ -376,7 +375,7 @@ class ImeService : InputMethodService() {
      * 向输入框提交预选词
      */
     fun setComposingText(text: CharSequence) {
-        currentInputConnection.setComposingText(text, 1)
+        currentInputConnection?.setComposingText(text, 1)
     }
 
 
@@ -416,7 +415,7 @@ class ImeService : InputMethodService() {
 
 
     fun performEditorAction(editorAction:Int) {
-        currentInputConnection.performEditorAction(editorAction)
+        currentInputConnection?.performEditorAction(editorAction)
     }
 
     fun deleteSurroundingText(length: Int) {
@@ -424,7 +423,7 @@ class ImeService : InputMethodService() {
     }
 
     fun setSelection(start: Int, end: Int) {
-        currentInputConnection.setSelection(start, end)
+        currentInputConnection?.setSelection(start, end)
     }
 
     fun handleHardwareKeyboard(newConfig: Configuration? = null): Boolean {
