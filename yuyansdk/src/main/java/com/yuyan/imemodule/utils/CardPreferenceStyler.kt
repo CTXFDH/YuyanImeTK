@@ -24,17 +24,36 @@ object CardPreferenceStyler {
     val expandedStates = mutableMapOf<String, Boolean>()
 
     fun stylePreferenceScreen(screen: PreferenceScreen) {
+        val currentGroup = mutableListOf<Preference>()
+
+        fun styleCurrentGroup() {
+            if (currentGroup.isEmpty()) return
+            val count = currentGroup.size
+            for (i in 0 until count) {
+                val pref = currentGroup[i]
+                val isFirst = (i == 0)
+                val isLast = (i == count - 1)
+                styleSingleItem(pref, isFirst, isLast)
+            }
+            currentGroup.clear()
+        }
+
         for (i in 0 until screen.preferenceCount) {
             val p = screen.getPreference(i)
             if (p is PreferenceCategory) {
+                styleCurrentGroup()
                 p.layoutResource = R.layout.sdk_item_category_card
                 styleGroup(p)
             } else if (p is PreferenceGroup) {
+                styleCurrentGroup()
                 styleGroup(p)
             } else {
-                styleSingleItem(p, isFirst = true, isLast = true)
+                if (p.isVisible) {
+                    currentGroup.add(p)
+                }
             }
         }
+        styleCurrentGroup()
     }
 
     fun styleGroup(group: PreferenceGroup) {
@@ -86,7 +105,7 @@ interface ICardPreferenceItem {
         val (isFirst, isLast) = if (group != null) {
             val visibleItems = (0 until group.preferenceCount)
                 .map { group.getPreference(it) }
-                .filter { it.isVisible }
+                .filter { it !is PreferenceCategory && it.isVisible }
             val index = visibleItems.indexOf(pref)
             if (index >= 0) {
                 Pair(index == 0, index == visibleItems.size - 1)
@@ -109,6 +128,7 @@ interface ICardPreferenceItem {
             cardRoot.outlineProvider = android.view.ViewOutlineProvider.BACKGROUND
 
             if (cardContent != null) {
+                cardContent.setBackgroundResource(bgRes)
                 cardContent.clipToOutline = true
                 cardContent.outlineProvider = android.view.ViewOutlineProvider.BACKGROUND
             }
