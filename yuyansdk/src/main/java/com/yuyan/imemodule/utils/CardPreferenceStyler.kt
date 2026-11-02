@@ -67,23 +67,46 @@ interface ICardPreferenceItem {
     fun bindCardViewHolder(holder: PreferenceViewHolder, pref: Preference) {
         val context = holder.itemView.context
         val cardRoot = holder.findViewById(R.id.card_item_root)
+        val cardContent = holder.findViewById(R.id.card_item_content)
         val cardDivider = holder.findViewById(R.id.card_divider)
         val iconBox = holder.findViewById(R.id.icon_box)
         val iconView = holder.findViewById(android.R.id.icon) as? ImageView
         val arrowRight = holder.findViewById(R.id.arrow_right) as? ImageView
 
+        val group = pref.parent
+        val (isFirst, isLast) = if (group != null) {
+            val visibleItems = (0 until group.preferenceCount)
+                .map { group.getPreference(it) }
+                .filter { it.isVisible }
+            val index = visibleItems.indexOf(pref)
+            if (index >= 0) {
+                Pair(index == 0, index == visibleItems.size - 1)
+            } else {
+                Pair(isFirstInGroup, isLastInGroup)
+            }
+        } else {
+            Pair(isFirstInGroup, isLastInGroup)
+        }
+
         if (cardRoot != null) {
             val bgRes = when {
-                isFirstInGroup && isLastInGroup -> R.drawable.sdk_bg_settings_card_single
-                isFirstInGroup -> R.drawable.sdk_bg_settings_card_top
-                isLastInGroup -> R.drawable.sdk_bg_settings_card_bottom
+                isFirst && isLast -> R.drawable.sdk_bg_settings_card_single
+                isFirst -> R.drawable.sdk_bg_settings_card_top
+                isLast -> R.drawable.sdk_bg_settings_card_bottom
                 else -> R.drawable.sdk_bg_settings_card_middle
             }
             cardRoot.setBackgroundResource(bgRes)
+            cardRoot.clipToOutline = true
+            cardRoot.outlineProvider = android.view.ViewOutlineProvider.BACKGROUND
+
+            if (cardContent != null) {
+                cardContent.clipToOutline = true
+                cardContent.outlineProvider = android.view.ViewOutlineProvider.BACKGROUND
+            }
         }
 
         if (cardDivider != null) {
-            cardDivider.isVisible = !isLastInGroup
+            cardDivider.isVisible = !isLast
         }
 
         if (iconBox != null) {
@@ -100,6 +123,8 @@ interface ICardPreferenceItem {
             val widgetFrame = holder.findViewById(android.R.id.widget_frame) as? ViewGroup
             val hasWidget = widgetFrame != null && widgetFrame.isVisible && widgetFrame.childCount > 0
             val isAction = (pref.intent != null || pref.onPreferenceClickListener != null || pref.fragment != null)
+            arrowRight.setImageResource(R.drawable.ic_arrow_right_pretty)
+            arrowRight.setColorFilter(android.graphics.Color.parseColor("#9CA3AF"))
             arrowRight.isVisible = isAction && !hasWidget
         }
     }

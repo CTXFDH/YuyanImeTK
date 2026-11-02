@@ -1,17 +1,19 @@
-
 package com.yuyan.imemodule.ui.fragment.base
 
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.CallSuper
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import com.yuyan.imemodule.R
 import com.yuyan.imemodule.view.widget.applyNavBarInsetsBottomPadding
 
 abstract class CsPreferenceFragment : PreferenceFragmentCompat() {
@@ -23,6 +25,12 @@ abstract class CsPreferenceFragment : PreferenceFragmentCompat() {
         savedInstanceState: Bundle?
     ) = super.onCreateView(inflater, container, savedInstanceState).apply {
         listView.applyNavBarInsetsBottomPadding()
+    }
+
+    @CallSuper
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        listView.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.settings_page_bg))
     }
 
     @Suppress("DEPRECATION")
