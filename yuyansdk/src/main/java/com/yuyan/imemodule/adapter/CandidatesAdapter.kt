@@ -9,6 +9,8 @@ import androidx.emoji2.widget.EmojiTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
+import com.yuyan.imemodule.data.theme.Theme
+import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.service.DictDecoder
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
@@ -19,7 +21,13 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 class CandidatesAdapter(context: Context?) :
     RecyclerView.Adapter<CandidatesAdapter.SymbolHolder>() {
     private val inflater: LayoutInflater = LayoutInflater.from(context)
-    private val textColor: Int = activeTheme.keyTextColor
+    private var overrideTheme: Theme? = null
+    var activeTheme: Theme
+        get() = overrideTheme ?: ThemeManager.activeTheme
+        set(value) {
+            overrideTheme = value
+        }
+    private val textColor: Int get() = activeTheme.keyTextColor
     private var mOnItemClickListener: OnRecyclerItemClickListener? = null
     fun setOnItemClickLitener(mOnItemClickLitener: OnRecyclerItemClickListener?) {
         mOnItemClickListener = mOnItemClickLitener
@@ -31,9 +39,12 @@ class CandidatesAdapter(context: Context?) :
     }
 
     override fun onBindViewHolder(holder: SymbolHolder, position: Int) {
-        holder.textView.text = DictDecoder.candidates[position].text
-        holder.textView.setOnClickListener { view: View? ->
-            mOnItemClickListener?.onItemClick(this@CandidatesAdapter, view, position)
+        if (position in DictDecoder.candidates.indices) {
+            holder.textView.text = DictDecoder.candidates[position].text
+            holder.textView.setTextColor(textColor)
+            holder.textView.setOnClickListener { view: View? ->
+                mOnItemClickListener?.onItemClick(this@CandidatesAdapter, view, position)
+            }
         }
     }
 

@@ -22,7 +22,12 @@ class CandidatesBarAdapter(context: Context?) :
     private val inflater: LayoutInflater
     private var mOnItemClickListener: OnRecyclerItemClickListener? = null
     private var mActiveCandNo:Int = 0
-    var activeTheme: Theme = ThemeManager.activeTheme
+    private var overrideTheme: Theme? = null
+    var activeTheme: Theme
+        get() = overrideTheme ?: ThemeManager.activeTheme
+        set(value) {
+            overrideTheme = value
+        }
     fun setOnItemClickLitener(mOnItemClickLitener: OnRecyclerItemClickListener?) {
         mOnItemClickListener = mOnItemClickLitener
     }
@@ -38,7 +43,7 @@ class CandidatesBarAdapter(context: Context?) :
     }
 
     override fun onBindViewHolder(holder: SymbolHolder, position: Int) {
-        if(DictDecoder.isCandidatesEmpty) return
+        if (DictDecoder.isCandidatesEmpty || position !in DictDecoder.candidates.indices) return
         holder.textView.text = DictDecoder.candidates[position].text
         holder.textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, instance.candidateTextSize)
         holder.textView.setTextColor(if(mActiveCandNo-1 == position) activeTheme.accentKeyBackgroundColor else activeTheme.candidateTextColor)

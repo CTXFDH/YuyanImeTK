@@ -177,7 +177,10 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
                 true
             }
             label.isDigitsOnly() ->{
-                chooseAndUpdate(label.toInt() - 1)
+                val candIndex = label.toInt() - 1
+                if (candIndex in 0..<DictDecoder.candidateSize) {
+                    chooseAndUpdate(candIndex)
+                }
                 true
             }
             Character.isLetter(keyChar) || keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON -> {
@@ -198,7 +201,9 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
     }
 
     fun chooseAndUpdate(candId: Int = mSkbCandidatesBarView.getActiveCandNo()) {
-        val choice = DictDecoder.chooseDecodingCandidate(candId)
+        if (DictDecoder.candidateSize == 0) return
+        val validCandId = candId.coerceIn(0, DictDecoder.candidateSize - 1)
+        val choice = DictDecoder.chooseDecodingCandidate(validCandId)
         if (DictDecoder.isCandidatesEmpty || DictDecoder.isAssociate) {
             commitDecInfoText(choice)
             resetToIdleState()
