@@ -220,7 +220,10 @@ open class CardListPreference @JvmOverloads constructor(
                         setPadding(0, 20, 0, 20)
                         isClickable = true
                         isFocusable = true
-                        background = ContextCompat.getDrawable(context, android.R.attr.selectableItemBackground)
+                        val typedVal = android.util.TypedValue()
+                        if (context.theme.resolveAttribute(android.R.attr.selectableItemBackground, typedVal, true) && typedVal.resourceId != 0) {
+                            background = ContextCompat.getDrawable(context, typedVal.resourceId)
+                        }
                         setOnClickListener {
                             if (callChangeListener(entryVal)) {
                                 value = entryVal
