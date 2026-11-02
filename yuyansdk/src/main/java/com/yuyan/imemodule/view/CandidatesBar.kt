@@ -98,6 +98,14 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
 
     fun setTheme(theme: Theme) {
         this.previewTheme = theme
+        if (::mCandidatesAdapter.isInitialized) {
+            mCandidatesAdapter.activeTheme = activeTheme
+            mCandidatesAdapter.notifyChanged()
+        }
+        if (::mCandidatesMenuAdapter.isInitialized) {
+            mCandidatesMenuAdapter.activeTheme = activeTheme
+            mCandidatesMenuAdapter.notifyChanged()
+        }
         updateTheme(theme.keyTextColor)
     }
 
@@ -233,15 +241,15 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 isClickable = true
                 isEnabled = true
                 setImageResource(R.drawable.ic_arrow_down_pretty)
-                drawable?.setTint(ThemeManager.activeTheme.keyTextColor)
-                applyCircleBackground(this, ThemeManager.activeTheme.keyTextColor)
+                drawable?.setTint(activeTheme.keyTextColor)
+                applyCircleBackground(this, activeTheme.keyTextColor)
             }
             mCloseAssociateBtn = ImageView(context).apply {
                 isClickable = true
                 isEnabled = true
                 setImageResource(R.drawable.ic_close_pretty)
-                drawable?.setTint(ThemeManager.activeTheme.arrowButtonTextColor)
-                applyCircleBackground(this, ThemeManager.activeTheme.arrowButtonTextColor)
+                drawable?.setTint(activeTheme.arrowButtonTextColor)
+                applyCircleBackground(this, activeTheme.arrowButtonTextColor)
                 visibility = GONE
                 setOnClickListener {
                     DevicesUtils.tryPlayKeyDown()
@@ -425,8 +433,8 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 isClickable = true
                 isEnabled = true
                 setImageResource(R.drawable.ic_arrow_down_pretty)
-                drawable?.setTint(ThemeManager.activeTheme.keyTextColor)
-                applyCircleBackground(this, ThemeManager.activeTheme.keyTextColor)
+                drawable?.setTint(activeTheme.keyTextColor)
+                applyCircleBackground(this, activeTheme.keyTextColor)
             }
             mMenuRightArrowBtn.setOnClickListener { _: View ->
                 mCvListener.onClickMenu(SkbMenuMode.CloseSKB)
@@ -536,12 +544,12 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             showViewVisibility(mCandidatesDataContainer)
             val isAssoc = DictDecoder.isAssociate
             mCloseAssociateBtn.visibility = if (isAssoc) VISIBLE else GONE
-            mCloseAssociateBtn.drawable?.setTint(ThemeManager.activeTheme.arrowButtonTextColor)
+            mCloseAssociateBtn.drawable?.setTint(activeTheme.arrowButtonTextColor)
             mCloseAssociateBtn.background = null
             mRightArrowBtn.visibility = if (isAssoc) GONE else VISIBLE
             val isExpanded = KeyboardManager.instance.currentContainer is CandidatesContainer
             mRightArrowBtn.setImageResource(if (isExpanded) R.drawable.ic_arrow_up_pretty else R.drawable.ic_arrow_down_pretty)
-            mRightArrowBtn.drawable?.setTint(ThemeManager.activeTheme.arrowButtonTextColor)
+            mRightArrowBtn.drawable?.setTint(activeTheme.arrowButtonTextColor)
             mRightArrowBtn.background = null
         }
         activeCandNo = 0
@@ -640,7 +648,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         if (!::mCandidatesDataContainer.isInitialized) initCandidateView()
         updateLogoView()
 
-        val activeTheme = ThemeManager.activeTheme
+        val activeTheme = activeTheme
         // 1. 工具栏背景全透明，与输入区按键共享同一张大壁纸/渐变背景！
         background = null
         if (::mCandidatesMenuContainer.isInitialized) mCandidatesMenuContainer.background = null
@@ -760,7 +768,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         clearLogoTint(ivMenu)
         clearLogoTint(ivCandidateLogo)
 
-        val activeTheme = ThemeManager.activeTheme
+        val activeTheme = activeTheme
 
         if (activeTheme.customLogoResId != null) {
             val resId = activeTheme.customLogoResId!!

@@ -371,7 +371,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
             }
             topCap.draw(canvas)
         } else {
-            if (isKeyBorder || !isAlphaInputKey(softKey)) {
+            if (isKeyBorder || (background ushr 24) > 0 || !isAlphaInputKey(softKey)) {
                 if (isKeyShadow) {
                     // 1. 开启按键阴影: 绘制底层 3D 阴影底座 + 顶层按键帽
                     val shadowColor = darkenColor(background, 0.22f)
