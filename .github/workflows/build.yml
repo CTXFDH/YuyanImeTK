@@ -1,50 +1,60 @@
-name: Build and Release YuyanIme APK
-# 触发条件：当推送符合 'v*' 格式的标签时触发，例如 v1.0.0
+name: Sync and Build APK
+
 on:
+  schedule:
+    - cron: '0 0 * * *'       # 每天 UTC 00:00 (北京时间 08:00) 自动触发
+  workflow_dispatch:          # 支持在 GitHub Actions 页面手动点击运行
   push:
-    tags:
-      - 'v*'
+    branches: [ "master", "main" ]
+
 jobs:
-  build:
-    name: Build and Sign APK
+  sync-and-build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write         # 赋予工作流推送代码的权限（用于同步上游代码）
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
+      - name: Checkout Code
+        uses: actions/checkout@v4
         with:
-          submodules: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: master         # 如果你的主分支是 main，请把这里和下面同步步骤的 master 改成 main
+          fetch-depth: 0
+
+      - name: Sync Upstream
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add upstream https://github.com/kuangru52/YuyanImeK.git || true
+          git fetch upstream
+          git merge upstream/master -m "Auto sync from upstream" || git merge upstream/main -m "Auto sync from upstream" || true
+          git push origin HEAD || true
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
-          java-version: '17'
           distribution: 'temurin'
-          cache: gradle
+          java-version: '17'
 
-      - name: Decode Keystore
-        run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > ${{ secrets.RELEASE_STORE_FILE }}
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          accept-android-sdk-licenses: true
 
-      - name: Make gradlew executable
+      - name: Force Accept Android SDK Licenses
+        run: yes | sdkmanager --licenses || true
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Grant Execute Permission
         run: chmod +x gradlew
 
-      - name: Build Release APK
-        run: ./gradlew assembleOffline
-        env:
-          RELEASE_STORE_FILE: ${{ secrets.RELEASE_STORE_FILE }}
-          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
-          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
-          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --stacktrace
 
-      - name: Upload APKs to Release
-        uses: softprops/action-gh-release@v2
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
         with:
-          files: |
-            app/build/outputs/apk/offline/release/*.apk
-            app/build/outputs/apk/offline/debug/*.apk
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: YuyanImeK-Debug-APK
+          path: "**/build/outputs/apk/debug/*.apk"
+          retention-days: 14
