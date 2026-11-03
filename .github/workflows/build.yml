@@ -26,7 +26,7 @@ jobs:
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git remote add upstream https://github.com/kuangru52/YuyanImeK.git || true
           git fetch upstream
-          # 尝试合并上游代码，如果主分支叫 main 也能兼容
+          # 尝试合并上游代码，兼容 master 或 main
           git merge upstream/master -m "Auto sync from upstream" || git merge upstream/main -m "Auto sync from upstream" || true
           git push origin HEAD || true
 
@@ -51,7 +51,7 @@ jobs:
           echo -e "\nd56f5187479451eabf01fb78af6dfcb131b33910" > $ANDROID_HOME/licenses/android-sdk-preview-license
           echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > $ANDROID_HOME/licenses/google-tv-preview-license
           
-          # 使用 yes 命令并处理管道正常关闭（SIGPIPE），确保即使 sdkmanager 提前退出也不会报错
+          # 使用 yes 命令并处理管道正常关闭（SIGPIPE）
           yes | sdkmanager --sdk_root="${ANDROID_SDK_ROOT}" --licenses > /dev/null || [[ "${PIPESTATUS[1]}" -eq 0 ]]
 
       - name: Setup Gradle
@@ -63,9 +63,12 @@ jobs:
       - name: Build Debug APK
         run: ./gradlew assembleDebug --stacktrace
 
+      - name: Find APK Files (Debug)
+        run: find . -name "*.apk" # 这一步会在日志里打印出所有生成的 APK 的路径
+
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: YuyanImeK-Debug-APK
-          path: "**/build/outputs/apk/debug/*.apk"
+          path: "**/*.apk" # 关键修改：全盘搜索所有 apk 文件，确保不漏
           retention-days: 14
