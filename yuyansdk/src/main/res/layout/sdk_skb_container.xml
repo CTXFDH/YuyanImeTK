@@ -5,7 +5,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_alignParentBottom="true"
-    android:layout_centerHorizontal="true">
+    android:layout_alignParentEnd="true">
     <include
         android:id="@+id/ll_skb_holder_layout_left"
         layout="@layout/sdk_skb_holder_layout"
@@ -21,7 +21,7 @@
         android:clipChildren="false"
         android:clipToPadding="false"
         android:gravity="center_horizontal"
-        android:layout_centerHorizontal="true">
+        android:layout_toEndOf="@+id/ll_skb_holder_layout_left">
 
         <!-- 1. 主键盘卡片（通栏全宽度铺满，横屏/竖屏完美无缝展示） -->
         <RelativeLayout
@@ -103,5 +103,5 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_below="@+id/ll_input_keyboard_container"
-        android:layout_centerHorizontal="true"/>
+        android:layout_alignStart="@+id/ll_input_keyboard_container"/>
 </RelativeLayout>

@@ -107,7 +107,7 @@ android {
 }
 
 static def getKVersionCode() {
-    return 31 // K版当前版本号: K31
+    return 32 // K版当前版本号: K32
 }
 
 static def versionCodeDate() {
