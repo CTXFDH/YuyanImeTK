@@ -2,14 +2,17 @@ package com.yuyan.imemodule.voice
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Bundle
 import android.os.Handler
+import android.os.IBinder
 import android.os.Looper
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
@@ -47,6 +50,42 @@ class SpeechRecognitionManager(private val context: Context) {
     private var audioRecord: AudioRecord? = null
     private var recordingThread: Thread? = null
     @Volatile private var isRecording = false
+
+    private var asrService: AsrProcessService? = null
+    private var isServiceBound = false
+
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            if (service is AsrProcessService.AsrBinder) {
+                asrService = service.getService()
+                isServiceBound = true
+                asrService?.setCallback(object : AsrProcessService.AsrCallback {
+                    override fun onPartialResult(text: String) {
+                        mainHandler.post { listener?.onPartialResult(text) }
+                    }
+                    override fun onFinalResult(text: String) {
+                        mainHandler.post { listener?.onFinalResult(text) }
+                    }
+                    override fun onError(msg: String) {
+                        mainHandler.post { listener?.onError(msg) }
+                    }
+                })
+                asrService?.prepareEngine()
+            }
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            asrService = null
+            isServiceBound = false
+        }
+    }
+
+    init {
+        try {
+            val intent = Intent(context, AsrProcessService::class.java)
+            context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+        } catch (_: Exception) {}
+    }
 
     // VAD 前置环形缓冲队列 (~0.4秒音频缓存)
     private val preSpeechBuffer = ArrayDeque<ByteArray>(4)
@@ -168,6 +207,7 @@ class SpeechRecognitionManager(private val context: Context) {
                         val rms = sqrt(sum / readSize)
                         val normAmp = (rms / 3000.0).coerceIn(0.0, 1.0).toFloat()
                         mainHandler.post { listener?.onAmplitudeChanged(normAmp) }
+                        asrService?.processAudioChunk(buffer, readSize)
                     }
                 }
             } catch (_: Exception) {
@@ -185,6 +225,7 @@ class SpeechRecognitionManager(private val context: Context) {
         if (!isRecording) return
         currentState = State.PROCESSING
         stopAudioRecording()
+        asrService?.finishSpeech()
         mainHandler.post {
             try {
                 speechRecognizer?.stopListening()
@@ -211,6 +252,12 @@ class SpeechRecognitionManager(private val context: Context) {
 
     fun destroy() {
         cancelListening()
+        if (isServiceBound) {
+            try {
+                context.unbindService(serviceConnection)
+            } catch (_: Exception) {}
+            isServiceBound = false
+        }
         mainHandler.post {
             try {
                 speechRecognizer?.destroy()

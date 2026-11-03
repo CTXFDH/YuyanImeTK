@@ -21,6 +21,10 @@
                 android:name="android.view.im"
                 android:resource="@xml/method" />
         </service>
+        <service
+            android:name="com.yuyan.imemodule.voice.AsrProcessService"
+            android:exported="false"
+            android:process=":asr" />
     </application>
 
 </manifest>
