@@ -1,8 +1,10 @@
 package com.yuyan.imemodule.voice
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
@@ -12,6 +14,7 @@ import android.os.Looper
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import androidx.core.content.ContextCompat
 import java.util.ArrayDeque
 import kotlin.math.sqrt
 
@@ -54,16 +57,28 @@ class SpeechRecognitionManager(private val context: Context) {
         const val AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT
     }
 
+    fun hasRecordPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+    }
+
     @SuppressLint("MissingPermission")
     fun startListening() {
+        if (!hasRecordPermission()) {
+            currentState = State.ERROR
+            mainHandler.post { listener?.onError("未授权录音权限，请点击开启") }
+            return
+        }
+
         if (currentState == State.LISTENING || currentState == State.PROCESSING) return
 
         currentState = State.LISTENING
         preSpeechBuffer.clear()
 
-        if (SpeechRecognizer.isRecognitionAvailable(context)) {
-            startSystemSpeechRecognizer()
-        }
+        try {
+            if (SpeechRecognizer.isRecognitionAvailable(context)) {
+                startSystemSpeechRecognizer()
+            }
+        } catch (_: Exception) {}
 
         startAudioRecording()
     }
@@ -117,19 +132,18 @@ class SpeechRecognitionManager(private val context: Context) {
                     putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
                 }
                 speechRecognizer?.startListening(intent)
-            } catch (e: Exception) {
-                // 回退到本地 AudioRecord 采样与提示
-            }
+            } catch (_: Exception) {}
         }
     }
 
     @SuppressLint("MissingPermission")
     private fun startAudioRecording() {
+        if (!hasRecordPermission()) return
         isRecording = true
         recordingThread = Thread {
-            val minBufSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT)
-            val bufferSize = maxOf(minBufSize, SAMPLE_RATE * 2)
             try {
+                val minBufSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT)
+                val bufferSize = maxOf(minBufSize, SAMPLE_RATE * 2)
                 audioRecord = AudioRecord(
                     MediaRecorder.AudioSource.VOICE_RECOGNITION,
                     SAMPLE_RATE,

@@ -15,6 +15,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.yuyan.imemodule.R
+import com.yuyan.imemodule.application.Launcher
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.keyboard.InputView
@@ -27,7 +28,8 @@ import splitties.dimensions.dp
 @SuppressLint("ViewConstructor", "ClickableViewAccessibility")
 class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBaseContainer(context, inputView) {
 
-    private val speechManager = SpeechRecognitionManager(context!!)
+    private val validContext = context ?: Launcher.instance.context
+    private val speechManager = SpeechRecognitionManager(validContext)
     private var waveformView: WaveformView? = null
     private var tvLiveText: TextView? = null
     private var tvStatus: TextView? = null
@@ -38,6 +40,10 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
         initSpeechManager()
     }
 
+    override fun updateStates() {
+        // 语音专属键盘无底层 TextKeyboard 视图，忽略 Enter 键更新
+    }
+
     private fun initVoiceLayout() {
         removeAllViews()
         val theme = ThemeManager.activeTheme
@@ -45,7 +51,7 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
         val keyBgColor = theme.keyBackgroundColor
         val keyTextColor = theme.keyTextColor
 
-        val rootLayout = LinearLayout(context).apply {
+        val rootLayout = LinearLayout(validContext).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER_HORIZONTAL
             setPadding(dp(12), dp(8), dp(12), dp(8))
@@ -53,7 +59,7 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
         }
 
         // 1. 实时流式文本框与状态框
-        val previewCard = LinearLayout(context).apply {
+        val previewCard = LinearLayout(validContext).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(dp(10), dp(10), dp(10), dp(10))
             background = GradientDrawable().apply {
@@ -66,7 +72,7 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
             }
         }
 
-        tvLiveText = TextView(context).apply {
+        tvLiveText = TextView(validContext).apply {
             text = "正在准备语音识别..."
             textSize = 15f
             setTextColor(keyTextColor)
@@ -77,7 +83,7 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
         rootLayout.addView(previewCard)
 
         // 2. 波形动画展示层
-        waveformView = WaveformView(context!!).apply {
+        waveformView = WaveformView(validContext).apply {
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(24)).apply {
                 bottomMargin = dp(8)
             }
@@ -85,7 +91,7 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
         rootLayout.addView(waveformView)
 
         // 3. 中央控制区域 (麦克风巨型按钮 + 辅助修字按钮)
-        val centerRow = LinearLayout(context).apply {
+        val centerRow = LinearLayout(validContext).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(90)).apply {
@@ -94,7 +100,7 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
         }
 
         // 左侧标点修字面板
-        val leftPunctuationCol = LinearLayout(context).apply {
+        val leftPunctuationCol = LinearLayout(validContext).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
             layoutParams = LinearLayout.LayoutParams(dp(70), LinearLayout.LayoutParams.MATCH_PARENT)
@@ -103,14 +109,14 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
         leftPunctuationCol.addView(createPunctuationButton("。"), LinearLayout.LayoutParams(dp(60), dp(36)))
 
         // 中央巨型麦克风按钮
-        val micFrame = FrameLayout(context!!).apply {
+        val micFrame = FrameLayout(validContext).apply {
             layoutParams = LinearLayout.LayoutParams(dp(80), dp(80)).apply {
                 leftMargin = dp(16)
                 rightMargin = dp(16)
             }
         }
 
-        ivMicBtn = ImageView(context).apply {
+        ivMicBtn = ImageView(validContext).apply {
             setImageResource(R.drawable.ic_menu_voice)
             setPadding(dp(18), dp(18), dp(18), dp(18))
             background = GradientDrawable().apply {
@@ -134,7 +140,7 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
         micFrame.addView(ivMicBtn, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
 
         // 右侧退格/换行控制
-        val rightControlCol = LinearLayout(context).apply {
+        val rightControlCol = LinearLayout(validContext).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
             layoutParams = LinearLayout.LayoutParams(dp(70), LinearLayout.LayoutParams.MATCH_PARENT)
@@ -153,13 +159,13 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
         rootLayout.addView(centerRow)
 
         // 4. 底部状态与返回打字主键盘按钮
-        val bottomBar = LinearLayout(context).apply {
+        val bottomBar = LinearLayout(validContext).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(36))
         }
 
-        val btnBackToKeyboard = TextView(context).apply {
+        val btnBackToKeyboard = TextView(validContext).apply {
             text = "↩ 返回键盘"
             textSize = 13f
             setTextColor(keyTextColor)
@@ -178,7 +184,7 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
             }
         }
 
-        tvStatus = TextView(context).apply {
+        tvStatus = TextView(validContext).apply {
             text = "🟢 点击开始语音输入"
             textSize = 12f
             setTextColor(keyTextColor)
@@ -195,7 +201,7 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
 
     private fun createPunctuationButton(symbol: String): View {
         val theme = ThemeManager.activeTheme
-        return TextView(context).apply {
+        return TextView(validContext).apply {
             text = symbol
             textSize = 16f
             setTextColor(theme.keyTextColor)
@@ -215,7 +221,7 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
 
     private fun createActionButton(label: String, onClick: () -> Unit): View {
         val theme = ThemeManager.activeTheme
-        return TextView(context).apply {
+        return TextView(validContext).apply {
             text = label
             textSize = 15f
             setTextColor(theme.keyTextColor)
@@ -249,7 +255,7 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
                         waveformView?.setAmplitude(0f)
                     }
                     SpeechRecognitionManager.State.ERROR -> {
-                        tvStatus?.text = "⚠️ 识别出错，请重试"
+                        tvStatus?.text = "⚠️ 未授权录音权限或识别出错"
                         waveformView?.setAmplitude(0f)
                     }
                 }
@@ -277,7 +283,9 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
     }
 
     override fun updateSkbLayout() {
-        speechManager.startListening()
+        try {
+            speechManager.startListening()
+        } catch (_: Exception) {}
     }
 
     override fun onDetachedFromWindow() {
