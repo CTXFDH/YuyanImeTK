@@ -22,7 +22,7 @@ object AsrModelManager {
         if (files.isEmpty()) return false
         val hasTokens = files.any { it.name.contains("tokens") || it.name.endsWith(".txt") }
         val hasEncoder = files.any { it.name.contains("encoder") || it.name.endsWith(".onnx") }
-        return hasTokens || hasEncoder
+        return hasTokens && hasEncoder
     }
 
     fun initModel(context: Context) {
@@ -153,6 +153,7 @@ object AsrModelManager {
 
     fun appendRecognizedText(text: String) {
         if (text.isNotEmpty()) {
+            recognizedBuffer.clear()
             recognizedBuffer.append(text)
         }
     }

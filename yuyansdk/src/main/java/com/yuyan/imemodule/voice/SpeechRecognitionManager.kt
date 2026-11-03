@@ -148,23 +148,22 @@ class SpeechRecognitionManager(private val context: Context) {
                         currentState = State.PROCESSING
                     }
                     override fun onError(error: Int) {
-                        currentState = State.IDLE
-                        stopAudioRecording()
+                        // 系统 SpeechRecognizer 在无服务手机上触发 error 时，仅打日志不杀 AudioRecord
                     }
                     override fun onResults(results: Bundle?) {
                         val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                         val text = matches?.firstOrNull() ?: ""
                         if (text.isNotEmpty()) {
-                            listener?.onFinalResult(text)
+                            listener?.onPartialResult(text)
+                            asrService?.appendRecognizedText(text)
                         }
-                        currentState = State.IDLE
-                        stopAudioRecording()
                     }
                     override fun onPartialResults(partialResults: Bundle?) {
                         val matches = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                         val text = matches?.firstOrNull() ?: ""
                         if (text.isNotEmpty()) {
                             listener?.onPartialResult(text)
+                            asrService?.appendRecognizedText(text)
                         }
                     }
                     override fun onEvent(eventType: Int, params: Bundle?) {}
@@ -228,10 +227,9 @@ class SpeechRecognitionManager(private val context: Context) {
     }
 
     fun stopListening() {
-        if (!isRecording) return
+        if (!isRecording && currentState == State.IDLE) return
         currentState = State.PROCESSING
         stopAudioRecording()
-        asrService?.finishSpeech()
 
         mainHandler.post {
             try {
@@ -239,12 +237,17 @@ class SpeechRecognitionManager(private val context: Context) {
             } catch (_: Exception) {}
         }
 
-        // 安全兜底定时器：1.0秒内不论结果是否到位，强制重置状态为 IDLE，确保绝不悬挂卡死
+        // 200ms 后提交识别并发出最终文本
+        mainHandler.postDelayed({
+            asrService?.finishSpeech()
+        }, 200)
+
+        // 安全定时器：0.6 秒内强行复位为 IDLE 状态，确保松手后绝不悬挂卡死
         mainHandler.postDelayed({
             if (currentState == State.PROCESSING) {
                 currentState = State.IDLE
             }
-        }, 1000)
+        }, 600)
     }
 
     fun cancelListening() {

@@ -57,7 +57,6 @@ class AsrProcessService : Service() {
             prepareEngine()
         }
 
-        // 简易流式 ASR 音频特征提取与识别管道
         try {
             val text = AsrModelManager.processChunk(data, size)
             if (text.isNotEmpty()) {
@@ -67,6 +66,10 @@ class AsrProcessService : Service() {
         } catch (e: Exception) {
             callback?.onError("识别异常: ${e.message}")
         }
+    }
+
+    fun appendRecognizedText(text: String) {
+        AsrModelManager.appendRecognizedText(text)
     }
 
     fun finishSpeech() {
