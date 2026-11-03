@@ -22,6 +22,7 @@ import com.yuyan.imemodule.keyboard.InputView
 import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.manager.InputModeSwitcher
 import com.yuyan.imemodule.utils.DevicesUtils
+import com.yuyan.imemodule.voice.AsrModelManager
 import com.yuyan.imemodule.voice.SpeechRecognitionManager
 import splitties.dimensions.dp
 
@@ -184,8 +185,10 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
             }
         }
 
+        val isOfflineModelReady = AsrModelManager.isModelFilesPresent(validContext)
+        val modeText = if (isOfflineModelReady) "离线 X-ASR " else ""
         tvStatus = TextView(validContext).apply {
-            text = "🟢 点击开始语音输入"
+            text = "🟢 ${modeText}语音就绪，点击说话"
             textSize = 12f
             setTextColor(keyTextColor)
             gravity = Gravity.END
@@ -242,16 +245,18 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
     private fun initSpeechManager() {
         speechManager.listener = object : SpeechRecognitionManager.Listener {
             override fun onStateChanged(state: SpeechRecognitionManager.State) {
+                val isOfflineModelReady = AsrModelManager.isModelFilesPresent(validContext)
+                val modeText = if (isOfflineModelReady) "离线 X-ASR " else ""
                 when (state) {
                     SpeechRecognitionManager.State.LISTENING -> {
-                        tvStatus?.text = "🔴 正在倾听中..."
+                        tvStatus?.text = "🔴 ${modeText}正在倾听中..."
                         tvLiveText?.text = "请说话..."
                     }
                     SpeechRecognitionManager.State.PROCESSING -> {
-                        tvStatus?.text = "🟡 正在识别处理..."
+                        tvStatus?.text = "🟡 ${modeText}正在识别处理..."
                     }
                     SpeechRecognitionManager.State.IDLE -> {
-                        tvStatus?.text = "🟢 语音就绪，点击说话"
+                        tvStatus?.text = "🟢 ${modeText}语音就绪，点击说话"
                         waveformView?.setAmplitude(0f)
                     }
                     SpeechRecognitionManager.State.ERROR -> {

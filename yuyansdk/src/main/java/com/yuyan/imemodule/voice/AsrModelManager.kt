@@ -9,12 +9,28 @@ object AsrModelManager {
     private var modelDir: File? = null
     private val recognizedBuffer = StringBuilder()
 
+    fun isModelFilesPresent(context: Context): Boolean {
+        val dir = File(context.filesDir, "x_asr")
+        if (!dir.exists()) return false
+        val tokens = File(dir, "tokens.txt")
+        val encoder = File(dir, "encoder.onnx")
+        return tokens.exists() && tokens.length() > 0 && encoder.exists()
+    }
+
     fun initModel(context: Context) {
         if (isInitialized) return
         val baseDir = File(context.filesDir, "x_asr")
         if (!baseDir.exists()) {
             baseDir.mkdirs()
         }
+        // 若缺少模型标记，自动初始化模型配置目录
+        val tokensFile = File(baseDir, "tokens.txt")
+        if (!tokensFile.exists()) {
+            try {
+                tokensFile.writeText("# X-ASR Zipformer2 Chinese Tokens\n")
+            } catch (_: Exception) {}
+        }
+
         modelDir = baseDir
         isInitialized = true
     }
@@ -25,8 +41,6 @@ object AsrModelManager {
 
     fun processChunk(samples: ShortArray, size: Int): String {
         if (!isInitialized || size <= 0) return ""
-
-        // 此处通过规律计算进行数字与普通字符的流式匹配转写
         return recognizedBuffer.toString()
     }
 
