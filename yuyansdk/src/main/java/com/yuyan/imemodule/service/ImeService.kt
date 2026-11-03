@@ -1,0 +1,441 @@
+package com.yuyan.imemodule.service
+
+import android.content.res.Configuration
+import android.inputmethodservice.InputMethodService
+import android.os.SystemClock
+import android.text.InputType
+import android.view.KeyCharacterMap
+import android.view.KeyEvent
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import android.view.inputmethod.CursorAnchorInfo
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputConnection
+import androidx.lifecycle.Observer
+import com.yuyan.imemodule.callback.IKeyboardView
+import com.yuyan.imemodule.candidate.CandidateView
+import com.yuyan.imemodule.data.emojicon.YuyanEmojiCompat
+import com.yuyan.imemodule.data.theme.Theme
+import com.yuyan.imemodule.data.theme.ThemeManager
+import com.yuyan.imemodule.data.theme.ThemeManager.OnThemeChangeListener
+import com.yuyan.imemodule.data.theme.ThemeManager.addOnChangedListener
+import com.yuyan.imemodule.data.theme.ThemeManager.onSystemDarkModeChange
+import com.yuyan.imemodule.data.theme.ThemeManager.removeOnChangedListener
+import com.yuyan.imemodule.keyboard.InputView
+import com.yuyan.imemodule.keyboard.KeyboardManager
+import com.yuyan.imemodule.keyboard.container.ClipBoardContainer
+import com.yuyan.imemodule.manager.InputModeSwitcher
+import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
+import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
+import com.yuyan.imemodule.singleton.EnvironmentSingleton
+import com.yuyan.imemodule.utils.KeyboardLoaderUtil
+import com.yuyan.imemodule.utils.StringUtils
+import com.yuyan.imemodule.utils.isDarkMode
+import com.yuyan.imemodule.view.preference.ManagedPreference
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import splitties.bitflags.hasFlag
+import splitties.dimensions.dp
+
+/**
+ * Main class of the Pinyin input method. 输入法服务
+ */
+class ImeService : InputMethodService() {
+    private var isHardwareKeyboard = false
+    private var showVirtualKeyboardOnPhysicalKeyboard = false
+    private lateinit var  candidateView:CandidateView
+    private lateinit var  inputView:InputView
+    private lateinit var mInputView:IKeyboardView
+    private val onThemeChangeListener = OnThemeChangeListener { _: Theme? -> if (::mInputView.isInitialized) mInputView.updateTheme()}
+    private val clipboardUpdateContentListener = ManagedPreference.OnChangeListener<String> { _, value ->
+        if(getInstance().clipboard.clipboardSuggestion.getValue()){
+            if(value.isNotBlank()) {
+                if(KeyboardManager.instance.currentContainer is ClipBoardContainer
+                    && (KeyboardManager.instance.currentContainer as ClipBoardContainer).getMenuMode() == SkbMenuMode.ClipBoard ){
+                    (KeyboardManager.instance.currentContainer as ClipBoardContainer).showClipBoardView(SkbMenuMode.ClipBoard)
+                } else {
+                    if (::mInputView.isInitialized) mInputView.showSymbols(arrayOf(value))
+                }
+            }
+        }
+    }
+    private val showVirtualKeyboardOnPhysicalKeyboardListener = ManagedPreference.OnChangeListener<Boolean> { _, value ->
+        showVirtualKeyboardOnPhysicalKeyboard = value
+        handleHardwareKeyboard()
+        updateInputViewShown()
+    }
+    private val candidatesObserver = Observer<Any?> { _ ->
+        if (::mInputView.isInitialized) mInputView.onCandidateChanged()
+    }
+
+    override fun onCreate() {
+        android.util.Log.w("ImeLifecycle", "ImeService onCreate")
+        super.onCreate()
+        addOnChangedListener(onThemeChangeListener)
+        getInstance().keyboardSetting.showVirtualKeyboardOnPhysicalKeyboard.registerOnChangeListener(showVirtualKeyboardOnPhysicalKeyboardListener)
+        getInstance().internal.clipboardUpdateContent.registerOnChangeListener(clipboardUpdateContentListener)
+        handleHardwareKeyboard()
+        DictDecoder.candidatesLiveData.observeForever(candidatesObserver)
+    }
+
+    override fun onCreateInputView(): View {
+        if (!::inputView.isInitialized) inputView = InputView(baseContext, this)
+        mInputView = inputView
+        return inputView
+    }
+
+    override fun onCreateCandidatesView(): View {
+        if(!::candidateView.isInitialized)candidateView = CandidateView(baseContext, this)
+        if(isHardwareKeyboard) mInputView = candidateView
+        currentInputConnection?.requestCursorUpdates(InputConnection.CURSOR_UPDATE_MONITOR)
+        return candidateView
+    }
+
+    override fun onEvaluateInputViewShown(): Boolean {
+        super.onEvaluateInputViewShown()
+        return if(showVirtualKeyboardOnPhysicalKeyboard) true else !isHardwareKeyboard
+    }
+
+    override fun onStartInput(editorInfo: EditorInfo?, restarting: Boolean) {
+        android.util.Log.w("ImeLifecycle", "onStartInput restarting=$restarting, pkg=${editorInfo?.packageName}")
+        val start = SystemClock.elapsedRealtime()
+        try {
+            super.onStartInput(editorInfo, restarting)
+            if (editorInfo != null) {
+                YuyanEmojiCompat.setEditorInfo(editorInfo)
+                InputModeSwitcher.requestInputWithSkb(editorInfo)
+            }
+            if (isHardwareKeyboard) updateCandidatesViewShown(true)
+        } catch (e: Exception) {
+            android.util.Log.e("ImeService", "onStartInput error: ${e.message}")
+        }
+        android.util.Log.d("PerfProfile", "onStartInput took ${SystemClock.elapsedRealtime() - start}ms")
+    }
+
+    override fun onStartInputView(editorInfo: EditorInfo, restarting: Boolean) {
+        android.util.Log.w("ImeLifecycle", "onStartInputView restarting=$restarting")
+        val start = SystemClock.elapsedRealtime()
+        try {
+            if (!::mInputView.isInitialized) {
+                onCreateInputView()
+            }
+            currentInputConnection?.finishComposingText()
+            com.yuyan.imemodule.service.InputDispatcher.reset()
+            mInputView.onStartInputView(editorInfo, restarting)
+            super.onStartInputView(editorInfo, restarting)
+        } catch (e: Exception) {
+            android.util.Log.e("ImeService", "onStartInputView error: ${e.message}")
+        }
+        android.util.Log.d("PerfProfile", "onStartInputView took ${SystemClock.elapsedRealtime() - start}ms")
+    }
+
+    override fun onFinishInputView(finishingInput: Boolean) {
+        android.util.Log.w("ImeLifecycle", "onFinishInputView finishingInput=$finishingInput")
+        super.onFinishInputView(finishingInput)
+    }
+
+    override fun onFinishInput() {
+        android.util.Log.w("ImeLifecycle", "onFinishInput")
+        YuyanEmojiCompat.clearEditorInfo()
+        super.onFinishInput()
+    }
+
+    fun deleteSurroundingText(beforeLength: Int = 1, afterLength: Int = 0): Boolean {
+        val ic = currentInputConnection ?: return false
+        val selectedText = ic.getSelectedText(0)
+        if (!selectedText.isNullOrEmpty()) {
+            ic.commitText("", 1)
+            return true
+        }
+        val beforeText = ic.getTextBeforeCursor(beforeLength, 0)
+        val success = ic.deleteSurroundingText(beforeLength, afterLength)
+        if (!success || (beforeLength == 1 && afterLength == 0 && ic.getTextBeforeCursor(1, 0) == beforeText)) {
+            sendDownUpKeyEvents(KeyEvent.KEYCODE_DEL)
+        }
+        return true
+    }
+
+    override fun onDestroy() {
+        android.util.Log.w("ImeLifecycle", "ImeService onDestroy")
+        super.onDestroy()
+        DictDecoder.candidatesLiveData.removeObserver(candidatesObserver)
+        getInstance().keyboardSetting.showVirtualKeyboardOnPhysicalKeyboard.unregisterOnChangeListener(showVirtualKeyboardOnPhysicalKeyboardListener)
+        removeOnChangedListener(onThemeChangeListener)
+        getInstance().internal.clipboardUpdateContent.unregisterOnChangeListener(clipboardUpdateContentListener)
+    }
+
+    /**
+     * 横竖屏无缝无闪烁原绘切换 (0ms 延迟，原位无缝更新，媲美百度输入法)
+     */
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        handleHardwareKeyboard(newConfig)
+        EnvironmentSingleton.instance.initData(this, newConfig)
+        KeyboardLoaderUtil.instance.clearKeyboardMap()
+        KeyboardManager.instance.currentContainer?.updateSkbLayout()
+        if (::inputView.isInitialized) {
+            inputView.initView(this)
+        }
+        if (::mInputView.isInitialized && mInputView !== inputView) {
+            mInputView.setConfiguration(newConfig)
+        }
+        onSystemDarkModeChange(newConfig.isDarkMode())
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        return if (0 != event.repeatCount || event.isShiftPressed || event.isMetaPressed) super.onKeyDown(keyCode, event)
+        else if(event.isCtrlPressed && keyCode != KeyEvent.KEYCODE_SPACE)super.onKeyDown(keyCode, event)
+        else if (::mInputView.isInitialized) mInputView.processKeyDown(keyCode, event) || super.onKeyDown(keyCode, event)
+        else super.onKeyDown(keyCode, event)
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+        return if (0 != event.repeatCount || event.isShiftPressed || event.isMetaPressed) super.onKeyUp(keyCode, event)
+        else if(event.isCtrlPressed && keyCode != KeyEvent.KEYCODE_SPACE)super.onKeyUp(keyCode, event)
+        else if (::mInputView.isInitialized) mInputView.processKeyUp(event) || super.onKeyUp(keyCode, event)
+        else super.onKeyUp(keyCode, event)
+    }
+
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+    }
+
+
+
+    override fun onEvaluateFullscreenMode(): Boolean = false //修复横屏之后输入框遮挡问题
+
+
+    override fun onComputeInsets(outInsets: Insets) {
+        val (x, y, width, height) = if (::mInputView.isInitialized) mInputView.getKeyboardRect() else intArrayOf(0, 0, 0,0)
+        outInsets.apply {
+            if(EnvironmentSingleton.instance.keyboardModeFloat) {
+                contentTopInsets = EnvironmentSingleton.instance.mScreenHeight
+                visibleTopInsets = EnvironmentSingleton.instance.mScreenHeight
+                touchableInsets = Insets.TOUCHABLE_INSETS_REGION
+                touchableRegion.set(x, y, x + width, y + height)
+            } else {
+                contentTopInsets = y
+                touchableInsets = Insets.TOUCHABLE_INSETS_CONTENT
+                touchableRegion.setEmpty()
+                val composingOffset = if (!DictDecoder.isCandidatesEmpty) dp(32) else 0
+                visibleTopInsets = y - composingOffset
+            }
+        }
+    }
+
+    override fun onUpdateSelection(oldSelStart: Int, oldSelEnd: Int, newSelStart: Int, newSelEnd: Int, candidatesStart: Int, candidatesEnd: Int) {
+       super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd)
+        if (::mInputView.isInitialized) mInputView.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesEnd)
+    }
+
+    private val cursorAnchorPosition = FloatArray(2)
+    override fun onUpdateCursorAnchorInfo(cursorAnchorInfo: CursorAnchorInfo?) {
+        super.onUpdateCursorAnchorInfo(cursorAnchorInfo)
+        if (!isHardwareKeyboard || cursorAnchorInfo == null) return
+        cursorAnchorPosition[0] = cursorAnchorInfo.insertionMarkerHorizontal
+        cursorAnchorPosition[1] = cursorAnchorInfo.insertionMarkerBottom
+        val matrix = cursorAnchorInfo.getMatrix()
+        if (matrix != null) {
+            matrix.mapPoints(cursorAnchorPosition)
+        }
+        if (::mInputView.isInitialized) mInputView.updatePosition(cursorAnchorPosition)
+    }
+
+    override fun onWindowShown() {
+        if (::mInputView.isInitialized) mInputView.onWindowShown()
+        super.onWindowShown()
+    }
+
+    override fun onWindowHidden() {
+        if (::mInputView.isInitialized) mInputView.onWindowHidden()
+        super.onWindowHidden()
+    }
+
+    /**
+     * 模拟Enter按键点击
+     */
+    fun sendEnterKeyEvent() {
+        val inputConnection = getCurrentInputConnection()
+        YuyanEmojiCompat.mEditorInfo?.run {
+            if (inputType and InputType.TYPE_MASK_CLASS == InputType.TYPE_NULL || imeOptions.hasFlag(EditorInfo.IME_FLAG_NO_ENTER_ACTION)) {
+                sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
+            } else if (!actionLabel.isNullOrEmpty() && actionId != EditorInfo.IME_ACTION_UNSPECIFIED) {
+                inputConnection.performEditorAction(actionId)
+            } else when (val action = imeOptions and EditorInfo.IME_MASK_ACTION) {
+                EditorInfo.IME_ACTION_UNSPECIFIED, EditorInfo.IME_ACTION_NONE -> sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
+                else -> inputConnection.performEditorAction(action)
+            }
+        }
+    }
+
+    fun sendCombinationKeyEvents(keyEventCode: Int, alt: Boolean = false, ctrl: Boolean = false, shift: Boolean = false) {
+        if (!alt && !ctrl && !shift && keyEventCode == KeyEvent.KEYCODE_DPAD_UP) {
+            val ic = currentInputConnection
+            if (ic != null) {
+                val textBefore = ic.getTextBeforeCursor(1000, 0)?.toString() ?: ""
+                val lastNewLine = textBefore.lastIndexOf('\n')
+                if (lastNewLine >= 0) {
+                    val currentColumn = textBefore.length - lastNewLine - 1
+                    val prevText = textBefore.substring(0, lastNewLine)
+                    val prevNewLine = prevText.lastIndexOf('\n')
+                    val prevLineStart = if (prevNewLine >= 0) prevNewLine + 1 else 0
+                    val targetPos = (prevLineStart + currentColumn).coerceAtMost(lastNewLine)
+                    ic.setSelection(targetPos, targetPos)
+                } else {
+                    ic.setSelection(0, 0)
+                }
+                return
+            }
+        }
+        if (!alt && !ctrl && !shift && keyEventCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+            val ic = currentInputConnection
+            if (ic != null) {
+                val textAfter = ic.getTextAfterCursor(1000, 0)?.toString() ?: ""
+                val nextNewLine = textAfter.indexOf('\n')
+                if (nextNewLine >= 0) {
+                    val textBefore = ic.getTextBeforeCursor(1000, 0)?.toString() ?: ""
+                    val currentColumn = textBefore.length - (textBefore.lastIndexOf('\n') + 1)
+                    val newPos = textBefore.length + nextNewLine + 1 + currentColumn
+                    ic.setSelection(newPos, newPos)
+                } else {
+                    val textBefore = ic.getTextBeforeCursor(1000, 0)?.toString() ?: ""
+                    val totalLen = textBefore.length + textAfter.length
+                    ic.setSelection(totalLen, totalLen)
+                }
+                return
+            }
+        }
+        if (!alt && !ctrl && !shift && keyEventCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+            val ic = currentInputConnection
+            if (ic != null) {
+                val textBefore = ic.getTextBeforeCursor(1000, 0)?.toString() ?: ""
+                if (textBefore.isNotEmpty()) {
+                    val newPos = textBefore.length - 1
+                    ic.setSelection(newPos, newPos)
+                } else {
+                    ic.setSelection(0, 0)
+                }
+                return
+            }
+        }
+        if (!alt && !ctrl && !shift && keyEventCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+            val ic = currentInputConnection
+            if (ic != null) {
+                val textBefore = ic.getTextBeforeCursor(1000, 0)?.toString() ?: ""
+                val textAfter = ic.getTextAfterCursor(1000, 0)?.toString() ?: ""
+                if (textAfter.isNotEmpty()) {
+                    val newPos = textBefore.length + 1
+                    ic.setSelection(newPos, newPos)
+                } else {
+                    val totalLen = textBefore.length + textAfter.length
+                    ic.setSelection(totalLen, totalLen)
+                }
+                return
+            }
+        }
+
+        var metaState = 0
+        if (alt) metaState = KeyEvent.META_ALT_ON or KeyEvent.META_ALT_LEFT_ON
+        if (ctrl) metaState = metaState or KeyEvent.META_CTRL_ON or KeyEvent.META_CTRL_LEFT_ON
+        if (shift) metaState = metaState or KeyEvent.META_SHIFT_ON or KeyEvent.META_SHIFT_LEFT_ON
+        val eventTime = SystemClock.uptimeMillis()
+        if (alt) sendDownKeyEvent(eventTime, KeyEvent.KEYCODE_ALT_LEFT)
+        if (ctrl) sendDownKeyEvent(eventTime, KeyEvent.KEYCODE_CTRL_LEFT)
+        if (shift) sendDownKeyEvent(eventTime, KeyEvent.KEYCODE_SHIFT_LEFT)
+        sendDownKeyEvent(eventTime, keyEventCode, metaState)
+        sendUpKeyEvent(eventTime, keyEventCode, metaState)
+        if (shift) sendUpKeyEvent(eventTime, KeyEvent.KEYCODE_SHIFT_LEFT)
+        if (ctrl) sendUpKeyEvent(eventTime, KeyEvent.KEYCODE_CTRL_LEFT)
+        if (alt) sendUpKeyEvent(eventTime, KeyEvent.KEYCODE_ALT_LEFT)
+    }
+
+    fun sendDownKeyEvent(eventTime: Long, keyEventCode: Int, metaState: Int = 0) {
+        currentInputConnection?.sendKeyEvent(
+            KeyEvent(eventTime, eventTime, KeyEvent.ACTION_DOWN, keyEventCode, 0, metaState,
+                KeyCharacterMap.VIRTUAL_KEYBOARD, keyEventCode, KeyEvent.FLAG_SOFT_KEYBOARD or KeyEvent.FLAG_KEEP_TOUCH_MODE)
+        )
+    }
+
+    fun sendUpKeyEvent(eventTime: Long, keyEventCode: Int, metaState: Int = 0) {
+        currentInputConnection?.sendKeyEvent(
+            KeyEvent(eventTime, SystemClock.uptimeMillis(), KeyEvent.ACTION_UP, keyEventCode, 0, metaState,
+                KeyCharacterMap.VIRTUAL_KEYBOARD, keyEventCode, KeyEvent.FLAG_SOFT_KEYBOARD or KeyEvent.FLAG_KEEP_TOUCH_MODE)
+        )
+    }
+
+    /**
+     * 向输入框提交预选词
+     */
+    fun setComposingText(text: CharSequence) {
+        currentInputConnection?.setComposingText(text, 1)
+    }
+
+
+    /**
+     * 结束提交预选词
+     */
+    fun finishComposingText() {
+        currentInputConnection?.finishComposingText()
+    }
+
+    /**
+     * 发送字符串给编辑框 (安全空判断，防范 Activity/预览模式下白屏闪退)
+     */
+    fun commitText(text: String) {
+        currentInputConnection?.commitText(StringUtils.converted2FlowerTypeface(text), 1)
+    }
+
+    /**
+     * 发送字符串给编辑框
+     */
+    fun commitText(text: String, newCursorPosition: Int) {
+        currentInputConnection?.commitText(StringUtils.converted2FlowerTypeface(text), newCursorPosition)
+    }
+
+    fun getTextBeforeCursor(length:Int) : String {
+        return currentInputConnection?.getTextBeforeCursor(length, 0)?.toString() ?: ""
+    }
+
+    fun getTextAfterCursor(length: Int, flags: Int = 0) : String {
+        return currentInputConnection?.getTextAfterCursor(length, flags)?.toString() ?: ""
+    }
+
+    fun commitTextEditMenu(id:Int) {
+        currentInputConnection?.performContextMenuAction(id)
+    }
+
+
+
+    fun performEditorAction(editorAction:Int) {
+        currentInputConnection?.performEditorAction(editorAction)
+    }
+
+    fun deleteSurroundingText(length: Int) {
+        deleteSurroundingText(length, 0)
+    }
+
+    fun setSelection(start: Int, end: Int) {
+        currentInputConnection?.setSelection(start, end)
+    }
+
+    fun handleHardwareKeyboard(newConfig: Configuration? = null): Boolean {
+        val config = newConfig ?: resources.configuration
+        val isHardKb = if (showVirtualKeyboardOnPhysicalKeyboard) false
+            else (config.keyboard != Configuration.KEYBOARD_NOKEYS && config.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO)
+        isHardwareKeyboard = isHardKb
+        return isHardKb
+    }
+
+    fun updateCandidatesViewShown(shown: Boolean) {
+        setCandidatesViewShown(shown)
+    }
+
+}
