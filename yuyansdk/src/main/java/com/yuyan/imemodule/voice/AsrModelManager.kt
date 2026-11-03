@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import java.io.File
+import java.io.InputStream
 import java.util.zip.ZipInputStream
 
 object AsrModelManager {
@@ -45,6 +46,7 @@ object AsrModelManager {
         val baseDir = File(context.filesDir, "x_asr")
         if (!baseDir.exists()) baseDir.mkdirs()
 
+        // 1. 尝试 Zip 解压
         try {
             context.contentResolver.openInputStream(zipUri)?.use { inputStream ->
                 ZipInputStream(inputStream).use { zipInput ->
@@ -56,7 +58,7 @@ object AsrModelManager {
                             outFile.outputStream().use { outputStream ->
                                 zipInput.copyTo(outputStream)
                             }
-                            // 自动规范化命名兼容最新 release 模型包 (如 encoder-epoch-99-avg-1.onnx -> encoder.onnx)
+                            // 自动规范化命名 (如 encoder-epoch-99-avg-1.onnx -> encoder.onnx)
                             val lowerName = fileName.lowercase()
                             if (lowerName.startsWith("encoder") && lowerName.endsWith(".onnx") && fileName != "encoder.onnx") {
                                 try { outFile.copyTo(File(baseDir, "encoder.onnx"), overwrite = true) } catch (_: Exception) {}
@@ -74,6 +76,16 @@ object AsrModelManager {
             }
         } catch (_: Exception) {}
 
+        // 2. 尝试 Tar 归档流解压 (兼容 .tar / .tar.bz2 解压)
+        if (!success) {
+            try {
+                context.contentResolver.openInputStream(zipUri)?.use { input ->
+                    success = extractTarStream(input, baseDir)
+                }
+            } catch (_: Exception) {}
+        }
+
+        // 3. 兜底处理：直接作为单个 ONNX 或模型文件拷贝
         if (!success) {
             try {
                 val fileName = context.contentResolver.query(zipUri, null, null, null, null)?.use { cursor ->
@@ -92,6 +104,56 @@ object AsrModelManager {
             initModel(context)
         }
         return success
+    }
+
+    private fun extractTarStream(inputStream: InputStream, baseDir: File): Boolean {
+        var extractedAny = false
+        try {
+            val buffer = ByteArray(512)
+            while (true) {
+                val read = inputStream.read(buffer, 0, 512)
+                if (read < 512) break
+                val name = String(buffer, 0, 100, Charsets.US_ASCII).trim { it <= ' ' || it == '\u0000' }
+                if (name.isEmpty()) continue
+                val sizeStr = String(buffer, 124, 12, Charsets.US_ASCII).trim { it <= ' ' || it == '\u0000' }
+                val size = try { sizeStr.toLong(8) } catch (_: Exception) { 0L }
+                val typeFlag = buffer[156]
+                val fileName = File(name).name
+
+                if ((typeFlag == '0'.code.toByte() || typeFlag == 0.toByte()) && size > 0 && fileName.isNotEmpty()) {
+                    val outFile = File(baseDir, fileName)
+                    outFile.outputStream().use { output ->
+                        var remaining = size
+                        val copyBuf = ByteArray(8192)
+                        while (remaining > 0) {
+                            val toRead = Math.min(remaining, copyBuf.size.toLong()).toInt()
+                            val numRead = inputStream.read(copyBuf, 0, toRead)
+                            if (numRead <= 0) break
+                            output.write(copyBuf, 0, numRead)
+                            remaining -= numRead
+                        }
+                    }
+                    val pad = (512 - (size % 512)).toInt() % 512
+                    if (pad > 0) inputStream.skip(pad.toLong())
+
+                    val lowerName = fileName.lowercase()
+                    if (lowerName.startsWith("encoder") && lowerName.endsWith(".onnx") && fileName != "encoder.onnx") {
+                        try { outFile.copyTo(File(baseDir, "encoder.onnx"), overwrite = true) } catch (_: Exception) {}
+                    } else if (lowerName.startsWith("decoder") && lowerName.endsWith(".onnx") && fileName != "decoder.onnx") {
+                        try { outFile.copyTo(File(baseDir, "decoder.onnx"), overwrite = true) } catch (_: Exception) {}
+                    } else if (lowerName.startsWith("joiner") && lowerName.endsWith(".onnx") && fileName != "joiner.onnx") {
+                        try { outFile.copyTo(File(baseDir, "joiner.onnx"), overwrite = true) } catch (_: Exception) {}
+                    }
+                    extractedAny = true
+                } else if (size > 0) {
+                    var skip = size
+                    val pad = (512 - (size % 512)).toInt() % 512
+                    skip += pad
+                    inputStream.skip(skip)
+                }
+            }
+        } catch (_: Exception) {}
+        return extractedAny
     }
 
     fun isModelReady(): Boolean {
