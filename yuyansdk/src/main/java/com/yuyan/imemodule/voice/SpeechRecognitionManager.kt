@@ -64,10 +64,16 @@ class SpeechRecognitionManager(private val context: Context) {
                         mainHandler.post { listener?.onPartialResult(text) }
                     }
                     override fun onFinalResult(text: String) {
-                        mainHandler.post { listener?.onFinalResult(text) }
+                        mainHandler.post {
+                            listener?.onFinalResult(text)
+                            currentState = State.IDLE
+                        }
                     }
                     override fun onError(msg: String) {
-                        mainHandler.post { listener?.onError(msg) }
+                        mainHandler.post {
+                            listener?.onError(msg)
+                            currentState = State.IDLE
+                        }
                     }
                 })
                 asrService?.prepareEngine()
@@ -226,11 +232,19 @@ class SpeechRecognitionManager(private val context: Context) {
         currentState = State.PROCESSING
         stopAudioRecording()
         asrService?.finishSpeech()
+
         mainHandler.post {
             try {
                 speechRecognizer?.stopListening()
             } catch (_: Exception) {}
         }
+
+        // 安全兜底定时器：1.0秒内不论结果是否到位，强制重置状态为 IDLE，确保绝不悬挂卡死
+        mainHandler.postDelayed({
+            if (currentState == State.PROCESSING) {
+                currentState = State.IDLE
+            }
+        }, 1000)
     }
 
     fun cancelListening() {
