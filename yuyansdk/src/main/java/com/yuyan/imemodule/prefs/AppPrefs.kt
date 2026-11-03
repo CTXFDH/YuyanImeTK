@@ -233,8 +233,16 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val showVirtualKeyboardOnPhysicalKeyboard = switch(R.string.show_virtual_keyboard_with_external, "show_virtual_keyboard_with_external", false)
     }
 
-    inner class Voice : ManagedPreferenceCategory(R.string.setting_ime_input, sharedPreferences) {
-//        val titleChinese = category(R.string.chinese_input_setting)
+    inner class Voice : ManagedPreferenceCategory(R.string.ime_settings_voice, sharedPreferences) {
+        val voiceLocalModel = switch(
+            R.string.voice_local_model, "voice_local_model_enable", true, R.string.voice_local_model_tips
+        )
+        val voiceKeepResident = switch(
+            R.string.voice_keep_resident, "voice_keep_resident_enable", true, R.string.voice_keep_resident_tips
+        ) { voiceLocalModel.getValue() }
+        val voiceAutoPunctuation = switch(
+            R.string.voice_auto_punctuation, "voice_auto_punctuation_enable", true, R.string.voice_auto_punctuation_tips
+        )
     }
 
     inner class Other : ManagedPreferenceCategory(R.string.setting_ime_other, sharedPreferences) {

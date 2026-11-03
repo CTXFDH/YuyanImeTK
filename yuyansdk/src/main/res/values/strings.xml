@@ -12,6 +12,12 @@
     <string name="setting_ime_keyboard_show">键盘效果</string>
     <string name="setting_ime_keyboard_height">键盘调节</string>
     <string name="ime_settings_voice">语音识别</string>
+    <string name="voice_local_model">使用本地模型</string>
+    <string name="voice_local_model_tips">离线运行，无需网络</string>
+    <string name="voice_keep_resident">保持引擎常驻</string>
+    <string name="voice_keep_resident_tips">语音结束后模型不自动释放（约150MB常驻内存），闲置后再用免重新加载，响应更快</string>
+    <string name="voice_auto_punctuation">自动标点符号</string>
+    <string name="voice_auto_punctuation_tips">识别结果自动断句并添加标点符号</string>
     <string name="ime_settings_handwriting">手写设置</string>
     <string name="keypopup_input_settings">按键气泡</string>
     <string name="long_press_timeout">按键长按灵敏度</string>

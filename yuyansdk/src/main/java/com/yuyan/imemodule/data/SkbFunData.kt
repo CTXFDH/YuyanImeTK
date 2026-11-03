@@ -29,4 +29,5 @@ val menuSkbFunsPreset: Map<SkbMenuMode, SkbFunItem> = hashMapOf(
     SkbMenuMode.LockClipBoard to SkbFunItem(Launcher.instance.context.getString(R.string.lock_view), R.drawable.icon_symbol_lock, SkbMenuMode.LockClipBoard),
     SkbMenuMode.TextEdit to SkbFunItem(Launcher.instance.context.getString(R.string.menu_text_edit), R.drawable.ic_menu_cursor_icon, SkbMenuMode.TextEdit),
     SkbMenuMode.SwitchIME to SkbFunItem("切换输入法", R.drawable.ic_menu_language, SkbMenuMode.SwitchIME),
+    SkbMenuMode.PinyinVoice to SkbFunItem("语音输入", R.drawable.ic_menu_voice, SkbMenuMode.PinyinVoice),
     )

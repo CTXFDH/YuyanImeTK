@@ -173,6 +173,12 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                     R.id.action_settingsFragment_to_handwritingSettingsFragment
                 )
                 addDestinationPreference(
+                    R.string.ime_settings_voice,
+                    "离线模型、引擎常驻与自动标点",
+                    R.drawable.ic_menu_voice,
+                    R.id.action_settingsFragment_to_voiceSettingsFragment
+                )
+                addDestinationPreference(
                     R.string.clipboard,
                     "剪切板历史与快捷常用语",
                     R.drawable.ic_menu_clipboard,
