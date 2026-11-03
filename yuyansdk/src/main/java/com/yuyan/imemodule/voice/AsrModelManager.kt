@@ -2,6 +2,7 @@ package com.yuyan.imemodule.voice
 
 import android.content.Context
 import android.net.Uri
+import android.provider.OpenableColumns
 import java.io.File
 import java.util.zip.ZipInputStream
 
@@ -40,9 +41,11 @@ object AsrModelManager {
     }
 
     fun importModelFromZip(context: Context, zipUri: Uri): Boolean {
-        return try {
-            val baseDir = File(context.filesDir, "x_asr")
-            if (!baseDir.exists()) baseDir.mkdirs()
+        var success = false
+        val baseDir = File(context.filesDir, "x_asr")
+        if (!baseDir.exists()) baseDir.mkdirs()
+
+        try {
             context.contentResolver.openInputStream(zipUri)?.use { inputStream ->
                 ZipInputStream(inputStream).use { zipInput ->
                     var entry = zipInput.nextEntry
@@ -62,17 +65,33 @@ object AsrModelManager {
                             } else if (lowerName.startsWith("joiner") && lowerName.endsWith(".onnx") && fileName != "joiner.onnx") {
                                 try { outFile.copyTo(File(baseDir, "joiner.onnx"), overwrite = true) } catch (_: Exception) {}
                             }
+                            success = true
                         }
                         zipInput.closeEntry()
                         entry = zipInput.nextEntry
                     }
                 }
             }
-            initModel(context)
-            true
-        } catch (_: Exception) {
-            false
+        } catch (_: Exception) {}
+
+        if (!success) {
+            try {
+                val fileName = context.contentResolver.query(zipUri, null, null, null, null)?.use { cursor ->
+                    val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (nameIndex != -1 && cursor.moveToFirst()) cursor.getString(nameIndex) else null
+                } ?: "encoder.onnx"
+                val outFile = File(baseDir, File(fileName).name)
+                context.contentResolver.openInputStream(zipUri)?.use { input ->
+                    outFile.outputStream().use { output -> input.copyTo(output) }
+                }
+                success = true
+            } catch (_: Exception) {}
         }
+
+        if (success) {
+            initModel(context)
+        }
+        return success
     }
 
     fun isModelReady(): Boolean {
