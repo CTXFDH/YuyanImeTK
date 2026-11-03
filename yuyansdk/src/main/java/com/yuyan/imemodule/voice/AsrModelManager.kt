@@ -1,7 +1,9 @@
 package com.yuyan.imemodule.voice
 
 import android.content.Context
+import android.net.Uri
 import java.io.File
+import java.util.zip.ZipInputStream
 
 object AsrModelManager {
 
@@ -33,6 +35,33 @@ object AsrModelManager {
 
         modelDir = baseDir
         isInitialized = true
+    }
+
+    fun importModelFromZip(context: Context, zipUri: Uri): Boolean {
+        return try {
+            val baseDir = File(context.filesDir, "x_asr")
+            if (!baseDir.exists()) baseDir.mkdirs()
+            context.contentResolver.openInputStream(zipUri)?.use { inputStream ->
+                ZipInputStream(inputStream).use { zipInput ->
+                    var entry = zipInput.nextEntry
+                    while (entry != null) {
+                        val fileName = File(entry.name).name
+                        if (!entry.isDirectory && fileName.isNotEmpty()) {
+                            val outFile = File(baseDir, fileName)
+                            outFile.outputStream().use { outputStream ->
+                                zipInput.copyTo(outputStream)
+                            }
+                        }
+                        zipInput.closeEntry()
+                        entry = zipInput.nextEntry
+                    }
+                }
+            }
+            initModel(context)
+            true
+        } catch (_: Exception) {
+            false
+        }
     }
 
     fun isModelReady(): Boolean {
