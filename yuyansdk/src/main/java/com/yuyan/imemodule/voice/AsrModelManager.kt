@@ -15,8 +15,10 @@ object AsrModelManager {
         val dir = File(context.filesDir, "x_asr")
         if (!dir.exists()) return false
         val tokens = File(dir, "tokens.txt")
-        val encoder = File(dir, "encoder.onnx")
-        return tokens.exists() && tokens.length() > 0 && encoder.exists()
+        val hasTokens = tokens.exists() && tokens.length() > 0
+        val files = dir.listFiles() ?: emptyArray()
+        val hasEncoder = files.any { it.name.startsWith("encoder") && it.name.endsWith(".onnx") } || File(dir, "encoder.onnx").exists()
+        return hasTokens && hasEncoder
     }
 
     fun initModel(context: Context) {
@@ -50,6 +52,15 @@ object AsrModelManager {
                             val outFile = File(baseDir, fileName)
                             outFile.outputStream().use { outputStream ->
                                 zipInput.copyTo(outputStream)
+                            }
+                            // 自动规范化命名兼容最新 release 模型包 (如 encoder-epoch-99-avg-1.onnx -> encoder.onnx)
+                            val lowerName = fileName.lowercase()
+                            if (lowerName.startsWith("encoder") && lowerName.endsWith(".onnx") && fileName != "encoder.onnx") {
+                                try { outFile.copyTo(File(baseDir, "encoder.onnx"), overwrite = true) } catch (_: Exception) {}
+                            } else if (lowerName.startsWith("decoder") && lowerName.endsWith(".onnx") && fileName != "decoder.onnx") {
+                                try { outFile.copyTo(File(baseDir, "decoder.onnx"), overwrite = true) } catch (_: Exception) {}
+                            } else if (lowerName.startsWith("joiner") && lowerName.endsWith(".onnx") && fileName != "joiner.onnx") {
+                                try { outFile.copyTo(File(baseDir, "joiner.onnx"), overwrite = true) } catch (_: Exception) {}
                             }
                         }
                         zipInput.closeEntry()
