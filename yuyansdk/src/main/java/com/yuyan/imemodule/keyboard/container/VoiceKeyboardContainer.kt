@@ -8,6 +8,7 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -45,10 +46,23 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
         // 语音专属键盘无底层 TextKeyboard 视图，忽略 Enter 键更新
     }
 
+    private fun updateMicButtonStyle(isActive: Boolean) {
+        val theme = ThemeManager.activeTheme
+        val activeBgColor = theme.toolbarActiveIconColor
+        val idleBgColor = theme.keyBackgroundColor
+        val activeIconColor = Color.WHITE
+        val idleIconColor = theme.keyTextColor
+
+        ivMicBtn?.background = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(if (isActive) activeBgColor else idleBgColor)
+        }
+        ivMicBtn?.drawable?.mutate()?.setTint(if (isActive) activeIconColor else idleIconColor)
+    }
+
     private fun initVoiceLayout() {
         removeAllViews()
         val theme = ThemeManager.activeTheme
-        val accentColor = theme.toolbarActiveIconColor
         val keyBgColor = theme.keyBackgroundColor
         val keyTextColor = theme.keyTextColor
 
@@ -74,7 +88,7 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
         }
 
         tvLiveText = TextView(validContext).apply {
-            text = "正在准备语音识别..."
+            text = "按住下方麦克风开始说话..."
             textSize = 15f
             setTextColor(keyTextColor)
             maxLines = 2
@@ -120,21 +134,28 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
         ivMicBtn = ImageView(validContext).apply {
             setImageResource(R.drawable.ic_menu_voice)
             setPadding(dp(18), dp(18), dp(18), dp(18))
-            background = GradientDrawable().apply {
-                shape = GradientDrawable.OVAL
-                setColor(accentColor)
-            }
-            drawable?.mutate()?.setTint(Color.WHITE)
             isClickable = true
             isFocusable = true
 
-            setOnClickListener {
-                DevicesUtils.tryPlayKeyDown()
-                DevicesUtils.tryVibrate(this)
-                if (speechManager.currentState == SpeechRecognitionManager.State.LISTENING) {
-                    speechManager.stopListening()
-                } else {
-                    speechManager.startListening()
+            // 未点击/未按住时默认展示灰色状态
+            updateMicButtonStyle(false)
+
+            setOnTouchListener { v, event ->
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        DevicesUtils.tryPlayKeyDown()
+                        DevicesUtils.tryVibrate(v)
+                        updateMicButtonStyle(true) // 按住高亮
+                        speechManager.startListening()
+                        true
+                    }
+                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                        updateMicButtonStyle(false) // 松开恢复灰色
+                        speechManager.stopListening()
+                        v.performClick()
+                        true
+                    }
+                    else -> false
                 }
             }
         }
@@ -188,7 +209,7 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
         val isOfflineModelReady = AsrModelManager.isModelFilesPresent(validContext)
         val modeText = if (isOfflineModelReady) "离线 X-ASR " else ""
         tvStatus = TextView(validContext).apply {
-            text = "🟢 ${modeText}语音就绪，点击说话"
+            text = "🟢 ${modeText}语音就绪，按住说话"
             textSize = 12f
             setTextColor(keyTextColor)
             gravity = Gravity.END
@@ -247,16 +268,19 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
             override fun onStateChanged(state: SpeechRecognitionManager.State) {
                 val isOfflineModelReady = AsrModelManager.isModelFilesPresent(validContext)
                 val modeText = if (isOfflineModelReady) "离线 X-ASR " else ""
+                val isListening = state == SpeechRecognitionManager.State.LISTENING || state == SpeechRecognitionManager.State.PROCESSING
+                updateMicButtonStyle(isListening)
+
                 when (state) {
                     SpeechRecognitionManager.State.LISTENING -> {
                         tvStatus?.text = "🔴 ${modeText}正在倾听中..."
-                        tvLiveText?.text = "请说话..."
+                        tvLiveText?.text = "正在说..."
                     }
                     SpeechRecognitionManager.State.PROCESSING -> {
                         tvStatus?.text = "🟡 ${modeText}正在识别处理..."
                     }
                     SpeechRecognitionManager.State.IDLE -> {
-                        tvStatus?.text = "🟢 ${modeText}语音就绪，点击说话"
+                        tvStatus?.text = "🟢 ${modeText}语音就绪，按住说话"
                         waveformView?.setAmplitude(0f)
                     }
                     SpeechRecognitionManager.State.ERROR -> {
@@ -288,9 +312,7 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
     }
 
     override fun updateSkbLayout() {
-        try {
-            speechManager.startListening()
-        } catch (_: Exception) {}
+        // 进入语音界面时置于准备状态
     }
 
     override fun onDetachedFromWindow() {
