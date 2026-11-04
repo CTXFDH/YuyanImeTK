@@ -17,7 +17,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.Launcher
 import com.yuyan.imemodule.data.theme.ThemeManager
@@ -31,7 +30,7 @@ import com.yuyan.imemodule.voice.SpeechRecognitionManager
 import splitties.dimensions.dp
 
 /**
- * 1:1 完美复刻曦码输入法 (Xime) 风格的语音识别键盘界面
+ * 1:1 极简纯净复刻曦码输入法 (Xime) 风格的语音识别键盘界面
  */
 @SuppressLint("ViewConstructor", "ClickableViewAccessibility")
 class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBaseContainer(context, inputView) {
@@ -57,10 +56,10 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
         removeAllViews()
         val theme = ThemeManager.activeTheme
         val isDark = theme.isDark
-        val mainBgColor = if (isDark) Color.parseColor("#22282F") else Color.parseColor("#EAEFF4")
-        val cardBgColor = if (isDark) Color.parseColor("#323B44") else Color.parseColor("#FFFFFF")
-        val textColor = theme.keyTextColor
-        val subTextColor = if (isDark) Color.parseColor("#9CA3AF") else Color.parseColor("#71717A")
+        val mainBgColor = if (isDark) Color.parseColor("#20262C") else Color.parseColor("#E6ECF2")
+        val circleBtnBgColor = if (isDark) Color.parseColor("#2D353F") else Color.parseColor("#FFFFFF")
+        val textColor = if (isDark) Color.parseColor("#E5E7EB") else Color.parseColor("#1F2937")
+        val subTextColor = if (isDark) Color.parseColor("#9CA3AF") else Color.parseColor("#6B7280")
 
         val rootLayout = LinearLayout(validContext).apply {
             orientation = LinearLayout.VERTICAL
@@ -69,24 +68,10 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
             layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         }
 
-        // 1. 顶部 Header (Logo + 语音模型名称 + 折叠箭头)
+        // 1. 顶部 Header (仅保留居中模型名称字幕)
         val headerBar = RelativeLayout(validContext).apply {
-            setPadding(dp(16), dp(8), dp(16), dp(4))
-            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(44))
-        }
-
-        val logoBtn = ImageView(validContext).apply {
-            setImageResource(R.drawable.ic_sdk_launcher)
-            background = GradientDrawable().apply {
-                shape = GradientDrawable.OVAL
-                setColor(cardBgColor)
-            }
-            setPadding(dp(6), dp(6), dp(6), dp(6))
-            val lp = RelativeLayout.LayoutParams(dp(32), dp(32)).apply {
-                addRule(RelativeLayout.ALIGN_PARENT_LEFT)
-                addRule(RelativeLayout.CENTER_VERTICAL)
-            }
-            layoutParams = lp
+            setPadding(dp(16), dp(12), dp(16), dp(4))
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(40))
         }
 
         val isOfflineModelReady = AsrModelManager.isModelFilesPresent(validContext)
@@ -102,34 +87,10 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
             layoutParams = lp
         }
 
-        val collapseBtn = ImageView(validContext).apply {
-            setImageResource(R.drawable.ic_arrow_down_pretty)
-            background = GradientDrawable().apply {
-                shape = GradientDrawable.OVAL
-                setColor(cardBgColor)
-            }
-            drawable?.mutate()?.setTint(textColor)
-            setPadding(dp(6), dp(6), dp(6), dp(6))
-            isClickable = true
-            isFocusable = true
-            val lp = RelativeLayout.LayoutParams(dp(32), dp(32)).apply {
-                addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
-                addRule(RelativeLayout.CENTER_VERTICAL)
-            }
-            layoutParams = lp
-            setOnClickListener {
-                DevicesUtils.tryPlayKeyDown()
-                DevicesUtils.tryVibrate(this)
-                KeyboardManager.instance.switchKeyboardToMain()
-            }
-        }
-
-        headerBar.addView(logoBtn)
         headerBar.addView(tvSubtitle)
-        headerBar.addView(collapseBtn)
         rootLayout.addView(headerBar)
 
-        // 2. 中间控制区域 (撤销/退格 + 曦码彩虹彩籽波形胶囊 + 发送/换行)
+        // 2. 中间控制区域 (撤销/退格圆形按钮 + 曦码彩虹彩籽波形胶囊 + 发送/上屏圆形按钮)
         val centerRow = LinearLayout(validContext).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER
@@ -137,19 +98,19 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(64))
         }
 
-        // 撤销/退格按钮 (↶)
+        // 撤销/退格按钮 (↶) - 纯圆正圆形按钮
         val btnUndo = ImageView(validContext).apply {
             setImageResource(R.drawable.ic_menu_reset)
             setPadding(dp(14), dp(14), dp(14), dp(14))
             background = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
-                setColor(cardBgColor)
+                setColor(circleBtnBgColor)
             }
             drawable?.mutate()?.setTint(textColor)
             isClickable = true
             isFocusable = true
-            layoutParams = LinearLayout.LayoutParams(dp(52), dp(52)).apply {
-                rightMargin = dp(14)
+            layoutParams = LinearLayout.LayoutParams(dp(54), dp(54)).apply {
+                rightMargin = dp(16)
             }
             setOnClickListener {
                 DevicesUtils.tryPlayKeyDown()
@@ -158,24 +119,24 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
             }
         }
 
-        // 曦码彩虹彩籽动画胶囊条
+        // 曦码彩虹彩籽动态胶囊条
         rainbowWaveView = RainbowWaveView(validContext).apply {
-            layoutParams = LinearLayout.LayoutParams(dp(180), dp(48))
+            layoutParams = LinearLayout.LayoutParams(dp(190), dp(50))
         }
 
-        // 发送/上屏按钮 (↑)
+        // 发送/上屏按钮 (↑) - 纯圆正圆形按钮
         val btnSend = ImageView(validContext).apply {
             setImageResource(R.drawable.ic_arrow_up_pretty)
             setPadding(dp(14), dp(14), dp(14), dp(14))
             background = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
-                setColor(cardBgColor)
+                setColor(circleBtnBgColor)
             }
             drawable?.mutate()?.setTint(textColor)
             isClickable = true
             isFocusable = true
-            layoutParams = LinearLayout.LayoutParams(dp(52), dp(52)).apply {
-                leftMargin = dp(14)
+            layoutParams = LinearLayout.LayoutParams(dp(54), dp(54)).apply {
+                leftMargin = dp(16)
             }
             setOnClickListener {
                 DevicesUtils.tryPlayKeyDown()
@@ -189,18 +150,18 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
         centerRow.addView(btnSend)
         rootLayout.addView(centerRow)
 
-        // 3. 底部巨型半圆弧拱形触摸区域 (曦码 Dome 弧边设计)
+        // 3. 底部 1:1 巨型半圆弧拱形触摸区域 (曦码 Dome 弧边设计)
         val domeContainer = FrameLayout(validContext).apply {
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f)
         }
 
-        val domeBgColor = if (isDark) Color.parseColor("#2A313A") else Color.parseColor("#F4F7FA")
+        val domeBgColor = if (isDark) Color.parseColor("#2C343E") else Color.parseColor("#F2F5F8")
         bottomDomeView = View(validContext).apply {
             background = GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
                 cornerRadii = floatArrayOf(
-                    dp(100f).toFloat(), dp(100f).toFloat(), // Top-Left
-                    dp(100f).toFloat(), dp(100f).toFloat(), // Top-Right
+                    dp(160f).toFloat(), dp(160f).toFloat(), // Top-Left
+                    dp(160f).toFloat(), dp(160f).toFloat(), // Top-Right
                     0f, 0f,                                  // Bottom-Right
                     0f, 0f                                   // Bottom-Left
                 )
@@ -217,13 +178,14 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
             gravity = Gravity.CENTER
             val lp = FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT).apply {
                 gravity = Gravity.CENTER
+                bottomMargin = dp(12)
             }
             layoutParams = lp
         }
 
         // 底部两侧辅助图标 (左下角折叠 ∨, 右下角键盘 ⌨)
         val bottomIconsRow = RelativeLayout(validContext).apply {
-            setPadding(dp(20), 0, dp(20), dp(12))
+            setPadding(dp(24), 0, dp(24), dp(12))
             val lp = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT).apply {
                 gravity = Gravity.BOTTOM
             }
@@ -233,6 +195,7 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
         val ivBottomClose = ImageView(validContext).apply {
             setImageResource(R.drawable.ic_arrow_down_pretty)
             drawable?.mutate()?.setTint(subTextColor)
+            alpha = 0.5f
             val lp = RelativeLayout.LayoutParams(dp(20), dp(20)).apply {
                 addRule(RelativeLayout.ALIGN_PARENT_LEFT)
                 addRule(RelativeLayout.CENTER_VERTICAL)
@@ -241,6 +204,7 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
             setOnClickListener {
                 DevicesUtils.tryPlayKeyDown()
                 DevicesUtils.tryVibrate(this)
+                inputView.mSkbCandidatesBarView.visibility = View.VISIBLE
                 KeyboardManager.instance.switchKeyboardToMain()
             }
         }
@@ -248,6 +212,7 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
         val ivBottomKeyboard = ImageView(validContext).apply {
             setImageResource(R.drawable.ic_menu_keyboard)
             drawable?.mutate()?.setTint(subTextColor)
+            alpha = 0.5f
             val lp = RelativeLayout.LayoutParams(dp(20), dp(20)).apply {
                 addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
                 addRule(RelativeLayout.CENTER_VERTICAL)
@@ -256,6 +221,7 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
             setOnClickListener {
                 DevicesUtils.tryPlayKeyDown()
                 DevicesUtils.tryVibrate(this)
+                inputView.mSkbCandidatesBarView.visibility = View.VISIBLE
                 KeyboardManager.instance.switchKeyboardToMain()
             }
         }
@@ -293,16 +259,16 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
     private fun updateVoiceRecordingState(isRecording: Boolean) {
         val theme = ThemeManager.activeTheme
         val isDark = theme.isDark
-        val activeDomeBg = if (isDark) Color.parseColor("#3B4450") else Color.parseColor("#E0E7F0")
-        val idleDomeBg = if (isDark) Color.parseColor("#2A313A") else Color.parseColor("#F4F7FA")
+        val activeDomeBg = if (isDark) Color.parseColor("#3B4552") else Color.parseColor("#DEE5EE")
+        val idleDomeBg = if (isDark) Color.parseColor("#2C343E") else Color.parseColor("#F2F5F8")
 
         tvDomeInstruction?.text = if (isRecording) "松开结束" else "按住说话"
 
         bottomDomeView?.background = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
             cornerRadii = floatArrayOf(
-                dp(100f).toFloat(), dp(100f).toFloat(),
-                dp(100f).toFloat(), dp(100f).toFloat(),
+                dp(160f).toFloat(), dp(160f).toFloat(),
+                dp(160f).toFloat(), dp(160f).toFloat(),
                 0f, 0f,
                 0f, 0f
             )
@@ -348,12 +314,14 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
     }
 
     override fun updateSkbLayout() {
-        // 进入界面保持按住说话模式
+        // 进入语音专属键盘时保持顶栏常显
+        inputView.mSkbCandidatesBarView.visibility = View.VISIBLE
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         speechManager.destroy()
+        inputView.mSkbCandidatesBarView.visibility = View.VISIBLE
     }
 
     /**

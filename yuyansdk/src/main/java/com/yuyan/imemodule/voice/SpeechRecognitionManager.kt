@@ -121,17 +121,14 @@ class SpeechRecognitionManager(private val context: Context) {
         currentState = State.LISTENING
         preSpeechBuffer.clear()
 
-        var isSystemSpeechAvailable = false
+        // 优先开启动态录音数据流
+        startAudioRecording()
+
         try {
             if (SpeechRecognizer.isRecognitionAvailable(context)) {
                 startSystemSpeechRecognizer()
-                isSystemSpeechAvailable = true
             }
         } catch (_: Exception) {}
-
-        if (!isSystemSpeechAvailable) {
-            startAudioRecording()
-        }
     }
 
     private fun startSystemSpeechRecognizer() {
@@ -154,28 +151,22 @@ class SpeechRecognitionManager(private val context: Context) {
                         currentState = State.PROCESSING
                     }
                     override fun onError(error: Int) {
-                        // 系统 SpeechRecognizer 不可用或出错时回退到本地 AudioRecord 采样
-                        mainHandler.post { startAudioRecording() }
+                        // 系统 SpeechRecognizer 错误时不杀死本地 AudioRecord
                     }
                     override fun onResults(results: Bundle?) {
                         val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                         val text = matches?.firstOrNull() ?: ""
                         if (text.isNotEmpty()) {
-                            val autoPunc = AppPrefs.getInstance().voice.voiceAutoPunctuation.getValue()
-                            val formattedText = if (autoPunc && !text.endsWith("。") && !text.endsWith("，") && !text.endsWith("？")) {
-                                "$text。"
-                            } else {
-                                text
-                            }
-                            listener?.onFinalResult(formattedText)
+                            listener?.onPartialResult(text)
+                            AsrModelManager.appendRecognizedText(text)
                         }
-                        currentState = State.IDLE
                     }
                     override fun onPartialResults(partialResults: Bundle?) {
                         val matches = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                         val text = matches?.firstOrNull() ?: ""
                         if (text.isNotEmpty()) {
                             listener?.onPartialResult(text)
+                            AsrModelManager.appendRecognizedText(text)
                         }
                     }
                     override fun onEvent(eventType: Int, params: Bundle?) {}
@@ -188,9 +179,7 @@ class SpeechRecognitionManager(private val context: Context) {
                     putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
                 }
                 speechRecognizer?.startListening(intent)
-            } catch (_: Exception) {
-                startAudioRecording()
-            }
+            } catch (_: Exception) {}
         }
     }
 
@@ -227,8 +216,14 @@ class SpeechRecognitionManager(private val context: Context) {
                         val normAmp = (rms / 3000.0).coerceIn(0.0, 1.0).toFloat()
                         mainHandler.post { listener?.onAmplitudeChanged(normAmp) }
 
-                        // 发送给后台处理
+                        // 1. 推送至后台进程
                         asrService?.processAudioChunk(buffer, readSize)
+
+                        // 2. 本地直接流式转写
+                        val livePartialText = AsrModelManager.processChunk(buffer, readSize)
+                        if (livePartialText.isNotEmpty()) {
+                            mainHandler.post { listener?.onPartialResult(livePartialText) }
+                        }
                     }
                 }
             } catch (_: Exception) {
@@ -253,19 +248,23 @@ class SpeechRecognitionManager(private val context: Context) {
             } catch (_: Exception) {}
         }
 
-        mainHandler.postDelayed({
-            val finalText = AsrModelManager.finishRecognition()
-            if (finalText.isNotEmpty()) {
-                val autoPunc = AppPrefs.getInstance().voice.voiceAutoPunctuation.getValue()
-                val formattedText = if (autoPunc && !finalText.endsWith("。") && !finalText.endsWith("，") && !finalText.endsWith("？")) {
-                    "$finalText。"
-                } else {
-                    finalText
-                }
+        // 收集提交最终转写识别出的文字结果并触发上屏
+        val finalText = AsrModelManager.finishRecognition()
+        val autoPunc = AppPrefs.getInstance().voice.voiceAutoPunctuation.getValue()
+        val formattedText = if (autoPunc && finalText.isNotEmpty() && !finalText.endsWith("。") && !finalText.endsWith("，") && !finalText.endsWith("？")) {
+            "$finalText。"
+        } else {
+            finalText
+        }
+
+        mainHandler.post {
+            if (formattedText.isNotEmpty()) {
                 listener?.onFinalResult(formattedText)
             }
             currentState = State.IDLE
-        }, 300)
+        }
+
+        asrService?.finishSpeech()
     }
 
     fun cancelListening() {
