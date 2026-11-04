@@ -8,13 +8,16 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.Launcher
 import com.yuyan.imemodule.data.theme.ThemeManager
@@ -27,292 +30,325 @@ import com.yuyan.imemodule.voice.AsrModelManager
 import com.yuyan.imemodule.voice.SpeechRecognitionManager
 import splitties.dimensions.dp
 
+/**
+ * 1:1 完美复刻曦码输入法 (Xime) 风格的语音识别键盘界面
+ */
 @SuppressLint("ViewConstructor", "ClickableViewAccessibility")
 class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBaseContainer(context, inputView) {
 
     private val validContext = context ?: Launcher.instance.context
     private val speechManager = SpeechRecognitionManager(validContext)
-    private var waveformView: WaveformView? = null
-    private var tvLiveText: TextView? = null
-    private var tvStatus: TextView? = null
-    private var ivMicBtn: ImageView? = null
+
+    private var tvSubtitle: TextView? = null
+    private var rainbowWaveView: RainbowWaveView? = null
+    private var tvDomeInstruction: TextView? = null
+    private var bottomDomeView: View? = null
 
     init {
-        initVoiceLayout()
+        initXimeVoiceLayout()
         initSpeechManager()
     }
 
     override fun updateStates() {
-        // 语音专属键盘无底层 TextKeyboard 视图，忽略 Enter 键更新
+        // 语音专属界面无标准 TextKeyboard 视图
     }
 
-    private fun updateMicButtonStyle(isActive: Boolean) {
-        val theme = ThemeManager.activeTheme
-        val activeBgColor = theme.toolbarActiveIconColor
-        val idleBgColor = theme.keyBackgroundColor
-        val activeIconColor = Color.WHITE
-        val idleIconColor = theme.keyTextColor
-
-        ivMicBtn?.background = GradientDrawable().apply {
-            shape = GradientDrawable.OVAL
-            setColor(if (isActive) activeBgColor else idleBgColor)
-        }
-        ivMicBtn?.drawable?.mutate()?.setTint(if (isActive) activeIconColor else idleIconColor)
-    }
-
-    private fun initVoiceLayout() {
+    private fun initXimeVoiceLayout() {
         removeAllViews()
         val theme = ThemeManager.activeTheme
-        val keyBgColor = theme.keyBackgroundColor
-        val keyTextColor = theme.keyTextColor
+        val isDark = theme.isDark
+        val mainBgColor = if (isDark) Color.parseColor("#22282F") else Color.parseColor("#EAEFF4")
+        val cardBgColor = if (isDark) Color.parseColor("#323B44") else Color.parseColor("#FFFFFF")
+        val textColor = theme.keyTextColor
+        val subTextColor = if (isDark) Color.parseColor("#9CA3AF") else Color.parseColor("#71717A")
 
         val rootLayout = LinearLayout(validContext).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER_HORIZONTAL
-            setPadding(dp(12), dp(8), dp(12), dp(8))
+            setBackgroundColor(mainBgColor)
             layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         }
 
-        // 1. 实时流式文本框与状态框
-        val previewCard = LinearLayout(validContext).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(10), dp(10), dp(10), dp(10))
+        // 1. 顶部 Header (Logo + 语音模型名称 + 折叠箭头)
+        val headerBar = RelativeLayout(validContext).apply {
+            setPadding(dp(16), dp(8), dp(16), dp(4))
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(44))
+        }
+
+        val logoBtn = ImageView(validContext).apply {
+            setImageResource(R.drawable.ic_sdk_launcher)
             background = GradientDrawable().apply {
-                shape = GradientDrawable.RECTANGLE
-                cornerRadius = dp(12f).toFloat()
-                setColor(keyBgColor)
+                shape = GradientDrawable.OVAL
+                setColor(cardBgColor)
             }
-            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(64)).apply {
-                bottomMargin = dp(8)
+            setPadding(dp(6), dp(6), dp(6), dp(6))
+            val lp = RelativeLayout.LayoutParams(dp(32), dp(32)).apply {
+                addRule(RelativeLayout.ALIGN_PARENT_LEFT)
+                addRule(RelativeLayout.CENTER_VERTICAL)
             }
+            layoutParams = lp
         }
 
-        tvLiveText = TextView(validContext).apply {
-            text = "按住下方麦克风开始说话..."
-            textSize = 15f
-            setTextColor(keyTextColor)
-            maxLines = 2
-            ellipsize = android.text.TextUtils.TruncateAt.END
-        }
-        previewCard.addView(tvLiveText, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
-        rootLayout.addView(previewCard)
-
-        // 2. 波形动画展示层
-        waveformView = WaveformView(validContext).apply {
-            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(24)).apply {
-                bottomMargin = dp(8)
-            }
-        }
-        rootLayout.addView(waveformView)
-
-        // 3. 中央控制区域 (麦克风巨型按钮 + 辅助修字按钮)
-        val centerRow = LinearLayout(validContext).apply {
-            orientation = LinearLayout.HORIZONTAL
+        val isOfflineModelReady = AsrModelManager.isModelFilesPresent(validContext)
+        val modelTitle = if (isOfflineModelReady) "中文 Zipformer int8" else "中文 语音转文本"
+        tvSubtitle = TextView(validContext).apply {
+            text = modelTitle
+            textSize = 14f
+            setTextColor(subTextColor)
             gravity = Gravity.CENTER
-            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(90)).apply {
-                bottomMargin = dp(8)
+            val lp = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT).apply {
+                addRule(RelativeLayout.CENTER_IN_PARENT)
             }
+            layoutParams = lp
         }
 
-        // 左侧标点修字面板
-        val leftPunctuationCol = LinearLayout(validContext).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER
-            layoutParams = LinearLayout.LayoutParams(dp(70), LinearLayout.LayoutParams.MATCH_PARENT)
-        }
-        leftPunctuationCol.addView(createPunctuationButton("，"), LinearLayout.LayoutParams(dp(60), dp(36)).apply { bottomMargin = dp(4) })
-        leftPunctuationCol.addView(createPunctuationButton("。"), LinearLayout.LayoutParams(dp(60), dp(36)))
-
-        // 中央巨型麦克风按钮
-        val micFrame = FrameLayout(validContext).apply {
-            layoutParams = LinearLayout.LayoutParams(dp(80), dp(80)).apply {
-                leftMargin = dp(16)
-                rightMargin = dp(16)
+        val collapseBtn = ImageView(validContext).apply {
+            setImageResource(R.drawable.ic_arrow_down_pretty)
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setColor(cardBgColor)
             }
-        }
-
-        ivMicBtn = ImageView(validContext).apply {
-            setImageResource(R.drawable.ic_menu_voice)
-            setPadding(dp(18), dp(18), dp(18), dp(18))
+            drawable?.mutate()?.setTint(textColor)
+            setPadding(dp(6), dp(6), dp(6), dp(6))
             isClickable = true
             isFocusable = true
-
-            // 未点击/未按住时默认展示灰色状态
-            updateMicButtonStyle(false)
-
-            setOnTouchListener { v, event ->
-                when (event.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        DevicesUtils.tryPlayKeyDown()
-                        DevicesUtils.tryVibrate(v)
-                        updateMicButtonStyle(true) // 按住高亮
-                        speechManager.startListening()
-                        true
-                    }
-                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                        updateMicButtonStyle(false) // 松开恢复灰色
-                        speechManager.stopListening()
-                        v.performClick()
-                        true
-                    }
-                    else -> false
-                }
+            val lp = RelativeLayout.LayoutParams(dp(32), dp(32)).apply {
+                addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+                addRule(RelativeLayout.CENTER_VERTICAL)
             }
-        }
-        micFrame.addView(ivMicBtn, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
-
-        // 右侧退格/换行控制
-        val rightControlCol = LinearLayout(validContext).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = Gravity.CENTER
-            layoutParams = LinearLayout.LayoutParams(dp(70), LinearLayout.LayoutParams.MATCH_PARENT)
-        }
-        rightControlCol.addView(createActionButton("⌫") {
-            inputView.responseKeyEvent(SoftKey(code = android.view.KeyEvent.KEYCODE_DEL, label = "⌫"))
-        }, LinearLayout.LayoutParams(dp(60), dp(36)).apply { bottomMargin = dp(4) })
-
-        rightControlCol.addView(createActionButton("↵") {
-            inputView.responseKeyEvent(SoftKey(code = InputModeSwitcher.USER_KEYCODE_RETURN, label = "返回"))
-        }, LinearLayout.LayoutParams(dp(60), dp(36)))
-
-        centerRow.addView(leftPunctuationCol)
-        centerRow.addView(micFrame)
-        centerRow.addView(rightControlCol)
-        rootLayout.addView(centerRow)
-
-        // 4. 底部状态与返回打字主键盘按钮
-        val bottomBar = LinearLayout(validContext).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(36))
-        }
-
-        val btnBackToKeyboard = TextView(validContext).apply {
-            text = "↩ 返回键盘"
-            textSize = 13f
-            setTextColor(keyTextColor)
-            gravity = Gravity.CENTER
-            setPadding(dp(12), dp(6), dp(12), dp(6))
-            background = GradientDrawable().apply {
-                shape = GradientDrawable.RECTANGLE
-                cornerRadius = dp(16f).toFloat()
-                setColor(keyBgColor)
-            }
+            layoutParams = lp
             setOnClickListener {
                 DevicesUtils.tryPlayKeyDown()
                 DevicesUtils.tryVibrate(this)
-                speechManager.cancelListening()
                 KeyboardManager.instance.switchKeyboardToMain()
             }
         }
 
-        val isOfflineModelReady = AsrModelManager.isModelFilesPresent(validContext)
-        val modeText = if (isOfflineModelReady) "离线 X-ASR " else ""
-        tvStatus = TextView(validContext).apply {
-            text = "🟢 ${modeText}语音就绪，按住说话"
-            textSize = 12f
-            setTextColor(keyTextColor)
-            gravity = Gravity.END
-            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        headerBar.addView(logoBtn)
+        headerBar.addView(tvSubtitle)
+        headerBar.addView(collapseBtn)
+        rootLayout.addView(headerBar)
+
+        // 2. 中间控制区域 (撤销/退格 + 曦码彩虹彩籽波形胶囊 + 发送/换行)
+        val centerRow = LinearLayout(validContext).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+            setPadding(dp(16), dp(8), dp(16), dp(12))
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(64))
         }
 
-        bottomBar.addView(btnBackToKeyboard)
-        bottomBar.addView(tvStatus)
-        rootLayout.addView(bottomBar)
+        // 撤销/退格按钮 (↶)
+        val btnUndo = ImageView(validContext).apply {
+            setImageResource(R.drawable.ic_menu_reset)
+            setPadding(dp(14), dp(14), dp(14), dp(14))
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setColor(cardBgColor)
+            }
+            drawable?.mutate()?.setTint(textColor)
+            isClickable = true
+            isFocusable = true
+            layoutParams = LinearLayout.LayoutParams(dp(52), dp(52)).apply {
+                rightMargin = dp(14)
+            }
+            setOnClickListener {
+                DevicesUtils.tryPlayKeyDown()
+                DevicesUtils.tryVibrate(this)
+                inputView.responseKeyEvent(SoftKey(code = KeyEvent.KEYCODE_DEL, label = "⌫"))
+            }
+        }
 
+        // 曦码彩虹彩籽动画胶囊条
+        rainbowWaveView = RainbowWaveView(validContext).apply {
+            layoutParams = LinearLayout.LayoutParams(dp(180), dp(48))
+        }
+
+        // 发送/上屏按钮 (↑)
+        val btnSend = ImageView(validContext).apply {
+            setImageResource(R.drawable.ic_arrow_up_pretty)
+            setPadding(dp(14), dp(14), dp(14), dp(14))
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setColor(cardBgColor)
+            }
+            drawable?.mutate()?.setTint(textColor)
+            isClickable = true
+            isFocusable = true
+            layoutParams = LinearLayout.LayoutParams(dp(52), dp(52)).apply {
+                leftMargin = dp(14)
+            }
+            setOnClickListener {
+                DevicesUtils.tryPlayKeyDown()
+                DevicesUtils.tryVibrate(this)
+                inputView.responseKeyEvent(SoftKey(code = InputModeSwitcher.USER_KEYCODE_RETURN, label = "返回"))
+            }
+        }
+
+        centerRow.addView(btnUndo)
+        centerRow.addView(rainbowWaveView)
+        centerRow.addView(btnSend)
+        rootLayout.addView(centerRow)
+
+        // 3. 底部巨型半圆弧拱形触摸区域 (曦码 Dome 弧边设计)
+        val domeContainer = FrameLayout(validContext).apply {
+            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f)
+        }
+
+        val domeBgColor = if (isDark) Color.parseColor("#2A313A") else Color.parseColor("#F4F7FA")
+        bottomDomeView = View(validContext).apply {
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadii = floatArrayOf(
+                    dp(100f).toFloat(), dp(100f).toFloat(), // Top-Left
+                    dp(100f).toFloat(), dp(100f).toFloat(), // Top-Right
+                    0f, 0f,                                  // Bottom-Right
+                    0f, 0f                                   // Bottom-Left
+                )
+                setColor(domeBgColor)
+            }
+            layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
+        }
+
+        tvDomeInstruction = TextView(validContext).apply {
+            text = "按住说话"
+            textSize = 18f
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            setTextColor(textColor)
+            gravity = Gravity.CENTER
+            val lp = FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT).apply {
+                gravity = Gravity.CENTER
+            }
+            layoutParams = lp
+        }
+
+        // 底部两侧辅助图标 (左下角折叠 ∨, 右下角键盘 ⌨)
+        val bottomIconsRow = RelativeLayout(validContext).apply {
+            setPadding(dp(20), 0, dp(20), dp(12))
+            val lp = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT).apply {
+                gravity = Gravity.BOTTOM
+            }
+            layoutParams = lp
+        }
+
+        val ivBottomClose = ImageView(validContext).apply {
+            setImageResource(R.drawable.ic_arrow_down_pretty)
+            drawable?.mutate()?.setTint(subTextColor)
+            val lp = RelativeLayout.LayoutParams(dp(20), dp(20)).apply {
+                addRule(RelativeLayout.ALIGN_PARENT_LEFT)
+                addRule(RelativeLayout.CENTER_VERTICAL)
+            }
+            layoutParams = lp
+            setOnClickListener {
+                DevicesUtils.tryPlayKeyDown()
+                DevicesUtils.tryVibrate(this)
+                KeyboardManager.instance.switchKeyboardToMain()
+            }
+        }
+
+        val ivBottomKeyboard = ImageView(validContext).apply {
+            setImageResource(R.drawable.ic_menu_keyboard)
+            drawable?.mutate()?.setTint(subTextColor)
+            val lp = RelativeLayout.LayoutParams(dp(20), dp(20)).apply {
+                addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+                addRule(RelativeLayout.CENTER_VERTICAL)
+            }
+            layoutParams = lp
+            setOnClickListener {
+                DevicesUtils.tryPlayKeyDown()
+                DevicesUtils.tryVibrate(this)
+                KeyboardManager.instance.switchKeyboardToMain()
+            }
+        }
+
+        bottomIconsRow.addView(ivBottomClose)
+        bottomIconsRow.addView(ivBottomKeyboard)
+
+        domeContainer.addView(bottomDomeView)
+        domeContainer.addView(tvDomeInstruction)
+        domeContainer.addView(bottomIconsRow)
+
+        // 全弧面长按手势监听器 (按住说话，松开结束)
+        domeContainer.setOnTouchListener { _, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    DevicesUtils.tryPlayKeyDown()
+                    DevicesUtils.tryVibrate(this)
+                    updateVoiceRecordingState(isRecording = true)
+                    speechManager.startListening()
+                    true
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    updateVoiceRecordingState(isRecording = false)
+                    speechManager.stopListening()
+                    true
+                }
+                else -> false
+            }
+        }
+
+        rootLayout.addView(domeContainer)
         addView(rootLayout, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
     }
 
-    private fun createPunctuationButton(symbol: String): View {
+    private fun updateVoiceRecordingState(isRecording: Boolean) {
         val theme = ThemeManager.activeTheme
-        return TextView(validContext).apply {
-            text = symbol
-            textSize = 16f
-            setTextColor(theme.keyTextColor)
-            gravity = Gravity.CENTER
-            background = GradientDrawable().apply {
-                shape = GradientDrawable.RECTANGLE
-                cornerRadius = dp(8f).toFloat()
-                setColor(theme.keyBackgroundColor)
-            }
-            setOnClickListener {
-                DevicesUtils.tryPlayKeyDown()
-                DevicesUtils.tryVibrate(this)
-                inputView.responseKeyEvent(SoftKey(label = symbol))
-            }
-        }
-    }
+        val isDark = theme.isDark
+        val activeDomeBg = if (isDark) Color.parseColor("#3B4450") else Color.parseColor("#E0E7F0")
+        val idleDomeBg = if (isDark) Color.parseColor("#2A313A") else Color.parseColor("#F4F7FA")
 
-    private fun createActionButton(label: String, onClick: () -> Unit): View {
-        val theme = ThemeManager.activeTheme
-        return TextView(validContext).apply {
-            text = label
-            textSize = 15f
-            setTextColor(theme.keyTextColor)
-            gravity = Gravity.CENTER
-            background = GradientDrawable().apply {
-                shape = GradientDrawable.RECTANGLE
-                cornerRadius = dp(8f).toFloat()
-                setColor(theme.keyBackgroundColor)
-            }
-            setOnClickListener {
-                DevicesUtils.tryPlayKeyDown()
-                DevicesUtils.tryVibrate(this)
-                onClick()
-            }
+        tvDomeInstruction?.text = if (isRecording) "松开结束" else "按住说话"
+
+        bottomDomeView?.background = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadii = floatArrayOf(
+                dp(100f).toFloat(), dp(100f).toFloat(),
+                dp(100f).toFloat(), dp(100f).toFloat(),
+                0f, 0f,
+                0f, 0f
+            )
+            setColor(if (isRecording) activeDomeBg else idleDomeBg)
         }
     }
 
     private fun initSpeechManager() {
         speechManager.listener = object : SpeechRecognitionManager.Listener {
             override fun onStateChanged(state: SpeechRecognitionManager.State) {
-                val isOfflineModelReady = AsrModelManager.isModelFilesPresent(validContext)
-                val modeText = if (isOfflineModelReady) "离线 X-ASR " else ""
-                val isListening = state == SpeechRecognitionManager.State.LISTENING || state == SpeechRecognitionManager.State.PROCESSING
-                updateMicButtonStyle(isListening)
-
                 when (state) {
                     SpeechRecognitionManager.State.LISTENING -> {
-                        tvStatus?.text = "🔴 ${modeText}正在倾听中..."
-                        tvLiveText?.text = "正在说..."
+                        updateVoiceRecordingState(true)
                     }
-                    SpeechRecognitionManager.State.PROCESSING -> {
-                        tvStatus?.text = "🟡 ${modeText}正在识别处理..."
-                    }
-                    SpeechRecognitionManager.State.IDLE -> {
-                        tvStatus?.text = "🟢 ${modeText}语音就绪，按住说话"
-                        waveformView?.setAmplitude(0f)
-                    }
-                    SpeechRecognitionManager.State.ERROR -> {
-                        tvStatus?.text = "⚠️ 未授权录音权限或识别出错"
-                        waveformView?.setAmplitude(0f)
+                    SpeechRecognitionManager.State.PROCESSING, SpeechRecognitionManager.State.IDLE, SpeechRecognitionManager.State.ERROR -> {
+                        updateVoiceRecordingState(false)
+                        rainbowWaveView?.setAmplitude(0f)
                     }
                 }
             }
 
             override fun onAmplitudeChanged(amplitude: Float) {
-                waveformView?.setAmplitude(amplitude)
+                rainbowWaveView?.setAmplitude(amplitude)
             }
 
             override fun onPartialResult(text: String) {
-                tvLiveText?.text = text
+                if (text.isNotEmpty()) {
+                    tvSubtitle?.text = text
+                }
             }
 
             override fun onFinalResult(text: String) {
-                tvLiveText?.text = text
                 if (text.isNotEmpty()) {
+                    tvSubtitle?.text = text
                     inputView.responseKeyEvent(SoftKey(label = text))
                 }
             }
 
             override fun onError(errorMsg: String) {
-                tvStatus?.text = "⚠️ $errorMsg"
+                tvSubtitle?.text = "⚠️ $errorMsg"
             }
         }
     }
 
     override fun updateSkbLayout() {
-        // 进入语音界面时置于准备状态
+        // 进入界面保持按住说话模式
     }
 
     override fun onDetachedFromWindow() {
@@ -320,11 +356,28 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
         speechManager.destroy()
     }
 
-    private class WaveformView(context: Context) : View(context) {
+    /**
+     * 1:1 复刻曦码彩虹彩籽动画胶囊条 (RainbowWaveView)
+     */
+    private class RainbowWaveView(context: Context) : View(context) {
         private var amplitude = 0f
-        private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = ThemeManager.activeTheme.toolbarActiveIconColor
-            style = Paint.Style.FILL
+
+        // 7 颗曦码彩虹圆籽色彩配置 (粉红、橙、金黄、浅绿、薄荷绿、天蓝、紫罗兰)
+        private val rainbowColors = intArrayOf(
+            Color.parseColor("#FF8A80"),
+            Color.parseColor("#FFA726"),
+            Color.parseColor("#FFCA28"),
+            Color.parseColor("#81C784"),
+            Color.parseColor("#4DB6AC"),
+            Color.parseColor("#64B5F6"),
+            Color.parseColor("#BA68C8")
+        )
+
+        private val paints = rainbowColors.map { colorVal ->
+            Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = colorVal
+                style = Paint.Style.FILL
+            }
         }
 
         fun setAmplitude(amp: Float) {
@@ -334,21 +387,39 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
 
         override fun onDraw(canvas: Canvas) {
             super.onDraw(canvas)
-            val barCount = 15
-            val width = width.toFloat()
-            val height = height.toFloat()
-            if (width <= 0 || height <= 0) return
+            val w = width.toFloat()
+            val h = height.toFloat()
+            if (w <= 0 || h <= 0) return
 
-            val spacing = dp(4f).toFloat()
-            val barWidth = (width - spacing * (barCount - 1)) / barCount
-            val centerY = height / 2f
+            val theme = ThemeManager.activeTheme
+            val capsuleBgColor = if (theme.isDark) Color.parseColor("#2D353F") else Color.parseColor("#EBF0F5")
 
-            for (i in 0 until barCount) {
-                val factor = kotlin.math.sin((i + 1) * Math.PI / (barCount + 1)).toFloat()
-                val barHeight = (height * 0.15f + height * 0.75f * amplitude * factor).coerceAtLeast(dp(3f).toFloat())
-                val left = i * (barWidth + spacing)
-                val rect = RectF(left, centerY - barHeight / 2f, left + barWidth, centerY + barHeight / 2f)
-                canvas.drawRoundRect(rect, dp(2f).toFloat(), dp(2f).toFloat(), paint)
+            // 1. 绘制底座平滑胶囊框
+            val capsuleRect = RectF(0f, 0f, w, h)
+            val capsuleBg = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = capsuleBgColor
+                style = Paint.Style.FILL
+            }
+            canvas.drawRoundRect(capsuleRect, h / 2f, h / 2f, capsuleBg)
+
+            // 2. 绘制中间 7 颗动态波纹彩籽 (Rainbow Pills)
+            val count = rainbowColors.size
+            val centerY = h / 2f
+            val maxDotHeight = h * 0.45f
+            val minDotHeight = dp(6f).toFloat()
+
+            val totalPadding = w * 0.22f
+            val availableW = w - totalPadding * 2
+            val spacing = availableW / (count - 1)
+
+            for (i in 0 until count) {
+                val cx = totalPadding + i * spacing
+                val sineFactor = kotlin.math.sin((i + 1) * Math.PI / (count + 1)).toFloat()
+                val currentHeight = (minDotHeight + (maxDotHeight - minDotHeight) * amplitude * sineFactor).coerceAtLeast(minDotHeight)
+                val dotWidth = (currentHeight * 0.65f).coerceIn(dp(6f).toFloat(), dp(12f).toFloat())
+
+                val rect = RectF(cx - dotWidth / 2f, centerY - currentHeight / 2f, cx + dotWidth / 2f, centerY + currentHeight / 2f)
+                canvas.drawRoundRect(rect, dotWidth / 2f, dotWidth / 2f, paints[i])
             }
         }
     }

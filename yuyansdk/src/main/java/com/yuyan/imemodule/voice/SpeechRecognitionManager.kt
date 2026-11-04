@@ -18,6 +18,7 @@ import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import androidx.core.content.ContextCompat
+import com.yuyan.imemodule.prefs.AppPrefs
 import java.util.ArrayDeque
 import kotlin.math.sqrt
 
@@ -91,6 +92,7 @@ class SpeechRecognitionManager(private val context: Context) {
             val intent = Intent(context, AsrProcessService::class.java)
             context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
         } catch (_: Exception) {}
+        AsrModelManager.initModel(context)
     }
 
     // VAD 前置环形缓冲队列 (~0.4秒音频缓存)
@@ -119,13 +121,17 @@ class SpeechRecognitionManager(private val context: Context) {
         currentState = State.LISTENING
         preSpeechBuffer.clear()
 
+        var isSystemSpeechAvailable = false
         try {
             if (SpeechRecognizer.isRecognitionAvailable(context)) {
                 startSystemSpeechRecognizer()
+                isSystemSpeechAvailable = true
             }
         } catch (_: Exception) {}
 
-        startAudioRecording()
+        if (!isSystemSpeechAvailable) {
+            startAudioRecording()
+        }
     }
 
     private fun startSystemSpeechRecognizer() {
@@ -141,29 +147,35 @@ class SpeechRecognitionManager(private val context: Context) {
                     override fun onBeginningOfSpeech() {}
                     override fun onRmsChanged(rmsdB: Float) {
                         val norm = (rmsdB / 10f).coerceIn(0f, 1f)
-                        listener?.onAmplitudeChanged(norm)
+                        mainHandler.post { listener?.onAmplitudeChanged(norm) }
                     }
                     override fun onBufferReceived(buffer: ByteArray?) {}
                     override fun onEndOfSpeech() {
                         currentState = State.PROCESSING
                     }
                     override fun onError(error: Int) {
-                        // 系统 SpeechRecognizer 在无服务手机上触发 error 时，仅打日志不杀 AudioRecord
+                        // 系统 SpeechRecognizer 不可用或出错时回退到本地 AudioRecord 采样
+                        mainHandler.post { startAudioRecording() }
                     }
                     override fun onResults(results: Bundle?) {
                         val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                         val text = matches?.firstOrNull() ?: ""
                         if (text.isNotEmpty()) {
-                            listener?.onPartialResult(text)
-                            asrService?.appendRecognizedText(text)
+                            val autoPunc = AppPrefs.getInstance().voice.voiceAutoPunctuation.getValue()
+                            val formattedText = if (autoPunc && !text.endsWith("。") && !text.endsWith("，") && !text.endsWith("？")) {
+                                "$text。"
+                            } else {
+                                text
+                            }
+                            listener?.onFinalResult(formattedText)
                         }
+                        currentState = State.IDLE
                     }
                     override fun onPartialResults(partialResults: Bundle?) {
                         val matches = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                         val text = matches?.firstOrNull() ?: ""
                         if (text.isNotEmpty()) {
                             listener?.onPartialResult(text)
-                            asrService?.appendRecognizedText(text)
                         }
                     }
                     override fun onEvent(eventType: Int, params: Bundle?) {}
@@ -176,7 +188,9 @@ class SpeechRecognitionManager(private val context: Context) {
                     putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
                 }
                 speechRecognizer?.startListening(intent)
-            } catch (_: Exception) {}
+            } catch (_: Exception) {
+                startAudioRecording()
+            }
         }
     }
 
@@ -189,7 +203,7 @@ class SpeechRecognitionManager(private val context: Context) {
                 val minBufSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT)
                 val bufferSize = maxOf(minBufSize, SAMPLE_RATE * 2)
                 audioRecord = AudioRecord(
-                    MediaRecorder.AudioSource.VOICE_RECOGNITION,
+                    MediaRecorder.AudioSource.MIC,
                     SAMPLE_RATE,
                     CHANNEL_CONFIG,
                     AUDIO_FORMAT,
@@ -212,6 +226,8 @@ class SpeechRecognitionManager(private val context: Context) {
                         val rms = sqrt(sum / readSize)
                         val normAmp = (rms / 3000.0).coerceIn(0.0, 1.0).toFloat()
                         mainHandler.post { listener?.onAmplitudeChanged(normAmp) }
+
+                        // 发送给后台处理
                         asrService?.processAudioChunk(buffer, readSize)
                     }
                 }
@@ -237,17 +253,19 @@ class SpeechRecognitionManager(private val context: Context) {
             } catch (_: Exception) {}
         }
 
-        // 200ms 后提交识别并发出最终文本
         mainHandler.postDelayed({
-            asrService?.finishSpeech()
-        }, 200)
-
-        // 安全定时器：0.6 秒内强行复位为 IDLE 状态，确保松手后绝不悬挂卡死
-        mainHandler.postDelayed({
-            if (currentState == State.PROCESSING) {
-                currentState = State.IDLE
+            val finalText = AsrModelManager.finishRecognition()
+            if (finalText.isNotEmpty()) {
+                val autoPunc = AppPrefs.getInstance().voice.voiceAutoPunctuation.getValue()
+                val formattedText = if (autoPunc && !finalText.endsWith("。") && !finalText.endsWith("，") && !finalText.endsWith("？")) {
+                    "$finalText。"
+                } else {
+                    finalText
+                }
+                listener?.onFinalResult(formattedText)
             }
-        }, 600)
+            currentState = State.IDLE
+        }, 300)
     }
 
     fun cancelListening() {
