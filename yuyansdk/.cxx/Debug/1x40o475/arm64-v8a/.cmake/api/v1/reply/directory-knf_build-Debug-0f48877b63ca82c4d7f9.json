@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "knf_build",
+		"source" : "third_party/knf/kaldi-native-fbank-1.22.3"
+	}
+}

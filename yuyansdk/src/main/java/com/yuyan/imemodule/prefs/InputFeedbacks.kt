@@ -153,11 +153,16 @@ object InputFeedbacks {
     fun soundEffect(effect: SoundEffect) {
         if (!isCurrentTimeInSoundRange()) return
 
-        val volume = when {
+        val baseVolume = when {
             soundOnKeyPress < 5 -> -1f
             soundOnKeyPress < 10 -> return
             else -> (soundOnKeyPress - 10) / 30f
         }
+
+        val keyPressVolPercentage = AppPrefs.getInstance().internal.keyPressVolume.getValue().coerceIn(1, 100)
+        val volMultiplier = keyPressVolPercentage / 100.0f
+
+        val playVol = (if (baseVolume < 0f) 0.8f else baseVolume) * volMultiplier
 
         val choice = when (effect) {
             SoundEffect.Standard -> soundEffectStandardPref.getValue()
@@ -171,7 +176,6 @@ object InputFeedbacks {
         if (customFile != null) {
             val soundId = loadSoundFromAssets(customFile)
             if (soundId != 0) {
-                val playVol = if (volume < 0f) 0.8f else volume
                 soundPool.play(soundId, playVol, playVol, 1, 0, 1.0f)
                 return
             }
@@ -183,7 +187,7 @@ object InputFeedbacks {
             SoundEffect.Delete -> AudioManager.FX_KEYPRESS_DELETE
             SoundEffect.Return -> AudioManager.FX_KEYPRESS_RETURN
         }
-        audioManager.playSoundEffect(fx, volume)
+        audioManager.playSoundEffect(fx, playVol)
     }
 
 }

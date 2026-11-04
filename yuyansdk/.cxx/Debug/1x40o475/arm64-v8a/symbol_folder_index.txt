@@ -1,0 +1,1 @@
+C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\yuyansdk\build\intermediates\cxx\Debug\1x40o475\obj\arm64-v8a

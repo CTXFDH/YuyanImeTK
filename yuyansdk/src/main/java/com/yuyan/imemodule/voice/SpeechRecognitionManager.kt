@@ -16,10 +16,11 @@ import android.os.Looper
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import kotlin.math.sqrt
 
 /**
- * 纯粹物理麦克风 PCM 音频流采集 + X-ASR 离线 C++ 神经网络引擎管道 (已彻底清理系统 SpeechRecognizer 冗余代码)
+ * 纯粹物理麦克风 PCM 音频流采集 + 软件 AGC 32倍音量增益放大器 + X-ASR 离线 C++ 神经网络引擎管道
  */
 class SpeechRecognitionManager(private val context: Context) {
 
@@ -36,6 +37,7 @@ class SpeechRecognitionManager(private val context: Context) {
         fun onPartialResult(text: String)
         fun onFinalResult(text: String)
         fun onError(errorMsg: String)
+        fun onDiagnosticStep(stepInfo: String)
     }
 
     var listener: Listener? = null
@@ -133,40 +135,74 @@ class SpeechRecognitionManager(private val context: Context) {
         if (currentState == State.LISTENING || currentState == State.PROCESSING) return
 
         currentState = State.LISTENING
+        AsrModelManager.prepareNewSession()
         startAudioRecording()
     }
 
     @SuppressLint("MissingPermission")
     private fun startAudioRecording() {
         isRecording = true
+        mainHandler.post { listener?.onDiagnosticStep("🎙️ 麦克风录音中...") }
         recordingThread = Thread {
             try {
                 val minBufSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT)
                 val bufferSize = maxOf(minBufSize, SAMPLE_RATE * 2)
-                audioRecord = AudioRecord(
+
+                // 强制使用原生物理麦克风声源 MIC (避免 VOICE_COMMUNICATION 在非通话状态下被国行系统静音返回 0)
+                var recordInstance = AudioRecord(
                     MediaRecorder.AudioSource.MIC,
                     SAMPLE_RATE,
                     CHANNEL_CONFIG,
                     AUDIO_FORMAT,
                     bufferSize
                 )
+                if (recordInstance.state != AudioRecord.STATE_INITIALIZED) {
+                    recordInstance = AudioRecord(
+                        MediaRecorder.AudioSource.DEFAULT,
+                        SAMPLE_RATE,
+                        CHANNEL_CONFIG,
+                        AUDIO_FORMAT,
+                        bufferSize
+                    )
+                }
+
+                audioRecord = recordInstance
                 if (audioRecord?.state != AudioRecord.STATE_INITIALIZED) {
+                    mainHandler.post { listener?.onError("录音硬件初始化失败!") }
                     stopAudioRecording()
                     return@Thread
                 }
                 audioRecord?.startRecording()
 
                 val buffer = ShortArray(1024)
+                var lastLogTime = 0L
                 while (isRecording) {
                     val readSize = audioRecord?.read(buffer, 0, buffer.size) ?: -1
                     if (readSize > 0) {
+                        // 软件 AGC 32倍自动音量增益放大器 (将国行手机低增益 PCM 强制放大 32倍 至 1000~4000 标准人声范围)
+                        val gainFactor = 32.0f
+                        for (i in 0 until readSize) {
+                            val boosted = (buffer[i] * gainFactor).coerceIn(-32768f, 32767f)
+                            buffer[i] = boosted.toInt().toShort()
+                        }
+
                         var sum = 0.0
                         for (i in 0 until readSize) {
                             sum += buffer[i] * buffer[i]
                         }
-                        val rms = sqrt(sum / readSize)
+                        val rms = sqrt(sum / readSize).toInt()
                         val normAmp = (rms / 3000.0).coerceIn(0.0, 1.0).toFloat()
                         mainHandler.post { listener?.onAmplitudeChanged(normAmp) }
+
+                        val now = System.currentTimeMillis()
+                        if (now - lastLogTime > 600) {
+                            lastLogTime = now
+                            if (rms < 50) {
+                                mainHandler.post { listener?.onDiagnosticStep("🎙️ 音量偏低(RMS: $rms)，请大声说话") }
+                            } else {
+                                mainHandler.post { listener?.onDiagnosticStep("🎙️ 捕获标准人声(RMS: $rms)，正在送入 C++ 神经网络...") }
+                            }
+                        }
 
                         // 1. 推送至后台 :asr 进程
                         asrService?.processAudioChunk(buffer, readSize)
@@ -176,9 +212,12 @@ class SpeechRecognitionManager(private val context: Context) {
                         if (livePartialText.isNotEmpty()) {
                             mainHandler.post { listener?.onPartialResult(livePartialText) }
                         }
+                    } else if (readSize <= 0) {
+                        mainHandler.post { listener?.onDiagnosticStep("⚠️ 麦克风读取数据为空 (readSize: $readSize)") }
                     }
                 }
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                mainHandler.post { listener?.onError("录音读取异常: ${e.message}") }
             } finally {
                 try {
                     audioRecord?.stop()
@@ -192,25 +231,35 @@ class SpeechRecognitionManager(private val context: Context) {
     fun stopListening() {
         if (!isRecording && currentState == State.IDLE) return
         currentState = State.PROCESSING
+        mainHandler.post { listener?.onDiagnosticStep("⏳ 正在执行 C++ 神经网络 0.5s Flush 解码...") }
         stopAudioRecording()
 
-        // 收集提交 X-ASR 离线 C++ 神经网络推导转写出的最终文字结果
-        val finalText = AsrModelManager.finishRecognition()
-        val autoPunc = AppPrefs.getInstance().voice.voiceAutoPunctuation.getValue()
-        val formattedText = if (autoPunc && finalText.isNotEmpty() && !finalText.endsWith("。") && !finalText.endsWith("，") && !finalText.endsWith("？")) {
-            "$finalText。"
-        } else {
-            finalText
-        }
+        ThreadPoolUtils.executeSingleton {
+            try {
+                val finalText = AsrModelManager.finishRecognition()
+                val autoPunc = AppPrefs.getInstance().voice.voiceAutoPunctuation.getValue()
+                val formattedText = if (autoPunc && finalText.isNotEmpty() && !finalText.endsWith("。") && !finalText.endsWith("，") && !finalText.endsWith("？")) {
+                    "$finalText。"
+                } else {
+                    finalText
+                }
 
-        mainHandler.post {
-            if (formattedText.isNotEmpty()) {
-                listener?.onFinalResult(formattedText)
+                mainHandler.post {
+                    if (formattedText.isNotEmpty()) {
+                        listener?.onFinalResult(formattedText)
+                    } else {
+                        listener?.onDiagnosticStep("⚠️ C++ 解码完成，但未检测到有效语音文字")
+                    }
+                    currentState = State.IDLE
+                }
+            } catch (e: Exception) {
+                mainHandler.post {
+                    listener?.onError("解调异常: ${e.message}")
+                    currentState = State.IDLE
+                }
             }
-            currentState = State.IDLE
+            asrService?.finishSpeech()
         }
-
-        asrService?.finishSpeech()
     }
 
     fun cancelListening() {

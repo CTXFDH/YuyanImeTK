@@ -3,35 +3,52 @@ package com.k2fsa.sherpa.onnx
 import androidx.annotation.Keep
 
 @Keep
-data class FeatureConfig(
-    val sampleRate: Int = 16000,
-    val featureDim: Int = 80
+class FeatureConfig(
+    @JvmField var sampleRate: Int = 16000,
+    @JvmField var featureDim: Int = 80
 )
 
 @Keep
-data class OnlineTransducerModelConfig(
-    val encoder: String = "",
-    val decoder: String = "",
-    val joiner: String = "",
-    val tokens: String = ""
+class OnlineTransducerModelConfig(
+    @JvmField var encoder: String = "",
+    @JvmField var decoder: String = "",
+    @JvmField var joiner: String = "",
+    @JvmField var tokens: String = ""
 )
 
 @Keep
-data class OnlineModelConfig(
-    val transducer: OnlineTransducerModelConfig = OnlineTransducerModelConfig(),
-    val numThreads: Int = 2,
-    val provider: String = "cpu",
-    val modelType: String = "zipformer"
+class OnlineParaformerModelConfig(
+    @JvmField var encoder: String = "",
+    @JvmField var decoder: String = ""
 )
 
 @Keep
-data class OnlineRecognizerConfig(
-    val featConfig: FeatureConfig = FeatureConfig(),
-    val modelConfig: OnlineModelConfig = OnlineModelConfig(),
-    val decodingMethod: String = "greedy_search",
-    val maxActivePaths: Int = 4,
-    val enableEndpoint: Boolean = true,
-    val rule1MinTrailingSilence: Float = 2.4f,
-    val rule2MinTrailingSilence: Float = 1.2f,
-    val rule3MinUtteranceLength: Float = 20.0f
+class OnlineZipformer2CtcModelConfig(
+    @JvmField var model: String = ""
+)
+
+@Keep
+class OnlineModelConfig(
+    @JvmField var transducer: OnlineTransducerModelConfig = OnlineTransducerModelConfig(),
+    @JvmField var paraformer: OnlineParaformerModelConfig = OnlineParaformerModelConfig(),
+    @JvmField var zipformer2Ctc: OnlineZipformer2CtcModelConfig = OnlineZipformer2CtcModelConfig(),
+    @JvmField var tokens: String = "",
+    @JvmField var numThreads: Int = 2,
+    @JvmField var debug: Boolean = false,
+    @JvmField var provider: String = "cpu",
+    @JvmField var modelType: String = "zipformer"
+)
+
+@Keep
+class OnlineRecognizerConfig(
+    @JvmField var featConfig: FeatureConfig = FeatureConfig(),
+    @JvmField var modelConfig: OnlineModelConfig = OnlineModelConfig(),
+    @JvmField var decodingMethod: String = "greedy_search",
+    @JvmField var maxActivePaths: Int = 4,
+    @JvmField var enableEndpoint: Boolean = false,
+    @JvmField var rule1MinTrailingSilence: Float = 2.4f,
+    @JvmField var rule2MinTrailingSilence: Float = 1.2f,
+    @JvmField var rule3MinUtteranceLength: Float = 20.0f,
+    @JvmField var hotwordsFile: String = "",
+    @JvmField var hotwordsScore: Float = 1.5f
 )

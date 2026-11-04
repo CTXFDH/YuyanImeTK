@@ -24,6 +24,7 @@ import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.keyboard.InputView
 import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.manager.InputModeSwitcher
+import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.voice.AsrModelManager
 import com.yuyan.imemodule.voice.SpeechRecognitionManager
@@ -40,6 +41,7 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
 
     private var tvSubtitle: TextView? = null
     private var rainbowWaveView: RainbowWaveView? = null
+    private var tvTranscribingStatus: TextView? = null
     private var tvDomeInstruction: TextView? = null
     private var bottomDomeView: View? = null
 
@@ -68,14 +70,13 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
             layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         }
 
-        // 1. 顶部 Header (仅保留居中模型名称字幕)
+        // 1. 顶部 Header (仅保留居中模型名称/动态转写字幕)
         val headerBar = RelativeLayout(validContext).apply {
             setPadding(dp(16), dp(12), dp(16), dp(4))
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(40))
         }
 
-        val isOfflineModelReady = AsrModelManager.isModelFilesPresent(validContext)
-        val modelTitle = if (isOfflineModelReady) "中文 Zipformer int8" else "中文 语音转文本"
+        val modelTitle = AsrModelManager.getEngineDiagnosticInfo(validContext)
         tvSubtitle = TextView(validContext).apply {
             text = modelTitle
             textSize = 14f
@@ -170,8 +171,23 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
             layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
         }
 
+        // 上方【转写中...】解调状态提示，位于【按住说话】正上方
+        tvTranscribingStatus = TextView(validContext).apply {
+            text = "转写中..."
+            textSize = 14f
+            setTextColor(subTextColor)
+            gravity = Gravity.CENTER
+            visibility = View.GONE
+            val lp = FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT).apply {
+                gravity = Gravity.CENTER
+                bottomMargin = dp(46)
+            }
+            layoutParams = lp
+        }
+
+        val isHoldToSpeak = AppPrefs.getInstance().voice.voiceHoldToSpeak.getValue()
         tvDomeInstruction = TextView(validContext).apply {
-            text = "按住说话"
+            text = if (isHoldToSpeak) "按住说话" else "点击说话"
             textSize = 18f
             typeface = android.graphics.Typeface.DEFAULT_BOLD
             setTextColor(textColor)
@@ -230,25 +246,40 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
         bottomIconsRow.addView(ivBottomKeyboard)
 
         domeContainer.addView(bottomDomeView)
+        domeContainer.addView(tvTranscribingStatus)
         domeContainer.addView(tvDomeInstruction)
         domeContainer.addView(bottomIconsRow)
 
-        // 全弧面长按手势监听器 (按住说话，松开结束)
+        // 全弧面手势监听器 (支持【按住说话】与【点击开启/结束】双模式)
         domeContainer.setOnTouchListener { _, event ->
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
+            val isHoldMode = AppPrefs.getInstance().voice.voiceHoldToSpeak.getValue()
+            if (isHoldMode) {
+                // 1. 按住说话模式
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        DevicesUtils.tryPlayKeyDown()
+                        DevicesUtils.tryVibrate(this)
+                        speechManager.startListening()
+                        true
+                    }
+                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                        speechManager.stopListening()
+                        true
+                    }
+                    else -> false
+                }
+            } else {
+                // 2. 点击开启 / 点击结束模式
+                if (event.action == MotionEvent.ACTION_UP) {
                     DevicesUtils.tryPlayKeyDown()
                     DevicesUtils.tryVibrate(this)
-                    updateVoiceRecordingState(isRecording = true)
-                    speechManager.startListening()
+                    if (speechManager.currentState == SpeechRecognitionManager.State.LISTENING) {
+                        speechManager.stopListening()
+                    } else if (speechManager.currentState == SpeechRecognitionManager.State.IDLE) {
+                        speechManager.startListening()
+                    }
                     true
-                }
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    updateVoiceRecordingState(isRecording = false)
-                    speechManager.stopListening()
-                    true
-                }
-                else -> false
+                } else event.action == MotionEvent.ACTION_DOWN
             }
         }
 
@@ -256,37 +287,64 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
         addView(rootLayout, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
     }
 
-    private fun updateVoiceRecordingState(isRecording: Boolean) {
+    private fun updateVoiceRecordingState(state: SpeechRecognitionManager.State) {
         val theme = ThemeManager.activeTheme
         val isDark = theme.isDark
         val activeDomeBg = if (isDark) Color.parseColor("#3B4552") else Color.parseColor("#DEE5EE")
         val idleDomeBg = if (isDark) Color.parseColor("#2C343E") else Color.parseColor("#F2F5F8")
 
-        tvDomeInstruction?.text = if (isRecording) "松开结束" else "按住说话"
+        val isHoldMode = AppPrefs.getInstance().voice.voiceHoldToSpeak.getValue()
 
-        bottomDomeView?.background = GradientDrawable().apply {
-            shape = GradientDrawable.RECTANGLE
-            cornerRadii = floatArrayOf(
-                dp(160f).toFloat(), dp(160f).toFloat(),
-                dp(160f).toFloat(), dp(160f).toFloat(),
-                0f, 0f,
-                0f, 0f
-            )
-            setColor(if (isRecording) activeDomeBg else idleDomeBg)
+        when (state) {
+            SpeechRecognitionManager.State.LISTENING -> {
+                tvTranscribingStatus?.visibility = View.GONE
+                tvDomeInstruction?.text = if (isHoldMode) "松开结束" else "点击结束"
+                bottomDomeView?.background = GradientDrawable().apply {
+                    shape = GradientDrawable.RECTANGLE
+                    cornerRadii = floatArrayOf(
+                        dp(160f).toFloat(), dp(160f).toFloat(),
+                        dp(160f).toFloat(), dp(160f).toFloat(),
+                        0f, 0f, 0f, 0f
+                    )
+                    setColor(activeDomeBg)
+                }
+            }
+            SpeechRecognitionManager.State.PROCESSING -> {
+                tvTranscribingStatus?.visibility = View.VISIBLE
+                tvTranscribingStatus?.text = "转写中..."
+                tvDomeInstruction?.text = if (isHoldMode) "按住说话" else "点击说话"
+                bottomDomeView?.background = GradientDrawable().apply {
+                    shape = GradientDrawable.RECTANGLE
+                    cornerRadii = floatArrayOf(
+                        dp(160f).toFloat(), dp(160f).toFloat(),
+                        dp(160f).toFloat(), dp(160f).toFloat(),
+                        0f, 0f, 0f, 0f
+                    )
+                    setColor(idleDomeBg)
+                }
+            }
+            else -> {
+                tvTranscribingStatus?.visibility = View.GONE
+                tvDomeInstruction?.text = if (isHoldMode) "按住说话" else "点击说话"
+                bottomDomeView?.background = GradientDrawable().apply {
+                    shape = GradientDrawable.RECTANGLE
+                    cornerRadii = floatArrayOf(
+                        dp(160f).toFloat(), dp(160f).toFloat(),
+                        dp(160f).toFloat(), dp(160f).toFloat(),
+                        0f, 0f, 0f, 0f
+                    )
+                    setColor(idleDomeBg)
+                }
+            }
         }
     }
 
     private fun initSpeechManager() {
         speechManager.listener = object : SpeechRecognitionManager.Listener {
             override fun onStateChanged(state: SpeechRecognitionManager.State) {
-                when (state) {
-                    SpeechRecognitionManager.State.LISTENING -> {
-                        updateVoiceRecordingState(true)
-                    }
-                    SpeechRecognitionManager.State.PROCESSING, SpeechRecognitionManager.State.IDLE, SpeechRecognitionManager.State.ERROR -> {
-                        updateVoiceRecordingState(false)
-                        rainbowWaveView?.setAmplitude(0f)
-                    }
+                updateVoiceRecordingState(state)
+                if (state != SpeechRecognitionManager.State.LISTENING) {
+                    rainbowWaveView?.setAmplitude(0f)
                 }
             }
 
@@ -294,19 +352,30 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
                 rainbowWaveView?.setAmplitude(amplitude)
             }
 
+            override fun onDiagnosticStep(stepInfo: String) {
+                tvSubtitle?.text = stepInfo
+            }
+
             override fun onPartialResult(text: String) {
                 if (text.isNotEmpty()) {
                     tvSubtitle?.text = text
                     // 边说边流式实时写进当前聊天框/编辑框！
                     inputView.responseKeyEvent(SoftKey(label = text))
+                } else {
+                    tvSubtitle?.text = AsrModelManager.getEngineDiagnosticInfo(validContext)
                 }
             }
 
             override fun onFinalResult(text: String) {
                 if (text.isNotEmpty()) {
                     tvSubtitle?.text = text
-                    // 松手瞬间最终确认并直接写进当前聊天框/编辑框！
+                    // 松手/停止后转写解调完成，直接写进当前聊天框/编辑框！
                     inputView.commitClipboardText(text)
+                    postDelayed({
+                        tvSubtitle?.text = AsrModelManager.getEngineDiagnosticInfo(validContext)
+                    }, 2000)
+                } else {
+                    tvSubtitle?.text = AsrModelManager.getEngineDiagnosticInfo(validContext)
                 }
             }
 
@@ -317,8 +386,9 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
     }
 
     override fun updateSkbLayout() {
-        // 进入语音专属键盘时保持顶栏常显
+        // 进入语音专属键盘时保持顶栏常显并更新底层引擎诊断信息
         inputView.mSkbCandidatesBarView.visibility = View.VISIBLE
+        tvSubtitle?.text = AsrModelManager.getEngineDiagnosticInfo(validContext)
     }
 
     override fun onDetachedFromWindow() {

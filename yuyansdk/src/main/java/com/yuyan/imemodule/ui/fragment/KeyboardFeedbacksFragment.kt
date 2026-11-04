@@ -8,11 +8,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.ScrollView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.yuyan.imemodule.R
-import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.InputFeedbacks
 import com.yuyan.imemodule.utils.DevicesUtils
@@ -31,12 +30,8 @@ import splitties.views.dsl.constraintlayout.topOfParent
 import splitties.views.dsl.constraintlayout.topToTopOf
 import splitties.views.dsl.core.add
 import splitties.views.dsl.core.horizontalLayout
-import splitties.views.dsl.core.lParams
-import splitties.views.dsl.core.matchParent
 import splitties.views.dsl.core.textView
 import splitties.views.dsl.core.verticalLayout
-import splitties.views.dsl.core.wrapContent
-import splitties.views.dsl.core.wrapInScrollView
 import splitties.views.gravityCenter
 import splitties.views.gravityVerticalCenter
 
@@ -44,7 +39,6 @@ class KeyboardFeedbacksFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View = with(requireContext()) {
 
         val pageBgColor = ContextCompat.getColor(requireContext(), R.color.settings_page_bg)
-        val cardBgColor = ContextCompat.getColor(requireContext(), R.color.settings_card_bg)
         val accentColor = ContextCompat.getColor(requireContext(), R.color.settings_icon_tint)
         val titleTextColor = ContextCompat.getColor(requireContext(), R.color.settings_title_text)
         val summaryTextColor = ContextCompat.getColor(requireContext(), R.color.settings_summary_text)
@@ -52,6 +46,7 @@ class KeyboardFeedbacksFragment : Fragment() {
         val grayColor = ContextCompat.getColor(requireContext(), R.color.color_gray)
 
         val soundOnKeyPress by AppPrefs.getInstance().internal.soundOnKeyPress
+        val keyPressVolumePref = AppPrefs.getInstance().internal.keyPressVolume
         val vibrationAmplitude by AppPrefs.getInstance().internal.vibrationAmplitude
 
         val soundTimeRangeEnablePref = AppPrefs.getInstance().internal.soundTimeRangeEnable
@@ -101,6 +96,27 @@ class KeyboardFeedbacksFragment : Fragment() {
             .sectionTextColor(summaryTextColor)
             .sectionTextSize(12)
             .bottomSidesLabels(resources.getStringArray(R.array.vibrate_labels))
+            .autoAdjustSectionMark()
+            .touchToSeek()
+            .build()
+
+        // 新增【按键音量调节】比例滑块 (1% - 100%)
+        val keyVolumeSeekBar = SignSeekBar(requireContext())
+        keyVolumeSeekBar.getConfigBuilder()
+            .min(1f).max(100f).progress(keyPressVolumePref.getValue().toFloat())
+            .sectionCount(4)
+            .trackSize(2)
+            .secondTrackSize(2)
+            .trackColor(grayColor)
+            .secondTrackColor(accentColor)
+            .thumbColor(accentColor)
+            .thumbRadius(6)
+            .thumbRadiusOnDragging(8)
+            .showThumbShadow(false)
+            .showSectionText()
+            .sectionTextPosition(SignSeekBar.TextPosition.BELOW_SECTION_MARK)
+            .sectionTextColor(summaryTextColor)
+            .sectionTextSize(12)
             .autoAdjustSectionMark()
             .touchToSeek()
             .build()
@@ -266,6 +282,7 @@ class KeyboardFeedbacksFragment : Fragment() {
 
         val isSoundActive = soundOnKeyPress < 5 || soundOnKeyPress > 10
         soundSeekBar.isEnabled = isSoundActive
+        keyVolumeSeekBar.isEnabled = isSoundActive
         renderTabsAndOptions(isSoundActive)
 
         val soundSwitch = switch {
@@ -275,11 +292,13 @@ class KeyboardFeedbacksFragment : Fragment() {
                     soundSeekBar.setProgress(0f)
                     AppPrefs.getInstance().internal.soundOnKeyPress.setValue(0)
                     soundSeekBar.isEnabled = true
+                    keyVolumeSeekBar.isEnabled = true
                     renderTabsAndOptions(true)
                 } else {
                     soundSeekBar.setProgress(10f)
                     AppPrefs.getInstance().internal.soundOnKeyPress.setValue(10)
                     soundSeekBar.isEnabled = false
+                    keyVolumeSeekBar.isEnabled = false
                     renderTabsAndOptions(false)
                 }
             }
@@ -329,6 +348,34 @@ class KeyboardFeedbacksFragment : Fragment() {
             setTextColor(titleTextColor)
             gravity = gravityVerticalCenter
         }
+
+        val keyVolumeTitle = textView {
+            setText(R.string.key_press_sound_volume_title)
+            textSize = 15.5f
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            setTextColor(titleTextColor)
+            gravity = gravityVerticalCenter
+        }
+
+        val keyVolumeValTv = textView {
+            text = "${keyPressVolumePref.getValue()}%"
+            textSize = 14f
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            setTextColor(accentColor)
+            gravity = gravityVerticalCenter
+        }
+
+        keyVolumeSeekBar.setOnProgressChangedListener(object : SignSeekBar.OnProgressChangedListener {
+            override fun onProgressChanged(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float, fromUser: Boolean) {
+                keyVolumeValTv.text = "$progress%"
+            }
+            override fun getProgressOnFinally(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float, fromUser: Boolean) {
+                keyPressVolumePref.setValue(progress)
+                keyVolumeValTv.text = "$progress%"
+                DevicesUtils.tryPlayKeyDown()
+            }
+            override fun getProgressOnActionUp(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float) {}
+        })
 
         val soundTimeRangeTitle = textView {
             setText(R.string.sound_time_range_title)
@@ -451,7 +498,7 @@ class KeyboardFeedbacksFragment : Fragment() {
                 topToTopOf(soundTitle)
                 endOfParent(itemMargin)
             })
-            add(soundSeekBar, lParams(width = matchParent, height = wrapContent) {
+            add(soundSeekBar, lParams(width = LinearLayout.LayoutParams.MATCH_PARENT, height = LinearLayout.LayoutParams.WRAP_CONTENT) {
                 below(soundTitle)
                 startOfParent(itemMargin)
                 endOfParent(itemMargin)
@@ -468,7 +515,7 @@ class KeyboardFeedbacksFragment : Fragment() {
                 topToTopOf(soundTimeRangeTitle)
                 endOfParent(itemMargin)
             })
-            add(timePickerLayout, lParams(width = matchParent, height = wrapContent) {
+            add(timePickerLayout, lParams(width = LinearLayout.LayoutParams.MATCH_PARENT, height = LinearLayout.LayoutParams.WRAP_CONTENT) {
                 below(soundTimeRangeTitle)
                 startOfParent(itemMargin)
                 endOfParent(itemMargin)
@@ -485,8 +532,25 @@ class KeyboardFeedbacksFragment : Fragment() {
                 topToTopOf(vibrationTitle)
                 endOfParent(itemMargin)
             })
-            add(vibrateSeekBar, lParams(width = matchParent, height = wrapContent) {
+            add(vibrateSeekBar, lParams(width = LinearLayout.LayoutParams.MATCH_PARENT, height = LinearLayout.LayoutParams.WRAP_CONTENT) {
                 below(vibrationTitle)
+                startOfParent(itemMargin)
+                endOfParent(itemMargin)
+                above(keyVolumeTitle)
+            })
+
+            add(keyVolumeTitle, lParams(matchConstraints, lineHeight) {
+                below(vibrateSeekBar)
+                startOfParent(itemMargin)
+                before(keyVolumeValTv)
+                above(keyVolumeSeekBar)
+            })
+            add(keyVolumeValTv, lParams(matchConstraints, lineHeight) {
+                topToTopOf(keyVolumeTitle)
+                endOfParent(itemMargin)
+            })
+            add(keyVolumeSeekBar, lParams(width = LinearLayout.LayoutParams.MATCH_PARENT, height = LinearLayout.LayoutParams.WRAP_CONTENT) {
+                below(keyVolumeTitle)
                 startOfParent(itemMargin)
                 endOfParent(itemMargin)
             })
@@ -501,43 +565,27 @@ class KeyboardFeedbacksFragment : Fragment() {
             addView(mainContentCard, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
         }
 
-        val soundEffectsCardContainer = LinearLayout(requireContext()).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(16), dp(16), dp(16), dp(16))
-            background = ContextCompat.getDrawable(context, R.drawable.sdk_bg_settings_card_single)
-            clipToOutline = true
-            outlineProvider = android.view.ViewOutlineProvider.BACKGROUND
-            addView(tabsLayout, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
-            addView(optionsContainer, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(8) })
-        }
-
-        val soundEffectsLayout = verticalLayout {
-            setPadding(dp(16), 0, dp(16), dp(24))
-            add(soundEffectsCardContainer, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
-        }
-
-        val mainCardWrapper = verticalLayout {
-            setPadding(dp(16), dp(16), dp(16), 0)
-            add(mainCardContainer, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
-        }
-
-        val contentLayout = verticalLayout {
+        val root = ScrollView(requireContext()).apply {
             setBackgroundColor(pageBgColor)
-            add(mainCardWrapper, lParams(matchParent, wrapContent))
-            add(soundEffectsCategoryTitle, lParams(matchParent, wrapContent))
-            add(soundEffectsLayout, lParams(matchParent, wrapContent))
+            addView(verticalLayout {
+                setPadding(dp(16), dp(12), dp(16), dp(24))
+                add(mainCardContainer, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+                add(soundEffectsCategoryTitle, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+
+                val optionsCardContainer = LinearLayout(requireContext()).apply {
+                    orientation = LinearLayout.VERTICAL
+                    background = ContextCompat.getDrawable(context, R.drawable.sdk_bg_settings_card_single)
+                    clipToOutline = true
+                    outlineProvider = android.view.ViewOutlineProvider.BACKGROUND
+                    add(tabsLayout, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                        setPadding(dp(12), dp(12), dp(12), 0)
+                    })
+                    add(optionsContainer, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+                }
+                add(optionsCardContainer, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
+            }, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT))
         }
 
-        contentLayout.wrapInScrollView()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        (activity as AppCompatActivity).supportActionBar?.setTitle(R.string.keyboard_feedback)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        KeyboardManager.instance.clearKeyboard()
+        root
     }
 }

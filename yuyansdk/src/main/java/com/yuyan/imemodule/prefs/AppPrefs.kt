@@ -47,6 +47,7 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val fullDisplayCenterMode = string("full_display_center_mode", FullDisplayCenterMode.MoveCursor.name)     //全面屏键盘优化：中间区域
 
         val soundOnKeyPress = int("key_press_vibration_amplitude",0)     //按键音量
+        val keyPressVolume = int("key_press_sound_volume_percentage", 80) // 按键音量 1-100%
         val vibrationAmplitude = int("key_press_sound_volume", 0)     //触感强度
         val soundTimeRangeEnable = bool("sound_time_range_enable", false)  // 是否启用按键音时间段限制
         val soundStartTime = string("sound_start_time", "11:00")            // 按键音开启起始时间
@@ -242,6 +243,9 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         ) { voiceLocalModel.getValue() }
         val voiceAutoPunctuation = switch(
             R.string.voice_auto_punctuation, "voice_auto_punctuation_enable", true, R.string.voice_auto_punctuation_tips
+        )
+        val voiceHoldToSpeak = switch(
+            R.string.voice_hold_to_speak, "voice_hold_to_speak_enable", true, R.string.voice_hold_to_speak_tips
         )
     }
 
