@@ -80,10 +80,10 @@ android {
     }
     sourceSets {
         main {
-            jniLibs.srcDirs = ['src/main/jniLibs', 'libs']
+            jniLibs.srcDirs = ['src/main/jniLibs']
         }
         offline {
-            jniLibs.srcDirs = ['src/main/jniLibs', 'libs']
+            jniLibs.srcDirs = ['src/main/jniLibs']
         }
     }
 
