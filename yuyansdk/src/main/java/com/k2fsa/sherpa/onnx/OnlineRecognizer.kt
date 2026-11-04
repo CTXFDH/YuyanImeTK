@@ -6,7 +6,7 @@ class OnlineRecognizer(val config: OnlineRecognizerConfig) {
 
     init {
         try {
-            System.loadLibrary("sherpa-onnx-jni")
+            loadNativeLibraries()
             ptr = newOnlineRecognizer(config)
         } catch (_: Throwable) {
             ptr = 0L
@@ -90,10 +90,20 @@ class OnlineRecognizer(val config: OnlineRecognizerConfig) {
     private external fun reset(ptr: Long, streamPtr: Long)
 
     companion object {
-        init {
+        private var librariesLoaded = false
+
+        fun loadNativeLibraries() {
+            if (librariesLoaded) return
             try {
+                System.loadLibrary("onnxruntime")
+                System.loadLibrary("sherpa-onnx-c-api")
                 System.loadLibrary("sherpa-onnx-jni")
+                librariesLoaded = true
             } catch (_: Throwable) {}
+        }
+
+        init {
+            loadNativeLibraries()
         }
     }
 }

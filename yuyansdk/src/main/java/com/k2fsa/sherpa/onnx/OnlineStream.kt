@@ -35,9 +35,7 @@ class OnlineStream(var ptr: Long) {
 
     companion object {
         init {
-            try {
-                System.loadLibrary("sherpa-onnx-jni")
-            } catch (_: Throwable) {}
+            OnlineRecognizer.loadNativeLibraries()
         }
     }
 }
