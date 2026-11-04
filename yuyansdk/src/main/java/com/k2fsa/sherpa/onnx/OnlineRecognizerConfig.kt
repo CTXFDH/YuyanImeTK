@@ -1,10 +1,14 @@
 package com.k2fsa.sherpa.onnx
 
+import androidx.annotation.Keep
+
+@Keep
 data class FeatureConfig(
     val sampleRate: Int = 16000,
     val featureDim: Int = 80
 )
 
+@Keep
 data class OnlineTransducerModelConfig(
     val encoder: String = "",
     val decoder: String = "",
@@ -12,6 +16,7 @@ data class OnlineTransducerModelConfig(
     val tokens: String = ""
 )
 
+@Keep
 data class OnlineModelConfig(
     val transducer: OnlineTransducerModelConfig = OnlineTransducerModelConfig(),
     val numThreads: Int = 2,
@@ -19,6 +24,7 @@ data class OnlineModelConfig(
     val modelType: String = "zipformer"
 )
 
+@Keep
 data class OnlineRecognizerConfig(
     val featConfig: FeatureConfig = FeatureConfig(),
     val modelConfig: OnlineModelConfig = OnlineModelConfig(),

@@ -10,18 +10,17 @@ import android.content.pm.PackageManager
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
-import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
-import android.speech.RecognitionListener
-import android.speech.RecognizerIntent
-import android.speech.SpeechRecognizer
 import androidx.core.content.ContextCompat
+import androidx.core.content.PermissionChecker
 import com.yuyan.imemodule.prefs.AppPrefs
-import java.util.ArrayDeque
 import kotlin.math.sqrt
 
+/**
+ * 纯粹物理麦克风 PCM 音频流采集 + X-ASR 离线 C++ 神经网络引擎管道 (已彻底清理系统 SpeechRecognizer 冗余代码)
+ */
 class SpeechRecognitionManager(private val context: Context) {
 
     enum class State {
@@ -47,7 +46,6 @@ class SpeechRecognitionManager(private val context: Context) {
         }
 
     private val mainHandler = Handler(Looper.getMainLooper())
-    private var speechRecognizer: SpeechRecognizer? = null
     private var audioRecord: AudioRecord? = null
     private var recordingThread: Thread? = null
     @Volatile private var isRecording = false
@@ -95,9 +93,6 @@ class SpeechRecognitionManager(private val context: Context) {
         AsrModelManager.initModel(context)
     }
 
-    // VAD 前置环形缓冲队列 (~0.4秒音频缓存)
-    private val preSpeechBuffer = ArrayDeque<ByteArray>(4)
-
     companion object {
         const val SAMPLE_RATE = 16000
         const val CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO
@@ -105,7 +100,26 @@ class SpeechRecognitionManager(private val context: Context) {
     }
 
     fun hasRecordPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+        val perm1 = ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+        val perm2 = PermissionChecker.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PermissionChecker.PERMISSION_GRANTED
+        if (perm1 || perm2) return true
+
+        return try {
+            val minBufSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT)
+            if (minBufSize <= 0) return true
+            val testRec = AudioRecord(
+                MediaRecorder.AudioSource.MIC,
+                SAMPLE_RATE,
+                CHANNEL_CONFIG,
+                AUDIO_FORMAT,
+                minBufSize
+            )
+            val isInit = testRec.state == AudioRecord.STATE_INITIALIZED
+            testRec.release()
+            isInit
+        } catch (_: Exception) {
+            true
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -119,73 +133,11 @@ class SpeechRecognitionManager(private val context: Context) {
         if (currentState == State.LISTENING || currentState == State.PROCESSING) return
 
         currentState = State.LISTENING
-        preSpeechBuffer.clear()
-
-        // 优先开启动态录音数据流
         startAudioRecording()
-
-        try {
-            if (SpeechRecognizer.isRecognitionAvailable(context)) {
-                startSystemSpeechRecognizer()
-            }
-        } catch (_: Exception) {}
-    }
-
-    private fun startSystemSpeechRecognizer() {
-        mainHandler.post {
-            try {
-                if (speechRecognizer == null) {
-                    speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
-                }
-                speechRecognizer?.setRecognitionListener(object : RecognitionListener {
-                    override fun onReadyForSpeech(params: Bundle?) {
-                        currentState = State.LISTENING
-                    }
-                    override fun onBeginningOfSpeech() {}
-                    override fun onRmsChanged(rmsdB: Float) {
-                        val norm = (rmsdB / 10f).coerceIn(0f, 1f)
-                        mainHandler.post { listener?.onAmplitudeChanged(norm) }
-                    }
-                    override fun onBufferReceived(buffer: ByteArray?) {}
-                    override fun onEndOfSpeech() {
-                        currentState = State.PROCESSING
-                    }
-                    override fun onError(error: Int) {
-                        // 系统 SpeechRecognizer 错误时不杀死本地 AudioRecord
-                    }
-                    override fun onResults(results: Bundle?) {
-                        val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                        val text = matches?.firstOrNull() ?: ""
-                        if (text.isNotEmpty()) {
-                            listener?.onPartialResult(text)
-                            AsrModelManager.appendRecognizedText(text)
-                        }
-                    }
-                    override fun onPartialResults(partialResults: Bundle?) {
-                        val matches = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                        val text = matches?.firstOrNull() ?: ""
-                        if (text.isNotEmpty()) {
-                            listener?.onPartialResult(text)
-                            AsrModelManager.appendRecognizedText(text)
-                        }
-                    }
-                    override fun onEvent(eventType: Int, params: Bundle?) {}
-                })
-
-                val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                    putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-                    putExtra(RecognizerIntent.EXTRA_LANGUAGE, "zh-CN")
-                    putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
-                    putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
-                }
-                speechRecognizer?.startListening(intent)
-            } catch (_: Exception) {}
-        }
     }
 
     @SuppressLint("MissingPermission")
     private fun startAudioRecording() {
-        if (!hasRecordPermission()) return
         isRecording = true
         recordingThread = Thread {
             try {
@@ -216,10 +168,10 @@ class SpeechRecognitionManager(private val context: Context) {
                         val normAmp = (rms / 3000.0).coerceIn(0.0, 1.0).toFloat()
                         mainHandler.post { listener?.onAmplitudeChanged(normAmp) }
 
-                        // 1. 推送至后台进程
+                        // 1. 推送至后台 :asr 进程
                         asrService?.processAudioChunk(buffer, readSize)
 
-                        // 2. 本地直接流式转写
+                        // 2. 本地同步调用 X-ASR 进行 C++ 神经网络推导转写
                         val livePartialText = AsrModelManager.processChunk(buffer, readSize)
                         if (livePartialText.isNotEmpty()) {
                             mainHandler.post { listener?.onPartialResult(livePartialText) }
@@ -242,13 +194,7 @@ class SpeechRecognitionManager(private val context: Context) {
         currentState = State.PROCESSING
         stopAudioRecording()
 
-        mainHandler.post {
-            try {
-                speechRecognizer?.stopListening()
-            } catch (_: Exception) {}
-        }
-
-        // 收集提交最终转写识别出的文字结果并触发上屏
+        // 收集提交 X-ASR 离线 C++ 神经网络推导转写出的最终文字结果
         val finalText = AsrModelManager.finishRecognition()
         val autoPunc = AppPrefs.getInstance().voice.voiceAutoPunctuation.getValue()
         val formattedText = if (autoPunc && finalText.isNotEmpty() && !finalText.endsWith("。") && !finalText.endsWith("，") && !finalText.endsWith("？")) {
@@ -271,11 +217,6 @@ class SpeechRecognitionManager(private val context: Context) {
         isRecording = false
         currentState = State.IDLE
         stopAudioRecording()
-        mainHandler.post {
-            try {
-                speechRecognizer?.cancel()
-            } catch (_: Exception) {}
-        }
     }
 
     private fun stopAudioRecording() {
@@ -291,12 +232,6 @@ class SpeechRecognitionManager(private val context: Context) {
                 context.unbindService(serviceConnection)
             } catch (_: Exception) {}
             isServiceBound = false
-        }
-        mainHandler.post {
-            try {
-                speechRecognizer?.destroy()
-            } catch (_: Exception) {}
-            speechRecognizer = null
         }
     }
 }

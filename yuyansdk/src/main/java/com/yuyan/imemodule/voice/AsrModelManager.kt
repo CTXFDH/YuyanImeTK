@@ -3,6 +3,7 @@ package com.yuyan.imemodule.voice
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
+import android.util.Log
 import com.k2fsa.sherpa.onnx.FeatureConfig
 import com.k2fsa.sherpa.onnx.OnlineModelConfig
 import com.k2fsa.sherpa.onnx.OnlineRecognizer
@@ -17,6 +18,7 @@ import java.util.zip.ZipInputStream
 
 object AsrModelManager {
 
+    private const val TAG = "X_ASR_NATIVE"
     @Volatile private var isInitialized = false
     private var modelDir: File? = null
     private var recognizer: OnlineRecognizer? = null
@@ -28,35 +30,34 @@ object AsrModelManager {
         if (!dir.exists()) return false
         val files = dir.walkTopDown().filter { it.isFile }.toList()
         if (files.isEmpty()) return false
-        val hasTokens = files.any { it.name.contains("tokens") || it.name.endsWith(".txt") }
+        val tokensFile = files.firstOrNull { it.name.contains("tokens") || it.name.endsWith(".txt") }
+        val hasValidTokens = tokensFile != null && tokensFile.length() > 100
         val hasEncoder = files.any { it.name.contains("encoder") || it.name.endsWith(".onnx") }
-        return hasTokens && hasEncoder
+        return hasValidTokens && hasEncoder
     }
 
     fun initModel(context: Context) {
-        if (isInitialized) return
+        if (isInitialized && recognizer?.isNativeReady() == true) return
         val baseDir = File(context.filesDir, "x_asr")
         if (!baseDir.exists()) {
             baseDir.mkdirs()
         }
-        val tokensFile = File(baseDir, "tokens.txt")
-        if (!tokensFile.exists()) {
-            try {
-                tokensFile.writeText("# X-ASR Zipformer2 Chinese Tokens\n")
-            } catch (_: Exception) {}
-        }
+
+        // 自动检查并从工程 assets/x_asr 自动解压打包进 APK 的模型文件
+        copyAssetsModelIfNeeded(context, baseDir)
 
         modelDir = baseDir
 
         try {
-            val encoderFile = File(baseDir, "encoder.onnx").takeIf { it.exists() }
-                ?: baseDir.listFiles()?.firstOrNull { it.name.contains("encoder") && it.name.endsWith(".onnx") }
-            val decoderFile = File(baseDir, "decoder.onnx").takeIf { it.exists() }
-                ?: baseDir.listFiles()?.firstOrNull { it.name.contains("decoder") && it.name.endsWith(".onnx") }
-            val joinerFile = File(baseDir, "joiner.onnx").takeIf { it.exists() }
-                ?: baseDir.listFiles()?.firstOrNull { it.name.contains("joiner") && it.name.endsWith(".onnx") }
+            val files = baseDir.walkTopDown().filter { it.isFile }.toList()
+            val tokensFile = files.firstOrNull { it.name.contains("tokens") || it.name.endsWith(".txt") }
+            val encoderFile = files.firstOrNull { it.name.contains("encoder") && it.name.endsWith(".onnx") }
+            val decoderFile = files.firstOrNull { it.name.contains("decoder") && it.name.endsWith(".onnx") }
+            val joinerFile = files.firstOrNull { it.name.contains("joiner") && it.name.endsWith(".onnx") }
 
-            if (encoderFile != null && tokensFile.exists()) {
+            Log.d(TAG, "Init model files check - encoder: ${encoderFile?.name}, decoder: ${decoderFile?.name}, joiner: ${joinerFile?.name}, tokens: ${tokensFile?.name}")
+
+            if (encoderFile != null && tokensFile != null && tokensFile.length() > 100) {
                 val config = OnlineRecognizerConfig(
                     featConfig = FeatureConfig(sampleRate = 16000, featureDim = 80),
                     modelConfig = OnlineModelConfig(
@@ -73,11 +74,37 @@ object AsrModelManager {
                 recognizer = OnlineRecognizer(config)
                 if (recognizer?.isNativeReady() == true) {
                     stream = recognizer?.createStream()
+                    Log.i(TAG, "X-ASR C++ ONNX Native Recognizer & Stream initialized successfully!")
+                } else {
+                    Log.e(TAG, "OnlineRecognizer native ptr is null. Check JNI library loading.")
                 }
+            } else {
+                Log.w(TAG, "X-ASR model files not complete. Encoder: ${encoderFile != null}, Tokens: ${tokensFile != null}")
             }
-        } catch (_: Throwable) {}
+        } catch (e: Throwable) {
+            Log.e(TAG, "Error initializing X-ASR model: ${e.message}", e)
+        }
 
         isInitialized = true
+    }
+
+    private fun copyAssetsModelIfNeeded(context: Context, baseDir: File) {
+        try {
+            val assetFiles = context.assets.list("x_asr") ?: return
+            if (assetFiles.isNotEmpty()) {
+                for (fileName in assetFiles) {
+                    val outFile = File(baseDir, fileName)
+                    if (!outFile.exists() || outFile.length() == 0L) {
+                        context.assets.open("x_asr/$fileName").use { input ->
+                            outFile.outputStream().use { output ->
+                                input.copyTo(output)
+                            }
+                        }
+                        normalizeModelFileNames(baseDir, fileName, outFile)
+                    }
+                }
+            }
+        } catch (_: Exception) {}
     }
 
     fun processChunk(samples: ShortArray, size: Int): String {
@@ -85,6 +112,7 @@ object AsrModelManager {
 
         val rec = recognizer
         val stm = stream
+
         if (rec != null && stm != null && rec.isNativeReady()) {
             try {
                 val floatSamples = FloatArray(size) { i -> samples[i] / 32768.0f }
@@ -96,9 +124,13 @@ object AsrModelManager {
                 if (text.isNotEmpty()) {
                     recognizedBuffer.clear()
                     recognizedBuffer.append(text)
+                    Log.d(TAG, "ONNX Streaming Recognized: $text")
                 }
-            } catch (_: Throwable) {}
+            } catch (e: Throwable) {
+                Log.e(TAG, "ONNX processChunk error: ${e.message}", e)
+            }
         }
+
         return recognizedBuffer.toString()
     }
 
@@ -117,7 +149,10 @@ object AsrModelManager {
                     recognizedBuffer.append(text)
                 }
                 rec.reset(stm)
-            } catch (_: Throwable) {}
+                Log.d(TAG, "ONNX Final Result: $text")
+            } catch (e: Throwable) {
+                Log.e(TAG, "ONNX finishRecognition error: ${e.message}", e)
+            }
         }
 
         val result = recognizedBuffer.toString().trim()
@@ -166,7 +201,7 @@ object AsrModelManager {
             errorMsg = "Zip 解压失败: ${e.message}"
         }
 
-        // 2. 尝试作为 .tar.bz2 / .bz2 / .tar 归档解压 (解压 GitHub Releases 原装 .tar.bz2 模型)
+        // 2. 尝试作为 .tar.bz2 / .bz2 / .tar 归档解压
         if (!success) {
             try {
                 context.contentResolver.openInputStream(zipUri)?.use { inputStream ->

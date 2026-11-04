@@ -297,13 +297,16 @@ class VoiceKeyboardContainer(context: Context?, inputView: InputView) : InputBas
             override fun onPartialResult(text: String) {
                 if (text.isNotEmpty()) {
                     tvSubtitle?.text = text
+                    // 边说边流式实时写进当前聊天框/编辑框！
+                    inputView.responseKeyEvent(SoftKey(label = text))
                 }
             }
 
             override fun onFinalResult(text: String) {
                 if (text.isNotEmpty()) {
                     tvSubtitle?.text = text
-                    inputView.responseKeyEvent(SoftKey(label = text))
+                    // 松手瞬间最终确认并直接写进当前聊天框/编辑框！
+                    inputView.commitClipboardText(text)
                 }
             }
 
