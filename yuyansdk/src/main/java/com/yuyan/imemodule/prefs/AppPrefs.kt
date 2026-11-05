@@ -149,53 +149,7 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
     inner class KeyboardSetting : ManagedPreferenceCategory(R.string.setting_ime_keyboard, sharedPreferences) {
 
-        val candidateTextSize = int(
-            R.string.candidate_size_input_setting,
-            "candidate_size",
-            55,
-            25,
-            100,
-            "%",
-            defaultLabel = R.string.system_default
-        )
-
-        val keyboardBalloonShow = switch(R.string.keypopup_input_settings, "keyboard_balloon_show_enable", false)
-
-        val longPressTimeout = int(
-            R.string.long_press_timeout,
-            "long_press_timeout",
-            400,
-            100,
-            700,
-            "毫秒",
-            50,
-            defaultLabel = R.string.number_400_ms
-        )
-
-
-        val abcNumberLine = switch(R.string.engish_full_keyboard, "keyboard_abc_number_line_enable", false)
-
-        val lx17WithLeftPrefix = switch(R.string.lx17_with_left_prefix, "lx17_with_left_prefix_enable", true)
-
-        val keyboardDoubleInputKey = switch(R.string.keyboard_double_input_key, "keyboard_double_input_pinyin_enable", true)
-
-        val keyboardMnemonic = switch(R.string.keyboard_mnemonic_show, "keyboard_mnemonic_show_enable", false)
-
-        val spaceSwipeMoveCursor = switch(R.string.space_swipe_move_cursor, "space_swipe_move_cursor", true)
-
-        val spaceSwipeMoveCursorSpeed = int(
-            R.string.swipe_move_cursor_speed,
-            "swipe_move_cursor_speed",
-            10,
-            1,
-            50,
-            "px"
-        )
-
-        // 锁定英语键盘:锁定后，切换到英语键盘，下次弹出键盘使用英语模式
-        val keyboardLockEnglish = switch(R.string.keyboard_menu_lock_english, "keyboard_menu_lock_english_enable", false)
-
-        val oneHandedModSwitch = switch(R.string.keyboard_one_handed_mod, "keyboard_one_handed_mod_enable", false)
+        val categoryLayout = category(R.string.category_layout_habit)
 
         val oneHandedMod = list(
             R.string.holding_habit,
@@ -211,6 +165,62 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
                 R.string.holding_habit_right
             )
         )
+
+        val oneHandedModSwitch = switch(R.string.keyboard_one_handed_mod, "keyboard_one_handed_mod_enable", false)
+
+        val candidateTextSize = int(
+            R.string.candidate_size_input_setting,
+            "candidate_size",
+            55,
+            25,
+            100,
+            "%",
+            defaultLabel = R.string.system_default
+        )
+
+
+        val categoryKeys = category(R.string.category_keys_gestures)
+
+        val keyboardBalloonShow = switch(R.string.keypopup_input_settings, "keyboard_balloon_show_enable", false)
+
+        val longPressTimeout = int(
+            R.string.long_press_timeout,
+            "long_press_timeout",
+            400,
+            100,
+            700,
+            "毫秒",
+            50,
+            defaultLabel = R.string.number_400_ms
+        )
+
+        val spaceSwipeMoveCursor = switch(R.string.space_swipe_move_cursor, "space_swipe_move_cursor", true)
+
+        val spaceSwipeMoveCursorSpeed = int(
+            R.string.swipe_move_cursor_speed,
+            "swipe_move_cursor_speed",
+            10,
+            1,
+            50,
+            "px"
+        )
+
+
+        val categoryModes = category(R.string.category_modes_prompts)
+
+        val abcNumberLine = switch(R.string.engish_full_keyboard, "keyboard_abc_number_line_enable", false)
+
+        // 锁定英语键盘:锁定后，切换到英语键盘，下次弹出键盘使用英语模式
+        val keyboardLockEnglish = switch(R.string.keyboard_menu_lock_english, "keyboard_menu_lock_english_enable", false)
+
+        val keyboardDoubleInputKey = switch(R.string.keyboard_double_input_key, "keyboard_double_input_pinyin_enable", true)
+
+        val keyboardMnemonic = switch(R.string.keyboard_mnemonic_show, "keyboard_mnemonic_show_enable", false)
+
+        val lx17WithLeftPrefix = switch(R.string.lx17_with_left_prefix, "lx17_with_left_prefix_enable", true)
+
+
+        val categoryPeripherals = category(R.string.category_symbols_peripherals)
 
         val halfWidthSymbolsMode = list(
             R.string.half_width_symbols_tips,

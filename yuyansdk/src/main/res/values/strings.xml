@@ -239,4 +239,10 @@
     <string name="keyboard_style_mod_samsung">三星</string>
 
     <string name="show_virtual_keyboard_with_external">物理键盘显示软键盘（插拔键盘生效）</string>
+
+    <!-- 键盘设置分类标题 -->
+    <string name="category_layout_habit">布局与习惯</string>
+    <string name="category_keys_gestures">按键与手势</string>
+    <string name="category_modes_prompts">输入模式与提示</string>
+    <string name="category_symbols_peripherals">符号与外设</string>
 </resources>
