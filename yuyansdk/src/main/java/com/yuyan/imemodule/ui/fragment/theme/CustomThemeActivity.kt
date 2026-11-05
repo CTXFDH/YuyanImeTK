@@ -894,14 +894,14 @@ class CustomThemeActivity : AppCompatActivity() {
         keyboardColorRow.isVisible = !hasWallpaper && !hasGradientResources
         wallpaperButtonsRow.isVisible = hasWallpaper
 
-        val showDarkAndBrightness = hasWallpaper || hasGradientResources
-        variantLabel.isVisible = showDarkAndBrightness
-        variantSwitch.isVisible = showDarkAndBrightness
-        brightnessLabel.isVisible = showDarkAndBrightness
-        brightnessValue.isVisible = showDarkAndBrightness
-        brightnessSeekBar.isVisible = showDarkAndBrightness
-        blurLabel.isVisible = showDarkAndBrightness
-        blurSeekBar.isVisible = showDarkAndBrightness
+        variantLabel.isVisible = true
+        variantSwitch.isVisible = true
+        val showBrightnessAndBlur = hasWallpaper || hasGradientResources
+        brightnessLabel.isVisible = showBrightnessAndBlur
+        brightnessValue.isVisible = showBrightnessAndBlur
+        brightnessSeekBar.isVisible = showBrightnessAndBlur
+        blurLabel.isVisible = showBrightnessAndBlur
+        blurSeekBar.isVisible = showBrightnessAndBlur
     }
 
     private val logoLabel by lazy {
@@ -1404,16 +1404,22 @@ class CustomThemeActivity : AppCompatActivity() {
                 variantSwitch.isChecked = !variantSwitch.isChecked
             }
             variantSwitch.setOnCheckedChangeListener { _, isChecked ->
-                val darkBkg = 0x66000000.toInt()
-                val lightBkg = 0x66FFFFFF.toInt()
-                val txtColor = if (isChecked) Color.WHITE else Color.BLACK
-                updateColorTheme {
-                    it.copy(
-                        isDark = isChecked,
-                        keyBackgroundColor = if (isChecked) darkBkg else lightBkg,
-                        keyTextColor = txtColor,
-                        functionKeyBackgroundColor = if (isChecked) 0x88000000.toInt() else 0x88FFFFFF.toInt()
-                    )
+                if (theme.backgroundImage != null) {
+                    val darkBkg = 0x66000000.toInt()
+                    val lightBkg = 0x66FFFFFF.toInt()
+                    val txtColor = if (isChecked) Color.WHITE else Color.BLACK
+                    updateColorTheme {
+                        it.copy(
+                            isDark = isChecked,
+                            keyBackgroundColor = if (isChecked) darkBkg else lightBkg,
+                            keyTextColor = txtColor,
+                            functionKeyBackgroundColor = if (isChecked) 0x88000000.toInt() else 0x88FFFFFF.toInt()
+                        )
+                    }
+                } else {
+                    updateColorTheme {
+                        it.copy(isDark = isChecked)
+                    }
                 }
                 previewUi.setTheme(theme, getInitialBackgroundDrawable().mutate())
                 previewUi.invalidate()
