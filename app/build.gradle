@@ -11,7 +11,7 @@ android {
         minSdk 23
         targetSdk 36
         versionCode Integer.valueOf(versionCodeDate())
-        versionName "K43"
+        versionName "K44"
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         ndk {
@@ -102,7 +102,7 @@ android {
 }
 
 static def getKVersionCode() {
-    return 43 // K版当前版本号: K43
+    return 44 // K版当前版本号: K44
 }
 
 static def versionCodeDate() {
