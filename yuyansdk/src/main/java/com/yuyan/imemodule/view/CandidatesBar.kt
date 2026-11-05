@@ -454,21 +454,12 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         mFlowerType.textSize = instance.candidateTextSize
 
         mCandidatesMenuContainer.removeAllViews()
-        if (isLeftMode) {
-            mIvMenuSetting?.layoutParams = LinearLayout.LayoutParams(logoSize, logoSize, 0f).apply { marginEnd = dp(10) }
-            mMenuRightArrowBtn.layoutParams = LinearLayout.LayoutParams(menuHeight, menuHeight, 0f).apply { marginStart = dp(10) }
-            mCandidatesMenuContainer.addView(mMenuRightArrowBtn)
-            mCandidatesMenuContainer.addView(mLlMenuHolder)
-            mCandidatesMenuContainer.addView(mLlContainer)
-            mCandidatesMenuContainer.addView(mIvMenuSetting)
-        } else {
-            mIvMenuSetting?.layoutParams = LinearLayout.LayoutParams(logoSize, logoSize, 0f).apply { marginStart = dp(10) }
-            mMenuRightArrowBtn.layoutParams = LinearLayout.LayoutParams(menuHeight, menuHeight, 0f).apply { marginEnd = dp(10) }
-            mCandidatesMenuContainer.addView(mIvMenuSetting)
-            mCandidatesMenuContainer.addView(mLlContainer)
-            mCandidatesMenuContainer.addView(mLlMenuHolder)
-            mCandidatesMenuContainer.addView(mMenuRightArrowBtn)
-        }
+        mIvMenuSetting?.layoutParams = LinearLayout.LayoutParams(logoSize, logoSize, 0f).apply { marginStart = dp(10) }
+        mMenuRightArrowBtn.layoutParams = LinearLayout.LayoutParams(menuHeight, menuHeight, 0f).apply { marginEnd = dp(10) }
+        mCandidatesMenuContainer.addView(mIvMenuSetting)
+        mCandidatesMenuContainer.addView(mLlContainer)
+        mCandidatesMenuContainer.addView(mLlMenuHolder)
+        mCandidatesMenuContainer.addView(mMenuRightArrowBtn)
 
         mLlContainer.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, menuHeight, 0f)
         mLlMenuHolder.layoutParams = LinearLayout.LayoutParams(0, menuHeight, 1f)
