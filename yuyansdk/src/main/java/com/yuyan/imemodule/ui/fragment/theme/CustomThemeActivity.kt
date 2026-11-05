@@ -852,7 +852,7 @@ class CustomThemeActivity : AppCompatActivity() {
                     val bytes = contentResolver.openInputStream(uri)?.use { it.readBytes() }
                     if (bytes != null && isSrcImageFileInitialized()) {
                         srcImageFile.writeBytes(bytes)
-                        val totalH = EnvironmentSingleton.instance.inputAreaHeight + EnvironmentSingleton.instance.heightForFullDisplayBar + dp(12)
+                        val totalH = EnvironmentSingleton.instance.inputAreaHeight + EnvironmentSingleton.instance.heightForFullDisplayBar
                         launchCrop(EnvironmentSingleton.instance.skbWidth, totalH)
                     }
                 }
@@ -878,7 +878,7 @@ class CustomThemeActivity : AppCompatActivity() {
                 changeWallpaperImageLauncher.launch("image/*")
             }
             val btnReCrop = createRoundedRectButton("✂️ 重新截取") {
-                val totalH = EnvironmentSingleton.instance.inputAreaHeight + EnvironmentSingleton.instance.heightForFullDisplayBar + dp(12)
+                val totalH = EnvironmentSingleton.instance.inputAreaHeight + EnvironmentSingleton.instance.heightForFullDisplayBar
                 backgroundStates.launchCrop(EnvironmentSingleton.instance.skbWidth, totalH)
             }
 
@@ -1190,7 +1190,7 @@ class CustomThemeActivity : AppCompatActivity() {
         val gap = dp(8)
 
         val origWidth = EnvironmentSingleton.instance.skbWidth
-        val origHeight = EnvironmentSingleton.instance.skbHeight + EnvironmentSingleton.instance.heightForCandidatesArea + dp(12)
+        val origHeight = EnvironmentSingleton.instance.skbHeight + EnvironmentSingleton.instance.heightForCandidatesArea
         val scaleRatio = 0.82f
         val scaledWidth = (origWidth * scaleRatio).toInt()
         val scaledHeight = (origHeight * scaleRatio).toInt()
@@ -1303,7 +1303,7 @@ class CustomThemeActivity : AppCompatActivity() {
         }
 
         val origWidth = EnvironmentSingleton.instance.skbWidth
-        val origHeight = EnvironmentSingleton.instance.skbHeight + EnvironmentSingleton.instance.heightForCandidatesArea + dp(12)
+        val origHeight = EnvironmentSingleton.instance.skbHeight + EnvironmentSingleton.instance.heightForCandidatesArea
         val scaleRatio = 0.82f
         val scaledWidth = (origWidth * scaleRatio).toInt()
         val scaledHeight = (origHeight * scaleRatio).toInt()
@@ -1397,7 +1397,7 @@ class CustomThemeActivity : AppCompatActivity() {
                 }
             }
             cropLabel.setOnClickListener {
-                val totalH = EnvironmentSingleton.instance.inputAreaHeight + EnvironmentSingleton.instance.heightForFullDisplayBar + dp(12)
+                val totalH = EnvironmentSingleton.instance.inputAreaHeight + EnvironmentSingleton.instance.heightForFullDisplayBar
                 launchCrop(EnvironmentSingleton.instance.skbWidth, totalH)
             }
             variantLabel.setOnClickListener {
@@ -1437,7 +1437,7 @@ class CustomThemeActivity : AppCompatActivity() {
         if (newCreated) {
             cropLabel.visibility = View.GONE
             whenHasBackground {
-                val totalH = EnvironmentSingleton.instance.inputAreaHeight + EnvironmentSingleton.instance.heightForFullDisplayBar + dp(12)
+                val totalH = EnvironmentSingleton.instance.inputAreaHeight + EnvironmentSingleton.instance.heightForFullDisplayBar
                 launchCrop(EnvironmentSingleton.instance.skbWidth, totalH)
             }
         } else {

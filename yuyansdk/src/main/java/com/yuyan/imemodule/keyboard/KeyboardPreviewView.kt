@@ -149,9 +149,8 @@ class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
         val brightness = customBg?.brightness ?: 100
         setBrightness(brightness)
         reloadKeyboardLayout(theme)
-        val extraBottom = dp(12)
         layoutParams?.width = instance.skbWidth
-        layoutParams?.height = instance.skbHeight + instance.heightForCandidatesArea + extraBottom
+        layoutParams?.height = instance.skbHeight + instance.heightForCandidatesArea
     }
 
     fun applyWindowTopCornerRadius(radiusDp: Int) {
@@ -205,8 +204,7 @@ class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
     private fun getScaledBackgroundDrawable(theme: Theme): Drawable {
         val rawDrawable = theme.backgroundDrawable()
         val targetWidth = instance.skbWidth
-        val extraBottom = dp(12)
-        val targetHeight = instance.skbHeight + instance.heightForCandidatesArea + extraBottom
+        val targetHeight = instance.skbHeight + instance.heightForCandidatesArea
         if (targetWidth <= 0 || targetHeight <= 0) return rawDrawable
 
         if (rawDrawable is BitmapDrawable) {
