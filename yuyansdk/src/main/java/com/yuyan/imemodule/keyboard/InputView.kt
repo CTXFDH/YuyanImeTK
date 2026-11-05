@@ -236,7 +236,8 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
             rightPadding = 0
             mBottomPaddingKey = appPrefs.internal.keyboardBottomPadding
             mRightPaddingKey = appPrefs.internal.keyboardRightPadding
-            mSkbRoot.bottomPadding = mBottomPaddingKey.getValue()
+            val userBottomPadding = mBottomPaddingKey.getValue()
+            mSkbRoot.bottomPadding = if (userBottomPadding == 0) dp(12) else userBottomPadding
             mSkbRoot.rightPadding = mRightPaddingKey.getValue()
         }
         KeyboardManager.instance.switchKeyboard()

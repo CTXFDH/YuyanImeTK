@@ -18,9 +18,12 @@ class SoftKeyboard(var mKeyRows: List<List<SoftKey>>) {
      * 可以在判断坐标在某个按键区域内的时候，并且加上判断离它最近的按键，这样就只需要一次遍历就行了。
      */
     fun mapToKey(x: Int, y: Int): SoftKey? {
+        val skbH = EnvironmentSingleton.instance.skbHeight
         for (element in mKeyRows) {
             for (sKey in element) {
-                if (sKey.mLeft <= x && sKey.mTop <= y && sKey.mRight > x && sKey.mBottom > y) return sKey
+                val isBottomRow = sKey.mBottom >= skbH - 5
+                val maxY = if (isBottomRow) maxOf(sKey.mBottom, y + 1) else sKey.mBottom
+                if (sKey.mLeft <= x && sKey.mTop <= y && sKey.mRight > x && maxY > y) return sKey
             }
         }
         return null

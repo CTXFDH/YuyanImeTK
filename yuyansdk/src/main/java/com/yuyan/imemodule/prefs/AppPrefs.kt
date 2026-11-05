@@ -37,7 +37,7 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val keyboardRightPaddingFloat = int("keyboard_padding_right", DevicesUtils.dip2px(20))     //竖屏悬浮模式右边距
         val keyboardBottomPaddingLandscapeFloat = int("keyboard_padding_bottom_landscape", DevicesUtils.dip2px(50))     //横屏悬浮模式底边距
         val keyboardRightPaddingLandscapeFloat = int("keyboard_padding_right_landscape", DevicesUtils.dip2px(20))     //横屏悬浮模式右边距
-        val keyboardBottomPadding = int("keyboard_padding_bottom_normal", DevicesUtils.dip2px(0))     //竖屏非悬浮底边距
+        val keyboardBottomPadding = int("keyboard_padding_bottom_normal", DevicesUtils.dip2px(12))     //竖屏非悬浮底边距
         val keyboardRightPadding = int("keyboard_padding_right_normal", DevicesUtils.dip2px(0))     //竖屏非悬浮右边距
         val clipboardUpdateTime = long("clipboard_update_time", 0)     //剪切板更新时间
         val clipboardUpdateContent = string("clipboard_update_content","")     //剪切板更新内容
