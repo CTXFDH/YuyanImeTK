@@ -234,21 +234,6 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val showVirtualKeyboardOnPhysicalKeyboard = switch(R.string.show_virtual_keyboard_with_external, "show_virtual_keyboard_with_external", false)
     }
 
-    inner class Voice : ManagedPreferenceCategory(R.string.ime_settings_voice, sharedPreferences) {
-        val voiceLocalModel = switch(
-            R.string.voice_local_model, "voice_local_model_enable", true, R.string.voice_local_model_tips
-        )
-        val voiceKeepResident = switch(
-            R.string.voice_keep_resident, "voice_keep_resident_enable", true, R.string.voice_keep_resident_tips
-        ) { voiceLocalModel.getValue() }
-        val voiceAutoPunctuation = switch(
-            R.string.voice_auto_punctuation, "voice_auto_punctuation_enable", true, R.string.voice_auto_punctuation_tips
-        )
-        val voiceHoldToSpeak = switch(
-            R.string.voice_hold_to_speak, "voice_hold_to_speak_enable", true, R.string.voice_hold_to_speak_tips
-        )
-    }
-
     inner class Other : ManagedPreferenceCategory(R.string.setting_ime_other, sharedPreferences) {
         val imeHideIcon = switch(R.string.ime_hide_icon, "ime_hide_icon_enable", false, R.string.ime_hide_icon_tips)
     }
@@ -338,7 +323,6 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
 
     val internal = Internal().register()
-    val voice = Voice().register()
     val handwriting = Handwriting().register()
     val input = Input().register()
     val clipboard = Clipboard().register()
@@ -362,9 +346,6 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             }
 
             input.managedPreferences.forEach {
-                it.value.putValueTo(this@edit)
-            }
-            voice.managedPreferences.forEach {
                 it.value.putValueTo(this@edit)
             }
             handwriting.managedPreferences.forEach {

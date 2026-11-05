@@ -36,25 +36,4 @@ target_link_libraries(onnx_env
     log
 )
 
-# 编译 Xime 1:1 C++ 原生 ASR 动态库 libasr_jni.so！
-add_library(asr_jni SHARED
-    ${JNI_DIR}/asr/asr_jni.cc
-    ${JNI_DIR}/asr/zipformer2_model.cc
-    ${JNI_DIR}/asr/feature_extractor.cc
-    ${JNI_DIR}/asr/streaming_recognizer.cc
-)
 
-target_include_directories(asr_jni PRIVATE
-    ${JNI_DIR}/include
-    ${JNI_DIR}
-    ${KNF_LOCAL_DIR}
-)
-
-target_link_libraries(asr_jni
-    onnxruntime
-    onnx_env
-    kaldi-native-fbank-core
-    log
-)
-
-target_link_options(asr_jni PRIVATE "-Wl,-z,max-page-size=16384")

@@ -223,13 +223,6 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
         )
         funItems.add(
             SkbFunItem(
-                "语音输入",
-                R.drawable.ic_menu_voice,
-                SkbMenuMode.PinyinVoice
-            )
-        )
-        funItems.add(
-            SkbFunItem(
                 "切换输入法",
                 R.drawable.ic_menu_language,
                 SkbMenuMode.SwitchIME
@@ -270,10 +263,6 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
     private fun onKeyboardMenuClick(data: SkbFunItem) {
         if (data.skbMenuMode == SkbMenuMode.SwitchIME) {
             InputMethodUtil.showPicker()
-            return
-        }
-        if (data.skbMenuMode == SkbMenuMode.PinyinVoice) {
-            KeyboardManager.instance.switchKeyboard(InputModeSwitcher.MASK_SKB_LAYOUT_VOICE)
             return
         }
         val value = when (data.skbMenuMode) {
