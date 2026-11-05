@@ -200,7 +200,7 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val oneHandedMod = list(
             R.string.holding_habit,
             "keyboard_one_handed_mod",
-            KeyboardOneHandedMod.LEFT,
+            KeyboardOneHandedMod.RIGHT,
             KeyboardOneHandedMod,
             listOf(
                 KeyboardOneHandedMod.LEFT,
