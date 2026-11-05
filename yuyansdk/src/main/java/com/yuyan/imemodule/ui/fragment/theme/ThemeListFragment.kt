@@ -59,14 +59,32 @@ class ThemeListFragment : Fragment() {
             }
         }
 
-        importYusLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-            if (uri != null) {
-                val imported = ThemeArchiveUtils.importThemeFromYus(requireContext(), uri)
-                if (imported != null) {
-                    themeListAdapter.prependTheme(imported)
-                    ThemeManager.saveTheme(imported)
-                    android.widget.Toast.makeText(requireContext(), "主题导入成功", android.widget.Toast.LENGTH_SHORT).show()
-                } else {
+        importYusLauncher = registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri> ->
+            if (uris.isNotEmpty()) {
+                var successCount = 0
+                var failCount = 0
+                var lastImportedTheme: Theme.Custom? = null
+
+                for (uri in uris) {
+                    val imported = ThemeArchiveUtils.importThemeFromYus(requireContext(), uri)
+                    if (imported != null) {
+                        successCount++
+                        lastImportedTheme = imported
+                    } else {
+                        failCount++
+                    }
+                }
+
+                if (successCount > 0) {
+                    ThemeManager.refreshThemes()
+                    themeListAdapter.setThemes(ThemeManager.getAllThemes())
+                    updateSelectedThemes()
+                    if (successCount == 1 && lastImportedTheme != null) {
+                        android.widget.Toast.makeText(requireContext(), "已导入主题: ${lastImportedTheme.name}", android.widget.Toast.LENGTH_SHORT).show()
+                    } else {
+                        android.widget.Toast.makeText(requireContext(), "成功导入 $successCount 个主题", android.widget.Toast.LENGTH_SHORT).show()
+                    }
+                } else if (failCount > 0) {
                     android.widget.Toast.makeText(requireContext(), "主题导入失败", android.widget.Toast.LENGTH_SHORT).show()
                 }
             }
