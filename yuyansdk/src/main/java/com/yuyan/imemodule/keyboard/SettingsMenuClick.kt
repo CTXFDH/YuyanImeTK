@@ -157,7 +157,6 @@ fun onSettingsMenuClick(inputView: InputView, skbMenuMode: SkbMenuMode) {
             if (currentContainer != null) {
                 KeyboardManager.instance.switchKeyboardToMain()
             } else {
-                KeyboardManager.instance.clearNonMainKeyboards(KeyboardManager.KeyboardType.CANDIDATES)
                 KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.CANDIDATES)
                 (KeyboardManager.instance.currentContainer as? CandidatesContainer)?.showCandidatesView()
             }

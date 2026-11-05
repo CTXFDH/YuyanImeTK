@@ -8,9 +8,11 @@ object InputDispatcher {
 
     // 初始化输入法
     @Synchronized
-    fun initImeSchema(schema: String) {
-        RimeEngine.selectSchema(schema)
-        nativeUpdateImeOption()
+    fun initImeSchema(schema: String, force: Boolean = false) {
+        if (schema.isNotEmpty() && (force || getCurrentRimeSchema() != schema)) {
+            RimeEngine.selectSchema(schema)
+            nativeUpdateImeOption()
+        }
     }
 
     fun getCurrentRimeSchema(): String {
@@ -54,7 +56,7 @@ object InputDispatcher {
     // 释放内存
     fun resetIme() {
         RimeEngine.destroy()
-        initImeSchema(AppPrefs.getInstance().internal.pinyinModeRime.getValue())
+        initImeSchema(AppPrefs.getInstance().internal.pinyinModeRime.getValue(), force = true)
     }
 
     // 根据输入的字符查询候选词

@@ -730,7 +730,7 @@ class CustomThemeActivity : AppCompatActivity() {
         }
     }
     private val candidateTextColorRow by lazy {
-        createColorPickerItem("【候选字】颜色", { theme.candidateTextColor }) { color ->
+        createColorPickerItem("候选字颜色", { theme.candidateTextColor }) { color ->
             updateColorTheme { it.copy(candidateTextColor = color) }
             previewUi.setTheme(theme, getInitialBackgroundDrawable())
         }

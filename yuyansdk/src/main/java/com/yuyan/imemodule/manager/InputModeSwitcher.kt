@@ -272,6 +272,7 @@ object InputModeSwitcher {
         KeyboardLoaderUtil.instance.clearKeyboardMap()
         KeyboardManager.instance.clearKeyboard()
         saveInputMode(inputMode)
+        InputDispatcher.initImeSchema(value.second, force = true)
         KeyboardManager.instance.switchKeyboard(skbImeLayout)
     }
 

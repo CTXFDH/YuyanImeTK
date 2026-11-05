@@ -1,6 +1,7 @@
 package com.yuyan.imemodule.adapter
 
 import android.content.Context
+import android.graphics.drawable.GradientDrawable
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -11,9 +12,9 @@ import com.yuyan.imemodule.R
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.data.theme.ThemeManager
-import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.service.DictDecoder
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
+import splitties.dimensions.dp
 
 /**
  * 候选词界面适配器
@@ -33,6 +34,15 @@ class CandidatesAdapter(context: Context?) :
         mOnItemClickListener = mOnItemClickLitener
     }
 
+    companion object {
+        private const val VIEW_TYPE_FIRST = 0
+        private const val VIEW_TYPE_NORMAL = 1
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (position == 0) VIEW_TYPE_FIRST else VIEW_TYPE_NORMAL
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SymbolHolder {
         val view = inflater.inflate(R.layout.sdk_item_recyclerview_candidates, parent, false)
         return SymbolHolder(view)
@@ -42,8 +52,34 @@ class CandidatesAdapter(context: Context?) :
         if (position in DictDecoder.candidates.indices) {
             holder.textView.text = DictDecoder.candidates[position].text
             holder.textView.setTextColor(textColor)
-            holder.textView.setOnClickListener { view: View? ->
-                mOnItemClickListener?.onItemClick(this@CandidatesAdapter, view, position)
+
+            val view = holder.textView
+            val lp = view.layoutParams as? ViewGroup.MarginLayoutParams
+
+            if (position == 0) {
+                val bg = GradientDrawable().apply {
+                    shape = GradientDrawable.RECTANGLE
+                    cornerRadius = view.dp(6f)
+                    setColor(activeTheme.keyBackgroundColor)
+                }
+                view.background = bg
+                view.setPadding(view.dp(12f).toInt(), view.dp(6f).toInt(), view.dp(12f).toInt(), view.dp(6f).toInt())
+                lp?.let {
+                    val m = view.dp(3f).toInt()
+                    it.setMargins(m, m, m, m)
+                    view.layoutParams = it
+                }
+            } else {
+                view.background = null
+                view.setPadding(view.dp(10f).toInt(), view.dp(10f).toInt(), view.dp(10f).toInt(), view.dp(10f).toInt())
+                lp?.let {
+                    it.setMargins(0, 0, 0, 0)
+                    view.layoutParams = it
+                }
+            }
+
+            view.setOnClickListener { v: View? ->
+                mOnItemClickListener?.onItemClick(this@CandidatesAdapter, v, position)
             }
         }
     }
