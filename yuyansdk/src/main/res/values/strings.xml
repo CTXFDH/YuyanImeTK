@@ -105,6 +105,9 @@
     <string name="keyboard_one_handed_mod">单手模式</string>
     <string name="keyboard_one_handed_mod_left">左手模式</string>
     <string name="keyboard_one_handed_mod_right">右手模式</string>
+    <string name="holding_habit">持机习惯</string>
+    <string name="holding_habit_left">左手持机</string>
+    <string name="holding_habit_right">右手持机</string>
     <string name="whether_reset_switch_preference">是否要将此设置重置为默认值？</string>
     <string name="button_sound_volume">按键音量</string>
     <string name="sound_time_range_title">按键音开启时段</string>

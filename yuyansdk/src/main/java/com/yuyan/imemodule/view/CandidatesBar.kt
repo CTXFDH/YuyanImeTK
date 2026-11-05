@@ -302,16 +302,19 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         candidatesData.setOnClickListener {
             if (isEditMode) onToolbarClick?.invoke()
         }
-        val oneHandedModSwitch = AppPrefs.getInstance().keyboardSetting.oneHandedModSwitch.getValue()
         val oneHandedMod = AppPrefs.getInstance().keyboardSetting.oneHandedMod.getValue()
-        mCloseAssociateBtn.layoutParams = LinearLayout.LayoutParams(menuHeight, menuHeight, 0f).apply { marginEnd = dp(8) }
+        val isLeftMode = oneHandedMod == KeyboardOneHandedMod.LEFT
 
         candidatesData.removeAllViews()
-        if (oneHandedModSwitch && oneHandedMod == KeyboardOneHandedMod.LEFT) {
+        if (isLeftMode) {
+            mRightArrowBtn.layoutParams = LinearLayout.LayoutParams(menuHeight, menuHeight, 0f).apply { marginStart = dp(10) }
+            mCloseAssociateBtn.layoutParams = LinearLayout.LayoutParams(menuHeight, menuHeight, 0f).apply { marginStart = dp(8) }
             candidatesData.addView(mRightArrowBtn)
             candidatesData.addView(mCloseAssociateBtn)
             candidatesData.addView(mRVCandidates, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT, 1f))
         } else {
+            mRightArrowBtn.layoutParams = LinearLayout.LayoutParams(menuHeight, menuHeight, 0f).apply { marginEnd = dp(10) }
+            mCloseAssociateBtn.layoutParams = LinearLayout.LayoutParams(menuHeight, menuHeight, 0f).apply { marginEnd = dp(8) }
             candidatesData.addView(mRVCandidates, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT, 1f))
             candidatesData.addView(mCloseAssociateBtn)
             candidatesData.addView(mRightArrowBtn)
@@ -439,20 +442,34 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             mMenuRightArrowBtn.setOnClickListener { _: View ->
                 mCvListener.onClickMenu(SkbMenuMode.CloseSKB)
             }
-            mCandidatesMenuContainer.addView(mIvMenuSetting)
-            mCandidatesMenuContainer.addView(mLlContainer)
-            mCandidatesMenuContainer.addView(mLlMenuHolder)
-            mCandidatesMenuContainer.addView(mMenuRightArrowBtn)
             this.addView(
                 mCandidatesMenuContainer,
                 LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
             )
         }
+        val oneHandedMod = AppPrefs.getInstance().keyboardSetting.oneHandedMod.getValue()
+        val isLeftMode = oneHandedMod == KeyboardOneHandedMod.LEFT
         val menuHeight = (instance.heightForCandidatesArea * 0.8).toInt()
         val logoSize = (instance.heightForCandidatesArea * 0.68).toInt() // 将左上角 Logo 缩小一点点 (约 28dp)
         mFlowerType.textSize = instance.candidateTextSize
-        mIvMenuSetting?.layoutParams = LinearLayout.LayoutParams(logoSize, logoSize, 0f).apply { marginStart = dp(10) }
-        mMenuRightArrowBtn.layoutParams = LinearLayout.LayoutParams(menuHeight, menuHeight, 0f).apply { marginEnd = dp(10) }
+
+        mCandidatesMenuContainer.removeAllViews()
+        if (isLeftMode) {
+            mIvMenuSetting?.layoutParams = LinearLayout.LayoutParams(logoSize, logoSize, 0f).apply { marginEnd = dp(10) }
+            mMenuRightArrowBtn.layoutParams = LinearLayout.LayoutParams(menuHeight, menuHeight, 0f).apply { marginStart = dp(10) }
+            mCandidatesMenuContainer.addView(mMenuRightArrowBtn)
+            mCandidatesMenuContainer.addView(mLlMenuHolder)
+            mCandidatesMenuContainer.addView(mLlContainer)
+            mCandidatesMenuContainer.addView(mIvMenuSetting)
+        } else {
+            mIvMenuSetting?.layoutParams = LinearLayout.LayoutParams(logoSize, logoSize, 0f).apply { marginStart = dp(10) }
+            mMenuRightArrowBtn.layoutParams = LinearLayout.LayoutParams(menuHeight, menuHeight, 0f).apply { marginEnd = dp(10) }
+            mCandidatesMenuContainer.addView(mIvMenuSetting)
+            mCandidatesMenuContainer.addView(mLlContainer)
+            mCandidatesMenuContainer.addView(mLlMenuHolder)
+            mCandidatesMenuContainer.addView(mMenuRightArrowBtn)
+        }
+
         mLlContainer.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, menuHeight, 0f)
         mLlMenuHolder.layoutParams = LinearLayout.LayoutParams(0, menuHeight, 1f)
         mRVContainerMenu.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, menuHeight)

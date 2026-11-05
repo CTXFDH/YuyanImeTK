@@ -198,7 +198,7 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val oneHandedModSwitch = switch(R.string.keyboard_one_handed_mod, "keyboard_one_handed_mod_enable", false)
 
         val oneHandedMod = list(
-            R.string.keyboard_one_handed_mod,
+            R.string.holding_habit,
             "keyboard_one_handed_mod",
             KeyboardOneHandedMod.LEFT,
             KeyboardOneHandedMod,
@@ -207,12 +207,10 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
                 KeyboardOneHandedMod.RIGHT
             ),
             listOf(
-                R.string.keyboard_one_handed_mod_left,
-                R.string.keyboard_one_handed_mod_right
+                R.string.holding_habit_left,
+                R.string.holding_habit_right
             )
-        ) {
-            oneHandedModSwitch.getValue()
-        }
+        )
 
         val halfWidthSymbolsMode = list(
             R.string.half_width_symbols_tips,
