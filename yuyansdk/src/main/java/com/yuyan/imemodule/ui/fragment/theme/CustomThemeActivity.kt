@@ -1111,10 +1111,11 @@ class CustomThemeActivity : AppCompatActivity() {
 
     private val themeTabLayout: com.google.android.material.tabs.TabLayout by lazy {
         com.google.android.material.tabs.TabLayout(this).apply {
-            val activeColor = ContextCompat.getColor(this@CustomThemeActivity, R.color.settings_icon_tint)
+            val indicatorColor = ContextCompat.getColor(this@CustomThemeActivity, R.color.settings_icon_tint)
+            val titleColor = ContextCompat.getColor(this@CustomThemeActivity, R.color.settings_title_text)
             val inactiveColor = ContextCompat.getColor(this@CustomThemeActivity, R.color.settings_summary_text)
-            setSelectedTabIndicatorColor(activeColor)
-            setTabTextColors(inactiveColor, activeColor)
+            setSelectedTabIndicatorColor(indicatorColor)
+            setTabTextColors(inactiveColor, titleColor)
             tabMode = com.google.android.material.tabs.TabLayout.MODE_FIXED
             background = null
             elevation = 0f
@@ -1211,10 +1212,10 @@ class CustomThemeActivity : AppCompatActivity() {
                 below(capsuleBarLayout, gap)
                 centerHorizontally()
             })
-            // 2区：Tab 选项卡栏 (标准 TabLayout)
+            // 2区：Tab 选项卡栏 (标准 TabLayout，全宽无两侧留白)
             add(themeTabLayout, lParams(matchParent, wrapContent) {
                 below(previewScaleContainer, gap)
-                centerHorizontally(itemMargin)
+                centerHorizontally()
             })
             // 3区：ViewPager2 页面容器
             add(themeViewPager, lParams(matchConstraints, matchConstraints) {
