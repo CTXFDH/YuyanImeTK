@@ -6,9 +6,12 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.ComposePathEffect
+import android.graphics.CornerPathEffect
 import android.graphics.DashPathEffect
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.RectF
 import splitties.dimensions.dp
 import android.graphics.Paint.FontMetricsInt
 import android.graphics.PorterDuff
@@ -240,7 +243,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
     }
 
     override fun isSpaceKey(key: SoftKey?): Boolean {
-        if (key == null) return false
+        key ?: return false
         return key.code == KeyEvent.KEYCODE_SPACE || key.label == "空格" || key.label == "En" || key.label == "cn" || key.labelSmall == "En" || key.labelSmall == "cn"
     }
 
@@ -294,20 +297,18 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         val sideLabels = arrayOf("，", "。", "？", "！", "～", "、", "；", "：", ",")
         if (softKey.label in sideLabels) return true
         val firstChar = softKey.label.getOrNull(0)
-        if (firstChar != null && !firstChar.isLetterOrDigit() && softKey.code < 0) {
-            return !isEnterKey(softKey) && !isSpaceKey(softKey) && !isDeleteKey(softKey) && !isSymbolKey(softKey) && !isNumberKey(softKey) && !isClearKey(softKey) && !isReturnKey(softKey) && !isShiftKey(softKey)
-        }
-        return false
+        return (firstChar != null) && (!firstChar.isLetterOrDigit()) && (softKey.code < 0) &&
+                !isEnterKey(softKey) && !isSpaceKey(softKey) && !isDeleteKey(softKey) && !isSymbolKey(softKey) && !isNumberKey(softKey) && !isClearKey(softKey) && !isReturnKey(softKey) && !isShiftKey(softKey)
     }
 
     private fun isAlphaInputKey(softKey: SoftKey): Boolean {
-        if (isNumberKey(softKey)) return false // 123 键绝对不是字母输入区！
-        return !isEnterKey(softKey) && !isSpaceKey(softKey) && !isDeleteKey(softKey) &&
+        return !isNumberKey(softKey) && !isEnterKey(softKey) && !isSpaceKey(softKey) && !isDeleteKey(softKey) &&
                !isSymbolKey(softKey) && !isSideSymbolKey(softKey) &&
                !isClearKey(softKey) && !isReturnKey(softKey) && !isAtKey(softKey) && !isShiftKey(softKey) && !isDotKey(softKey)
     }
 
-    private fun darkenColor(color: Int, factor: Float = 0.22f): Int {
+    private fun darkenColor(color: Int): Int {
+        val factor = 0.22f
         val a = Color.alpha(color)
         val r = (Color.red(color) * (1f - factor)).toInt().coerceIn(0, 255)
         val g = (Color.green(color) * (1f - factor)).toInt().coerceIn(0, 255)
@@ -376,7 +377,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
             if (isKeyBorder || (background ushr 24) > 0 || !isAlphaInputKey(softKey)) {
                 if (isKeyShadow) {
                     // 1. 开启按键阴影: 绘制底层 3D 阴影底座 + 顶层按键帽
-                    val shadowColor = darkenColor(background, 0.22f)
+                    val shadowColor = darkenColor(background)
                     val shadowCap = GradientDrawable().apply {
                         shape = GradientDrawable.RECTANGLE
                         cornerRadius = keyRadius.toFloat()
@@ -537,10 +538,10 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         canvas.restore()
     }
 
-    private fun drawRingSectorHighlight(canvas: Canvas, cx: Float, cy: Float, innerR: Float, outerR: Float, startAngle: Float, fillPaint: android.graphics.Paint) {
+    private fun drawRingSectorHighlight(canvas: Canvas, cx: Float, cy: Float, innerR: Float, outerR: Float, startAngle: Float, fillPaint: Paint) {
         val path = Path().apply {
-            val outerRect = android.graphics.RectF(cx - outerR, cy - outerR, cx + outerR, cy + outerR)
-            val innerRect = android.graphics.RectF(cx - innerR, cy - innerR, cx + innerR, cy + innerR)
+            val outerRect = RectF(cx - outerR, cy - outerR, cx + outerR, cy + outerR)
+            val innerRect = RectF(cx - innerR, cy - innerR, cx + innerR, cy + innerR)
             arcTo(outerRect, startAngle, 90f, false)
             arcTo(innerRect, startAngle + 90f, -90f, false)
             close()
@@ -548,6 +549,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         canvas.drawPath(path, fillPaint)
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun drawTextEditKey(canvas: Canvas, softKey: SoftKey, keyXMargin: Int, keyYMargin: Int) {
         val centerX = width * 0.27f
         val centerY = height * 0.39f
@@ -555,23 +557,23 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         val innerRadius = outerRadius * 0.40f
         val arrowDist = (outerRadius + innerRadius) / 2f
 
-        val strokePaint = android.graphics.Paint().apply {
-            style = android.graphics.Paint.Style.STROKE
+        val strokePaint = Paint().apply {
+            style = Paint.Style.STROKE
             strokeWidth = (height * 0.002f).coerceAtLeast(1.5f)
             color = (mActiveTheme.keyTextColor and 0x00FFFFFF) or 0x44000000
             isAntiAlias = true
         }
 
-        val fillPaint = android.graphics.Paint().apply {
-            style = android.graphics.Paint.Style.FILL
+        val fillPaint = Paint().apply {
+            style = Paint.Style.FILL
             isAntiAlias = true
         }
 
-        val textPaint = android.graphics.Paint().apply {
+        val textPaint = Paint().apply {
             color = mActiveTheme.keyTextColor
             typeface = Typeface.DEFAULT_BOLD
             textSize = height * 0.04f
-            textAlign = android.graphics.Paint.Align.CENTER
+            textAlign = Paint.Align.CENTER
             isAntiAlias = true
         }
 
@@ -624,22 +626,20 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
 
             KeyEvent.KEYCODE_DPAD_LEFT -> { // 左箭头
                 val arrowX = centerX - arrowDist
-                val arrowY = centerY
                 if (softKey.pressed) {
                     fillPaint.color = mActiveTheme.keyPressHighlightColor
                     drawRingSectorHighlight(canvas, centerX, centerY, innerRadius, outerRadius, 135f, fillPaint)
                 }
-                drawChevronArrow(canvas, arrowX, arrowY, dp(6f), 90f, mActiveTheme.keyTextColor)
+                drawChevronArrow(canvas, arrowX, centerY, dp(6f), 90f, mActiveTheme.keyTextColor)
             }
 
             KeyEvent.KEYCODE_DPAD_RIGHT -> { // 右箭头
                 val arrowX = centerX + arrowDist
-                val arrowY = centerY
                 if (softKey.pressed) {
                     fillPaint.color = mActiveTheme.keyPressHighlightColor
                     drawRingSectorHighlight(canvas, centerX, centerY, innerRadius, outerRadius, 315f, fillPaint)
                 }
-                drawChevronArrow(canvas, arrowX, arrowY, dp(6f), -90f, mActiveTheme.keyTextColor)
+                drawChevronArrow(canvas, arrowX, centerY, dp(6f), -90f, mActiveTheme.keyTextColor)
             }
 
             InputModeSwitcher.USER_KEYCODE_MOVE_START, InputModeSwitcher.USER_KEYCODE_MOVE_END -> { // 底部 |＜ 和 ＞| 按钮：增大尺寸，箭头与竖线无缝连结
@@ -716,14 +716,13 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         val marqueePath = Path()
 
         val maxAllowedX = width.toFloat() - strokeHalfWidth
-        val minAllowedY = strokeHalfWidth
         val maxAllowedY = height.toFloat() - strokeHalfWidth
 
         // 使用直角矩形合并，彻底消灭按键交叉中心夹角处留下的星形内孔与小黑点！
         for (k in keys) {
-            val rectF = android.graphics.RectF(
+            val rectF = RectF(
                 (k.mLeft - padding).coerceAtLeast(strokeHalfWidth),
-                (k.mTop - padding).coerceAtLeast(minAllowedY),
+                (k.mTop - padding).coerceAtLeast(strokeHalfWidth),
                 (k.mRight + padding).coerceAtMost(maxAllowedX),
                 (k.mBottom + padding).coerceAtMost(maxAllowedY),
             )
@@ -737,15 +736,15 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         val dashGap = dp(5f)
 
         // 使用 PathEffect.chainPathEffect 为最外廓整体大框架外拐角平滑磨圆
-        val cornerEffect = android.graphics.CornerPathEffect(r)
+        val cornerEffect = CornerPathEffect(r)
 
         val blackPaint = Paint().apply {
             style = Paint.Style.STROKE
             strokeWidth = dp(2.5f)
             color = Color.BLACK
-            pathEffect = android.graphics.ComposePathEffect(
+            pathEffect = ComposePathEffect(
                 DashPathEffect(floatArrayOf(dashWidth, dashGap), 0f),
-                cornerEffect
+                cornerEffect,
             )
             isAntiAlias = true
         }
@@ -754,9 +753,9 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
             style = Paint.Style.STROKE
             strokeWidth = dp(2.5f)
             color = Color.WHITE
-            pathEffect = android.graphics.ComposePathEffect(
+            pathEffect = ComposePathEffect(
                 DashPathEffect(floatArrayOf(dashWidth, dashGap), dashWidth),
-                cornerEffect
+                cornerEffect,
             )
             isAntiAlias = true
         }
