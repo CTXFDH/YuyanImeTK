@@ -41,17 +41,15 @@ class KeyboardManager {
     fun clearNonMainKeyboards(keepType: KeyboardType) {
         val keepContainer = keyboards[keepType]
         keyboards.clear()
-        if (keepContainer != null) {
-            keyboards[keepType] = keepContainer
-        }
+        keepContainer?.let { keyboards[keepType] = it }
     }
 
     fun switchKeyboardToMain() {
         var defaultMainLayout = AppPrefs.getInstance().internal.inputMethodPinyinMode.getValue() and InputModeSwitcher.MASK_SKB_LAYOUT
         // 强保底防篡改：如果主键盘配置被误存为了数字键盘(0x5000)或文本编辑键盘(0x8000)，强行自动恢复为 T9 主打字键盘！
-        if (defaultMainLayout == InputModeSwitcher.MASK_SKB_LAYOUT_NUMBER || 
-            defaultMainLayout == InputModeSwitcher.MASK_SKB_LAYOUT_TEXTEDIT || 
-            defaultMainLayout == 0) {
+        if ((defaultMainLayout == InputModeSwitcher.MASK_SKB_LAYOUT_NUMBER) || 
+            (defaultMainLayout == InputModeSwitcher.MASK_SKB_LAYOUT_TEXTEDIT) || 
+            (defaultMainLayout == 0)) {
             defaultMainLayout = InputModeSwitcher.MASK_SKB_LAYOUT_T9_PINYIN
             AppPrefs.getInstance().internal.inputMethodPinyinMode.setValue(InputModeSwitcher.MASK_SKB_LAYOUT_T9_PINYIN or InputModeSwitcher.MASK_LANGUAGE_CN)
         }

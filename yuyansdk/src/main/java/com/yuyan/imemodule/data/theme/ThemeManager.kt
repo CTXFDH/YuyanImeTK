@@ -4,7 +4,6 @@ package com.yuyan.imemodule.data.theme
 import android.content.res.Configuration
 import androidx.annotation.Keep
 import com.yuyan.imemodule.prefs.AppPrefs
-import com.yuyan.imemodule.prefs.WeakHashSet
 import com.yuyan.imemodule.utils.isDarkMode
 import com.yuyan.imemodule.view.preference.ManagedPreference
 

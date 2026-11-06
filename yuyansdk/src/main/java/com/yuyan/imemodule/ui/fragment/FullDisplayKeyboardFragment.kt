@@ -113,7 +113,7 @@ class FullDisplayKeyboardFragment: Fragment(){
             orientation = VERTICAL
             gravity = Gravity.CENTER
             icon = ImageView(context)
-            addView(icon, LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(100)))
+            addView(icon, LayoutParams(LayoutParams.MATCH_PARENT, dp(100)))
             tip = textView {
                 setText(R.string.keyboard_full_display_advanced_tip)
                 gravity = Gravity.CENTER

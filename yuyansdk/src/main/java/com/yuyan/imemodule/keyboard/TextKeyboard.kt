@@ -508,7 +508,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
             isAntiAlias = true
         }
 
-        val path = android.graphics.Path().apply {
+        val path = Path().apply {
             moveTo(cx - size, cy - size / 2.2f)
             lineTo(cx, cy + size / 2.2f)
             lineTo(cx + size, cy - size / 2.2f)
@@ -538,7 +538,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
     }
 
     private fun drawRingSectorHighlight(canvas: Canvas, cx: Float, cy: Float, innerR: Float, outerR: Float, startAngle: Float, fillPaint: android.graphics.Paint) {
-        val path = android.graphics.Path().apply {
+        val path = Path().apply {
             val outerRect = android.graphics.RectF(cx - outerR, cy - outerR, cx + outerR, cy + outerR)
             val innerRect = android.graphics.RectF(cx - innerR, cy - innerR, cx + innerR, cy + innerR)
             arcTo(outerRect, startAngle, 90f, false)

@@ -1,6 +1,5 @@
 package com.yuyan.imemodule.ui.fragment
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -29,7 +28,6 @@ import com.yuyan.imemodule.view.widget.withLoadingDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ImeSettingsFragment : PreferenceFragmentCompat() {
@@ -55,13 +53,11 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                         try {
                             val inputStream = cr.openInputStream(uri)!!
                             UserDataManager.import(inputStream).getOrThrow()
-                            lifecycleScope.launch(NonCancellable + Dispatchers.Main) {
-                                delay(400L)
-                                AppUtil.exit()
-                            }
                             withContext(Dispatchers.Main) {
+                                delay(400L)
                                 AppUtil.showRestartNotification(ctx)
                                 Toast.makeText(ctx, R.string.user_data_imported, Toast.LENGTH_SHORT).show()
+                                AppUtil.exit()
                             }
                         } catch (e: Exception) {
                             ctx.importErrorDialog(e)

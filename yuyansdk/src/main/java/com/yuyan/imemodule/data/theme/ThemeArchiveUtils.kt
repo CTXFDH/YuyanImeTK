@@ -87,26 +87,30 @@ object ThemeArchiveUtils {
             val targetDir = ThemeFilesManager.getThemeDir(finalName)
 
             var finalSrcPath = baseTheme.backgroundImage?.srcFilePath
-            if (tempSrcFile != null && tempSrcFile!!.exists()) {
-                val ext = tempSrcFile!!.extension
-                val dest = File(targetDir, if (ext.isNotEmpty()) "src.$ext" else "src.png")
-                tempSrcFile!!.copyTo(dest, overwrite = true)
-                finalSrcPath = dest.absolutePath
+            tempSrcFile?.let { src ->
+                if (src.exists()) {
+                    val ext = src.extension
+                    val dest = File(targetDir, if (ext.isNotEmpty()) "src.$ext" else "src.png")
+                    src.copyTo(dest, overwrite = true)
+                    finalSrcPath = dest.absolutePath
+                }
             }
 
             var finalLogoPath = baseTheme.customLogoFilePath
-            if (tempLogoFile != null && tempLogoFile!!.exists()) {
-                val ext = tempLogoFile!!.extension
-                val dest = File(targetDir, if (ext.isNotEmpty()) "logo.$ext" else "logo.png")
-                tempLogoFile!!.copyTo(dest, overwrite = true)
-                finalLogoPath = dest.absolutePath
+            tempLogoFile?.let { logo ->
+                if (logo.exists()) {
+                    val ext = logo.extension
+                    val dest = File(targetDir, if (ext.isNotEmpty()) "logo.$ext" else "logo.png")
+                    logo.copyTo(dest, overwrite = true)
+                    finalLogoPath = dest.absolutePath
+                }
             }
 
             val newBg = baseTheme.backgroundImage?.let { bg ->
                 Theme.Custom.CustomBackground(
                     srcFilePath = finalSrcPath ?: bg.srcFilePath,
                     brightness = bg.brightness,
-                    cropRect = bg.cropRect
+                    cropRect = bg.cropRect,
                 )
             }
 

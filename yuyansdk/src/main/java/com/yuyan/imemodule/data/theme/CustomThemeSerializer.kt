@@ -23,12 +23,12 @@ object CustomThemeSerializer : JsonTransformingSerializer<Theme.Custom>(Theme.Cu
         val jsonObj = element.jsonObject.removeVersion()
         val mutableMap = jsonObj.toMutableMap()
         for ((key, value) in jsonObj) {
-            if (value is JsonPrimitive && value.isString) {
+            if ((value is JsonPrimitive) && value.isString) {
                 val str = value.content.trim()
                 if (str.startsWith("#") || str.startsWith("0x") || str.startsWith("0X")) {
                     val colorInt = parseColorString(str)
-                    if (colorInt != null) {
-                        mutableMap[key] = JsonPrimitive(colorInt)
+                    colorInt?.let {
+                        mutableMap[key] = JsonPrimitive(it)
                     }
                 }
             }
@@ -37,7 +37,7 @@ object CustomThemeSerializer : JsonTransformingSerializer<Theme.Custom>(Theme.Cu
     }
 
     fun stripJsonComments(jsonText: String): String {
-        return jsonText.lines().filterNot { line ->
+        return jsonText.lineSequence().filterNot { line ->
             val trimmed = line.trim()
             trimmed.startsWith("#") || trimmed.startsWith("//")
         }.joinToString("\n")

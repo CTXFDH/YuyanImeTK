@@ -8,7 +8,6 @@ import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
@@ -86,7 +85,7 @@ class FloatCandidateBar(context: Context?, attrs: AttributeSet?) : RelativeLayou
                         DictDecoder.activeCandidateBar =
                             layoutManager.findLastVisibleItemPosition()
                         val itemCount = recyclerView.adapter?.itemCount
-                        if (KeyboardManager.instance.currentContainer !is CandidatesContainer && itemCount != null && DictDecoder.activeCandidateBar >= itemCount - 1) {
+                        if ((KeyboardManager.instance.currentContainer !is CandidatesContainer) && (itemCount != null) && (DictDecoder.activeCandidateBar >= itemCount - 1)) {
                             DictDecoder.nextPageCandidates
                         }
                     }
@@ -180,7 +179,7 @@ class FloatCandidateBar(context: Context?, attrs: AttributeSet?) : RelativeLayou
         if (::mComposingTagContainer.isInitialized) {
             val tagBg = GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
-                cornerRadius = dp(14f).toFloat()
+                cornerRadius = dp(14f)
                 if (activeTheme.isDark) {
                     setColor(0xE62A2C30.toInt())
                     setStroke(dp(1), 0x40FFFFFF.toInt())

@@ -54,7 +54,7 @@ class CandidatesBarAdapter(context: Context?) :
     }
 
     override fun onBindViewHolder(holder: SymbolHolder, position: Int) {
-        if (DictDecoder.isCandidatesEmpty || position !in DictDecoder.candidates.indices) return
+        if (DictDecoder.isCandidatesEmpty || (position !in DictDecoder.candidates.indices)) return
         holder.textView.text = DictDecoder.candidates[position].text
         holder.textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, instance.candidateTextSize)
 

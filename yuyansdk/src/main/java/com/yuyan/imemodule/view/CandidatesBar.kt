@@ -275,7 +275,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                         DictDecoder.activeCandidateBar =
                             layoutManager.findLastVisibleItemPosition()
                         val itemCount = recyclerView.adapter?.itemCount
-                        if (KeyboardManager.instance.currentContainer !is CandidatesContainer && itemCount != null && DictDecoder.activeCandidateBar >= itemCount - 1) {
+                        if ((KeyboardManager.instance.currentContainer !is CandidatesContainer) && (itemCount != null) && (DictDecoder.activeCandidateBar >= itemCount - 1)) {
                             DictDecoder.nextPageCandidates
                         }
                     }
@@ -694,7 +694,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             for (i in 0 until mCandidatesMenuContainer.childCount) {
                 val child = mCandidatesMenuContainer.getChildAt(i)
                 if (child === mIvMenuSetting || child === mCandidateLogoView) {
-                    clearLogoTint(child as? ImageView)
+                    clearLogoTint(child as ImageView)
                     continue
                 }
                 if (child is TextView) {
@@ -822,7 +822,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                         }
                     }
 
-                    val cachedBmp = logoCache.get(customLogoPath)
+                    val cachedBmp = logoCache[customLogoPath]
                     if (cachedBmp != null) {
                         ivMenu?.apply {
                             setImageBitmap(cachedBmp)
