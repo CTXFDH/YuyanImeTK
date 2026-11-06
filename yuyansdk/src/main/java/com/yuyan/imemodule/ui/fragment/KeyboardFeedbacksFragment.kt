@@ -46,7 +46,6 @@ class KeyboardFeedbacksFragment : Fragment() {
         val grayColor = ContextCompat.getColor(requireContext(), R.color.color_gray)
 
         val soundOnKeyPress by AppPrefs.getInstance().internal.soundOnKeyPress
-        val keyPressVolumePref = AppPrefs.getInstance().internal.keyPressVolume
         val vibrationAmplitude by AppPrefs.getInstance().internal.vibrationAmplitude
 
         val soundTimeRangeEnablePref = AppPrefs.getInstance().internal.soundTimeRangeEnable
@@ -96,27 +95,6 @@ class KeyboardFeedbacksFragment : Fragment() {
             .sectionTextColor(summaryTextColor)
             .sectionTextSize(12)
             .bottomSidesLabels(resources.getStringArray(R.array.vibrate_labels))
-            .autoAdjustSectionMark()
-            .touchToSeek()
-            .build()
-
-        // 新增【按键音量调节】比例滑块 (1% - 100%)
-        val keyVolumeSeekBar = SignSeekBar(requireContext())
-        keyVolumeSeekBar.getConfigBuilder()
-            .min(1f).max(100f).progress(keyPressVolumePref.getValue().toFloat())
-            .sectionCount(4)
-            .trackSize(2)
-            .secondTrackSize(2)
-            .trackColor(grayColor)
-            .secondTrackColor(accentColor)
-            .thumbColor(accentColor)
-            .thumbRadius(6)
-            .thumbRadiusOnDragging(8)
-            .showThumbShadow(false)
-            .showSectionText()
-            .sectionTextPosition(SignSeekBar.TextPosition.BELOW_SECTION_MARK)
-            .sectionTextColor(summaryTextColor)
-            .sectionTextSize(12)
             .autoAdjustSectionMark()
             .touchToSeek()
             .build()
@@ -282,7 +260,6 @@ class KeyboardFeedbacksFragment : Fragment() {
 
         val isSoundActive = soundOnKeyPress < 5 || soundOnKeyPress > 10
         soundSeekBar.isEnabled = isSoundActive
-        keyVolumeSeekBar.isEnabled = isSoundActive
         renderTabsAndOptions(isSoundActive)
 
         val soundSwitch = switch {
@@ -292,13 +269,11 @@ class KeyboardFeedbacksFragment : Fragment() {
                     soundSeekBar.setProgress(0f)
                     AppPrefs.getInstance().internal.soundOnKeyPress.setValue(0)
                     soundSeekBar.isEnabled = true
-                    keyVolumeSeekBar.isEnabled = true
                     renderTabsAndOptions(true)
                 } else {
                     soundSeekBar.setProgress(10f)
                     AppPrefs.getInstance().internal.soundOnKeyPress.setValue(10)
                     soundSeekBar.isEnabled = false
-                    keyVolumeSeekBar.isEnabled = false
                     renderTabsAndOptions(false)
                 }
             }
@@ -348,34 +323,6 @@ class KeyboardFeedbacksFragment : Fragment() {
             setTextColor(titleTextColor)
             gravity = gravityVerticalCenter
         }
-
-        val keyVolumeTitle = textView {
-            setText(R.string.key_press_sound_volume_title)
-            textSize = 15.5f
-            typeface = android.graphics.Typeface.DEFAULT_BOLD
-            setTextColor(titleTextColor)
-            gravity = gravityVerticalCenter
-        }
-
-        val keyVolumeValTv = textView {
-            text = "${keyPressVolumePref.getValue()}%"
-            textSize = 14f
-            typeface = android.graphics.Typeface.DEFAULT_BOLD
-            setTextColor(accentColor)
-            gravity = gravityVerticalCenter
-        }
-
-        keyVolumeSeekBar.setOnProgressChangedListener(object : SignSeekBar.OnProgressChangedListener {
-            override fun onProgressChanged(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float, fromUser: Boolean) {
-                keyVolumeValTv.text = "$progress%"
-            }
-            override fun getProgressOnFinally(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float, fromUser: Boolean) {
-                keyPressVolumePref.setValue(progress)
-                keyVolumeValTv.text = "$progress%"
-                DevicesUtils.tryPlayKeyDown()
-            }
-            override fun getProgressOnActionUp(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float) {}
-        })
 
         val soundTimeRangeTitle = textView {
             setText(R.string.sound_time_range_title)
@@ -488,8 +435,28 @@ class KeyboardFeedbacksFragment : Fragment() {
         val mainContentCard = constraintLayout {
             val lineHeight = dp(48)
             val itemMargin = dp(16)
-            add(soundTitle, lParams(matchConstraints, lineHeight) {
+
+            // 1. 触感强度 (最上边)
+            add(vibrationTitle, lParams(matchConstraints, lineHeight) {
                 topOfParent()
+                startOfParent(itemMargin)
+                before(vibrationSwitch)
+                above(vibrateSeekBar)
+            })
+            add(vibrationSwitch, lParams(matchConstraints, lineHeight) {
+                topToTopOf(vibrationTitle)
+                endOfParent(itemMargin)
+            })
+            add(vibrateSeekBar, lParams(width = LinearLayout.LayoutParams.MATCH_PARENT, height = LinearLayout.LayoutParams.WRAP_CONTENT) {
+                below(vibrationTitle)
+                startOfParent(itemMargin)
+                endOfParent(itemMargin)
+                above(soundTitle)
+            })
+
+            // 2. 按键音量
+            add(soundTitle, lParams(matchConstraints, lineHeight) {
+                below(vibrateSeekBar)
                 startOfParent(itemMargin)
                 before(soundSwitch)
                 above(soundSeekBar)
@@ -505,6 +472,7 @@ class KeyboardFeedbacksFragment : Fragment() {
                 above(soundTimeRangeTitle)
             })
 
+            // 3. 按键音开启时段
             add(soundTimeRangeTitle, lParams(matchConstraints, lineHeight) {
                 below(soundSeekBar)
                 startOfParent(itemMargin)
@@ -517,40 +485,6 @@ class KeyboardFeedbacksFragment : Fragment() {
             })
             add(timePickerLayout, lParams(width = LinearLayout.LayoutParams.MATCH_PARENT, height = LinearLayout.LayoutParams.WRAP_CONTENT) {
                 below(soundTimeRangeTitle)
-                startOfParent(itemMargin)
-                endOfParent(itemMargin)
-                above(vibrationTitle)
-            })
-
-            add(vibrationTitle, lParams(matchConstraints, lineHeight) {
-                below(timePickerLayout)
-                startOfParent(itemMargin)
-                before(vibrationSwitch)
-                above(vibrateSeekBar)
-            })
-            add(vibrationSwitch, lParams(matchConstraints, lineHeight) {
-                topToTopOf(vibrationTitle)
-                endOfParent(itemMargin)
-            })
-            add(vibrateSeekBar, lParams(width = LinearLayout.LayoutParams.MATCH_PARENT, height = LinearLayout.LayoutParams.WRAP_CONTENT) {
-                below(vibrationTitle)
-                startOfParent(itemMargin)
-                endOfParent(itemMargin)
-                above(keyVolumeTitle)
-            })
-
-            add(keyVolumeTitle, lParams(matchConstraints, lineHeight) {
-                below(vibrateSeekBar)
-                startOfParent(itemMargin)
-                before(keyVolumeValTv)
-                above(keyVolumeSeekBar)
-            })
-            add(keyVolumeValTv, lParams(matchConstraints, lineHeight) {
-                topToTopOf(keyVolumeTitle)
-                endOfParent(itemMargin)
-            })
-            add(keyVolumeSeekBar, lParams(width = LinearLayout.LayoutParams.MATCH_PARENT, height = LinearLayout.LayoutParams.WRAP_CONTENT) {
-                below(keyVolumeTitle)
                 startOfParent(itemMargin)
                 endOfParent(itemMargin)
             })
