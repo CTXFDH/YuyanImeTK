@@ -44,6 +44,7 @@ import com.yuyan.imemodule.keyboard.container.SymbolContainer
 import com.yuyan.imemodule.keyboard.container.T9TextContainer
 import com.yuyan.imemodule.manager.InputModeSwitcher
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
+import com.yuyan.imemodule.prefs.behavior.ChineseAssociationMode
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.prefs.behavior.PopupMenuMode
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
@@ -79,7 +80,7 @@ import splitties.views.rightPadding
 class InputView(context: Context, private val service: ImeService) : IKeyboardView(context), IResponseKeyEvent {
     val imeService: ImeService get() = service
     private val appPrefs = getInstance()
-    private var chinesePredictionMode = com.yuyan.imemodule.prefs.behavior.ChineseAssociationMode.CONTINUOUS
+    private var chinesePredictionMode = ChineseAssociationMode.CONTINUOUS
     var isAddPhrases = false
     var isInternalOperation = false
     var isCursorSwiping = false
@@ -92,9 +93,9 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     var mAddPhrasesLayout: EditPhrasesView
     private var mLlKeyboardBottomHolder: LinearLayout
     private var mInputKeyboardContainer: ViewGroup
-    private lateinit var mLlMainKeyboardCard: ViewGroup
-    private lateinit var mComposingTagContainer: LinearLayout
-    private lateinit var mComposingView: TextView
+    private var mLlMainKeyboardCard: ViewGroup
+    private var mComposingTagContainer: LinearLayout
+    private var mComposingView: TextView
     private lateinit var mRightPaddingKey: ManagedPreference.PInt
     private lateinit var mBottomPaddingKey: ManagedPreference.PInt
     private var mFullDisplayKeyboardBar: FullDisplayKeyboardBar? = null
@@ -133,14 +134,12 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     override fun onCandidateChanged() {
         updateCandidateBar()
         val composingText = DictDecoder.composingStrForDisplay
-        if (::mComposingTagContainer.isInitialized) {
-            if (composingText.isNotBlank()) {
-                mComposingView.text = composingText
-                mComposingTagContainer.visibility = VISIBLE
-                updateComposingTagTheme()
-            } else {
-                mComposingTagContainer.visibility = GONE
-            }
+        if (composingText.isNotBlank()) {
+            mComposingView.text = composingText
+            mComposingTagContainer.visibility = VISIBLE
+            updateComposingTagTheme()
+        } else {
+            mComposingTagContainer.visibility = GONE
         }
         (KeyboardManager.instance.currentContainer as? CandidatesContainer)?.showCandidatesView()
     }
@@ -263,16 +262,14 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
                 0f, 0f               // Bottom-Left
             )
         }
-        if (::mLlMainKeyboardCard.isInitialized) {
-            mLlMainKeyboardCard.background = bg
-            mLlMainKeyboardCard.clipToOutline = true
-            mLlMainKeyboardCard.outlineProvider = object : android.view.ViewOutlineProvider() {
-                override fun getOutline(view: View, outline: android.graphics.Outline) {
-                    outline.setRoundRect(0, 0, view.width, view.height + (radiusPx.toInt() * 2), radiusPx)
-                }
+        mLlMainKeyboardCard.background = bg
+        mLlMainKeyboardCard.clipToOutline = true
+        mLlMainKeyboardCard.outlineProvider = object : android.view.ViewOutlineProvider() {
+            override fun getOutline(view: View, outline: android.graphics.Outline) {
+                outline.setRoundRect(0, 0, view.width, view.height + (radiusPx.toInt() * 2), radiusPx)
             }
-            mLlMainKeyboardCard.invalidate()
         }
+        mLlMainKeyboardCard.invalidate()
         mLlKeyboardBottomHolder.setBackgroundColor(activeTheme.keyboardColor)
         mSkbRoot.background = null
     }
@@ -343,15 +340,11 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
             }
 
             mSkbRoot.background = drawable
-            if (::mLlMainKeyboardCard.isInitialized) {
-                mLlMainKeyboardCard.setBackgroundResource(android.R.color.transparent)
-            }
+            mLlMainKeyboardCard.setBackgroundResource(android.R.color.transparent)
             mLlKeyboardBottomHolder.setBackgroundResource(android.R.color.transparent)
         } else {
             mSkbRoot.background = null
-            if (::mLlMainKeyboardCard.isInitialized) {
-                mLlMainKeyboardCard.background = background
-            }
+            mLlMainKeyboardCard.background = background
             mLlKeyboardBottomHolder.setBackgroundColor(activeTheme.keyboardColor)
         }
 
@@ -373,7 +366,6 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     }
 
     fun updateComposingTagTheme() {
-        if (!::mComposingTagContainer.isInitialized) return
         val activeTheme = ThemeManager.activeTheme
         val isDark = activeTheme.isDark
         val tagBg = GradientDrawable().apply {
@@ -916,8 +908,8 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
                     skbInputView.removeAllViews()
                     skbInputView.addView(container)
                 }
-                container.visibility = View.VISIBLE
-                skbInputView?.visibility = View.VISIBLE
+                container.visibility = VISIBLE
+                skbInputView?.visibility = VISIBLE
             }
         } catch (_: Exception) {
             try {
@@ -998,8 +990,8 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
                     showSymbols(result)
                 }
             }
-            chinesePredictionMode != com.yuyan.imemodule.prefs.behavior.ChineseAssociationMode.DISABLED && InputModeSwitcher.isChinese -> {
-                if (chinesePredictionMode == com.yuyan.imemodule.prefs.behavior.ChineseAssociationMode.SINGLE_WORD && DictDecoder.justCommittedAssociateWord) {
+            chinesePredictionMode != ChineseAssociationMode.DISABLED && InputModeSwitcher.isChinese -> {
+                if (chinesePredictionMode == ChineseAssociationMode.SINGLE_WORD && DictDecoder.justCommittedAssociateWord) {
                     DictDecoder.justCommittedAssociateWord = false
                     resetCandidateWindow()
                 } else {
