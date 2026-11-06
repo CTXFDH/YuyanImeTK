@@ -223,6 +223,7 @@ object CustomThemeSerializer : JsonTransformingSerializer<Theme.Custom>(Theme.Cu
         val transformation: (JsonObject) -> JsonObject
     )
 
+    @Suppress("UNUSED")
     private val strategies: List<MigrationStrategy> =
         // Add migrations here
         listOf(
@@ -252,8 +253,4 @@ object CustomThemeSerializer : JsonTransformingSerializer<Theme.Custom>(Theme.Cu
     private const val VERSION = "version"
 
     private const val CURRENT_VERSION = "2.0"
-    private const val FALLBACK_VERSION = "1.0"
-
-    private val knownVersions = strategies.map { it.version }
-
 }

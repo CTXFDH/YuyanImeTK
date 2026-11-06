@@ -84,7 +84,7 @@ class CandidatesBarAdapter(context: Context?) :
             }
         }
 
-        view.setTextColor(if ((mActiveCandNo - 1 == position)) activeTheme.accentKeyBackgroundColor else activeTheme.candidateTextColor)
+        view.setTextColor(if (mActiveCandNo - 1 == position) activeTheme.accentKeyBackgroundColor else activeTheme.candidateTextColor)
         if (mOnItemClickListener != null) {
             view.setOnClickListener { v: View? ->
                 mOnItemClickListener!!.onItemClick(this@CandidatesBarAdapter, v, position)
