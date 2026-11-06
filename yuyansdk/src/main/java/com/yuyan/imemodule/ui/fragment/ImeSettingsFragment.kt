@@ -29,6 +29,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import kotlin.time.Duration.Companion.milliseconds
 
 class ImeSettingsFragment : PreferenceFragmentCompat() {
 
@@ -54,7 +55,7 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                             val inputStream = cr.openInputStream(uri)!!
                             UserDataManager.import(inputStream).getOrThrow()
                             withContext(Dispatchers.Main) {
-                                delay(400L)
+                                delay(400.milliseconds)
                                 AppUtil.showRestartNotification(ctx)
                                 Toast.makeText(ctx, R.string.user_data_imported, Toast.LENGTH_SHORT).show()
                                 AppUtil.exit()

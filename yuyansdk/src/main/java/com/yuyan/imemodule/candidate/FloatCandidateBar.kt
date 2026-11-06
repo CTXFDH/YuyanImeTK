@@ -68,7 +68,7 @@ class FloatCandidateBar(context: Context?, attrs: AttributeSet?) : RelativeLayou
                 gravity = Gravity.CENTER_VERTICAL
             }
             mRVCandidates = RecyclerView(context).apply {
-                setItemAnimator(null)
+                itemAnimator = null
                 layoutParams = LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT, 1f)
                 layoutManager =
                     CustomLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, reverseLayout = false)
@@ -195,11 +195,11 @@ class FloatCandidateBar(context: Context?, attrs: AttributeSet?) : RelativeLayou
             mComposingView.setTextColor(activeTheme.toolbarTextColor)
             mComposingView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14f)
         }
-        val drawable = GradientDrawable()
-        drawable.setShape(GradientDrawable.RECTANGLE)
-        drawable.setColor(ThemeManager.activeTheme.keyboardColor)
-        val cornerRadiusInPx = 20f
-        drawable.setCornerRadius(cornerRadiusInPx)
+        val drawable = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            setColor(ThemeManager.activeTheme.keyboardColor)
+            cornerRadius = 20f
+        }
         background = drawable
         mCandidatesAdapter.notifyChanged()
     }

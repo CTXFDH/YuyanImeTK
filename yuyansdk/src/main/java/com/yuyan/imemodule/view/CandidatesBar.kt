@@ -29,6 +29,7 @@ import androidx.core.graphics.createBitmap
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.yuyan.imemodule.data.theme.Theme
 import com.yuyan.imemodule.utils.DevicesUtils
+import kotlin.time.Duration.Companion.milliseconds
 import java.io.File
 import android.util.AttributeSet
 import android.util.TypedValue
@@ -509,7 +510,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         }
         if (pendingMenuJob?.isActive == true) return
         pendingMenuJob = serviceScope.launch {
-            delay(100)
+            delay(100.milliseconds)
             showCandidates()
             pendingMenuJob = null
         }
@@ -572,10 +573,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         val barMenus = DataBaseKT.instance.skbFunDao().getALlBarMenu()
         for (item in barMenus) {
             val skbMenuMode = SkbMenuMode.decode(item.name)
-            val skbFunItem = menuSkbFunsPreset[skbMenuMode]
-            if (skbFunItem != null) {
-                mFunItems.add(skbFunItem)
-            }
+            menuSkbFunsPreset[skbMenuMode]?.let { mFunItems.add(it) }
         }
         mCandidatesMenuAdapter.items = mFunItems
         activeCandNo = 0
@@ -882,6 +880,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         view.setPadding(p, p, p, p)
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun decodeSampledBitmapFromFile(path: String, reqWidth: Int, reqHeight: Int): Bitmap? {
         val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         BitmapFactory.decodeFile(path, options)
