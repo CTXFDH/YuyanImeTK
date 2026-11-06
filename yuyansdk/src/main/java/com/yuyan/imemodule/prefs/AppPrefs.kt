@@ -151,22 +151,13 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
         val categoryLayout = category(R.string.category_layout_habit)
 
-        val oneHandedMod = list(
-            R.string.holding_habit,
+        val oneHandedMod = stringLike(
             "keyboard_one_handed_mod",
             KeyboardOneHandedMod.RIGHT,
-            KeyboardOneHandedMod,
-            listOf(
-                KeyboardOneHandedMod.LEFT,
-                KeyboardOneHandedMod.RIGHT
-            ),
-            listOf(
-                R.string.holding_habit_left,
-                R.string.holding_habit_right
-            )
+            KeyboardOneHandedMod
         )
 
-        val oneHandedModSwitch = switch(R.string.keyboard_one_handed_mod, "keyboard_one_handed_mod_enable", false)
+        val oneHandedModSwitch = bool("keyboard_one_handed_mod_enable", false)
 
         val candidateTextSize = int(
             R.string.candidate_size_input_setting,
@@ -208,14 +199,14 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
         val categoryModes = category(R.string.category_modes_prompts)
 
-        val abcNumberLine = switch(R.string.engish_full_keyboard, "keyboard_abc_number_line_enable", false)
+        val abcNumberLine = bool("keyboard_abc_number_line_enable", false)
 
         // 锁定英语键盘:锁定后，切换到英语键盘，下次弹出键盘使用英语模式
         val keyboardLockEnglish = switch(R.string.keyboard_menu_lock_english, "keyboard_menu_lock_english_enable", false)
 
         val keyboardDoubleInputKey = switch(R.string.keyboard_double_input_key, "keyboard_double_input_pinyin_enable", true)
 
-        val keyboardMnemonic = switch(R.string.keyboard_mnemonic_show, "keyboard_mnemonic_show_enable", false)
+        val keyboardMnemonic = bool("keyboard_mnemonic_show_enable", false)
 
         val lx17WithLeftPrefix = switch(R.string.lx17_with_left_prefix, "lx17_with_left_prefix_enable", true)
 

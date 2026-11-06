@@ -37,6 +37,25 @@ abstract class ManagedPreferenceCategory(
         return pref
     }
 
+    protected fun bool(
+        key: String,
+        defaultValue: Boolean
+    ): ManagedPreference.PBool {
+        val pref = ManagedPreference.PBool(sharedPreferences, key, defaultValue)
+        pref.register()
+        return pref
+    }
+
+    protected fun <T : Any> stringLike(
+        key: String,
+        defaultValue: T,
+        codec: ManagedPreference.StringLikeCodec<T>
+    ): ManagedPreference.PStringLike<T> {
+        val pref = ManagedPreference.PStringLike(sharedPreferences, key, defaultValue, codec)
+        pref.register()
+        return pref
+    }
+
     protected fun <T : Any> list(
         @StringRes
         title: Int,
