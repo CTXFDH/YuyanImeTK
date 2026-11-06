@@ -135,6 +135,11 @@ class ImeService : InputMethodService() {
 
     override fun onFinishInputView(finishingInput: Boolean) {
         android.util.Log.w("ImeLifecycle", "onFinishInputView finishingInput=$finishingInput")
+        try {
+            if (::mInputView.isInitialized) {
+                KeyboardManager.instance.switchKeyboardToMain()
+            }
+        } catch (_: Exception) {}
         super.onFinishInputView(finishingInput)
     }
 
