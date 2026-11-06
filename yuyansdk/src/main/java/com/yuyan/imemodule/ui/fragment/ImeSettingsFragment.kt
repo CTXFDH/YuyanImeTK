@@ -109,14 +109,14 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                 addPreference(
                     R.string.enable_ime,
                     "在系统设置中启用语燕输入法",
-                    R.drawable.ic_menu_language
+                    R.drawable.ic_menu_language,
                 ) {
                     InputMethodUtil.startSettingsActivity(requireContext())
                 }
                 addPreference(
                     "选择输入法",
                     "将语燕输入法设为当前输入法",
-                    R.drawable.ic_menu_keyboard_switcher
+                    R.drawable.ic_menu_keyboard_switcher,
                 ) {
                     InputMethodUtil.showPicker()
                 }
@@ -131,25 +131,25 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                     R.string.theme,
                     "皮肤壁纸、按键配色与外观定制",
                     R.drawable.ic_menu_theme,
-                    R.id.action_settingsFragment_to_themeSettingsFragment
+                    R.id.action_settingsFragment_to_themeSettingsFragment,
                 )
                 addDestinationPreference(
                     R.string.keyboard_feedback,
                     "按键音效和振动反馈",
                     R.drawable.ic_menu_touch,
-                    R.id.action_settingsFragment_to_keyboardFeedbackFragment
+                    R.id.action_settingsFragment_to_keyboardFeedbackFragment,
                 )
                 addDestinationPreference(
                     R.string.setting_ime_keyboard,
                     "键盘布局、按键高度与划动设置",
                     R.drawable.ic_menu_keyboard,
-                    R.id.action_settingsFragment_to_keyboardSettingFragment
+                    R.id.action_settingsFragment_to_keyboardSettingFragment,
                 )
                 addDestinationPreference(
                     R.string.full_display_keyboard,
                     "底部边距与全面屏适配",
                     R.drawable.ic_menu_keyboard_full,
-                    R.id.action_settingsFragment_to_fullDisplayKeyboardFragment
+                    R.id.action_settingsFragment_to_fullDisplayKeyboardFragment,
                 )
             }
 
@@ -161,19 +161,19 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                     R.string.setting_ime_input,
                     "拼音、双拼方案与出词习惯",
                     R.drawable.ic_menu_language,
-                    R.id.action_settingsFragment_to_inputSettingsFragment
+                    R.id.action_settingsFragment_to_inputSettingsFragment,
                 )
                 addDestinationPreference(
                     R.string.ime_settings_handwriting,
                     "手写识别与笔画轨迹设置",
                     R.drawable.ic_menu_handwriting,
-                    R.id.action_settingsFragment_to_handwritingSettingsFragment
+                    R.id.action_settingsFragment_to_handwritingSettingsFragment,
                 )
                 addDestinationPreference(
                     R.string.clipboard,
                     "剪切板历史与快捷常用语",
                     R.drawable.ic_menu_clipboard,
-                    R.id.action_settingsFragment_to_clipboardSettingsFragment
+                    R.id.action_settingsFragment_to_clipboardSettingsFragment,
                 )
 
                 // 点击展开【用户数据】选项
@@ -208,7 +208,7 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                     R.string.about,
                     "版本信息、开源协议与团队",
                     R.drawable.ic_menu_feedback,
-                    R.id.action_settingsFragment_to_aboutFragment
+                    R.id.action_settingsFragment_to_aboutFragment,
                 )
             }
             com.yuyan.imemodule.utils.CardPreferenceStyler.stylePreferenceScreen(this)

@@ -885,14 +885,15 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         val reqHeight = 128
         val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         BitmapFactory.decodeFile(path, options)
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight)
+        options.inSampleSize = calculateInSampleSize(options)
         options.inPreferredConfig = Bitmap.Config.ARGB_8888
         options.inJustDecodeBounds = false
         return BitmapFactory.decodeFile(path, options)
     }
 
-    private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
-        if (reqWidth <= 0 || reqHeight <= 0) return 1
+    private fun calculateInSampleSize(options: BitmapFactory.Options): Int {
+        val reqWidth = 128
+        val reqHeight = 128
         val height = options.outHeight
         val width = options.outWidth
         var inSampleSize = 1
