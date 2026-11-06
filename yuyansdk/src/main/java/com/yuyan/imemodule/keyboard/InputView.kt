@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.util.TypedValue
 import android.view.KeyEvent
@@ -12,22 +13,14 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowInsets
-import android.view.WindowInsetsController
 import android.view.inputmethod.EditorInfo
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
-import android.graphics.drawable.GradientDrawable
 import android.widget.RelativeLayout
-import splitties.dimensions.dp
-import androidx.core.graphics.drawable.toDrawable
+import android.widget.TextView
 import androidx.core.graphics.scale
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -43,7 +36,6 @@ import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.database.entry.Clipboard
 import com.yuyan.imemodule.database.entry.Phrase
-import com.yuyan.imemodule.utils.clipboardManager
 import com.yuyan.imemodule.entity.StringQueue
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.keyboard.container.CandidatesContainer
@@ -63,6 +55,7 @@ import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.InputMethodUtil
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.utils.StringUtils
+import com.yuyan.imemodule.utils.clipboardManager
 import com.yuyan.imemodule.view.CandidatesBar
 import com.yuyan.imemodule.view.EditPhrasesView
 import com.yuyan.imemodule.view.FullDisplayKeyboardBar
@@ -70,9 +63,13 @@ import com.yuyan.imemodule.view.popup.PopupComponent
 import com.yuyan.imemodule.view.preference.ManagedPreference
 import com.yuyan.inputmethod.CustomEngine
 import com.yuyan.inputmethod.core.CandidateListItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import splitties.dimensions.dp
 import splitties.views.bottomPadding
 import splitties.views.rightPadding
-import kotlin.math.absoluteValue
 
 /**
  * 输入法主界面。
@@ -94,7 +91,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     private lateinit var mOnehandHoderLayout: LinearLayout
     var mAddPhrasesLayout: EditPhrasesView
     private var mLlKeyboardBottomHolder: LinearLayout
-    private var mInputKeyboardContainer: android.view.ViewGroup
+    private var mInputKeyboardContainer: ViewGroup
     private lateinit var mLlMainKeyboardCard: ViewGroup
     private lateinit var mComposingTagContainer: LinearLayout
     private lateinit var mComposingView: TextView
@@ -122,10 +119,13 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         KeyboardManager.instance.setData(mSkbRoot.findViewById(R.id.skb_input_keyboard_view), this)
         PopupComponent.get().root.let { root ->
             root.parent?.let { (it as ViewGroup).removeView(root) }
-            addView(root, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
-                addRule(ALIGN_BOTTOM, mSkbRoot.id)
-                addRule(ALIGN_LEFT, mSkbRoot.id)
-            })
+            addView(
+                root,
+                LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
+                    addRule(ALIGN_BOTTOM, mSkbRoot.id)
+                    addRule(ALIGN_LEFT, mSkbRoot.id)
+                },
+            )
         }
         initView(context)
     }
@@ -215,7 +215,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
                 isEnabled = true
                 scaleType = ImageView.ScaleType.FIT_CENTER
                 setPadding(dp(20), dp(10), dp(20), dp(10))
-                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, moveHeight).apply {
+                layoutParams = LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, moveHeight).apply {
                     gravity = android.view.Gravity.CENTER_HORIZONTAL
                 }
             }
@@ -388,7 +388,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
             }
         }
         mComposingTagContainer.background = tagBg
-        mComposingView.setTextColor(if (isDark) android.graphics.Color.WHITE else android.graphics.Color.BLACK)
+        mComposingView.setTextColor(if (isDark) Color.WHITE else Color.BLACK)
         mComposingView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13f)
     }
 
@@ -410,7 +410,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
 
     override fun responseLongKeyEvent(result: Pair<PopupMenuMode, String>) {
         val (mode, value) = result
-        if (value == "cn" || value == "En" || value == "空格") {
+        if ((value == "cn") || (value == "En") || (value == "空格")) {
             return
         }
         if (mode != PopupMenuMode.None && !DictDecoder.isAssociate && !DictDecoder.isCandidatesEmpty) {
@@ -770,7 +770,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
 
     override fun showSymbols(symbols: Array<String>) {
         val list = symbols.map { CandidateListItem("📋", it) }.toTypedArray()
-        DictDecoder.cacheCandidates(list, true)
+        DictDecoder.cacheCandidates(list, associate = true)
     }
 
     fun requestHideSelf() = service.requestHideSelf(0)
@@ -874,7 +874,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
             resetToIdleState()
             val clipboard = appPrefs.clipboard
             if (clipboard.clipboardSuggestion.getValue()) {
-                kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val clipManager = context.clipboardManager
                         if (clipManager.hasPrimaryClip()) {
@@ -892,7 +892,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
                                 val timeoutSec = clipboard.clipboardItemTimeout.getValue()
                                 val elapsedMs = System.currentTimeMillis() - updateTime
                                 if (elapsedMs <= timeoutSec * 1000L) {
-                                    kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                                    withContext(Dispatchers.Main) {
                                         showSymbols(arrayOf(trimmed))
                                     }
                                 }
@@ -990,8 +990,13 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         when {
             InputModeSwitcher.isNumberSkb -> {
                 val textBeforeCursor = service.getTextBeforeCursor(500)
-                if (textBeforeCursor.isBlank()) resetCandidateWindow()
-                else CustomEngine.parseExpressionAtEnd(textBeforeCursor).let { CustomEngine.expressionCalculator(textBeforeCursor, it).let(::showSymbols) }
+                if (textBeforeCursor.isBlank()) {
+                    resetCandidateWindow()
+                } else {
+                    val expr = CustomEngine.parseExpressionAtEnd(textBeforeCursor)
+                    val result = CustomEngine.expressionCalculator(textBeforeCursor, expr)
+                    showSymbols(result)
+                }
             }
             chinesePredictionMode != com.yuyan.imemodule.prefs.behavior.ChineseAssociationMode.DISABLED && InputModeSwitcher.isChinese -> {
                 if (chinesePredictionMode == com.yuyan.imemodule.prefs.behavior.ChineseAssociationMode.SINGLE_WORD && DictDecoder.justCommittedAssociateWord) {

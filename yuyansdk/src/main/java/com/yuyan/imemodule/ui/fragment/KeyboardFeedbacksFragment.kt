@@ -68,7 +68,7 @@ class KeyboardFeedbacksFragment : Fragment() {
             .thumbColor(accentColor)
             .thumbRadius(6)
             .thumbRadiusOnDragging(8)
-            .showThumbShadow(false)
+            .showThumbShadow(showThumbShadow = false)
             .showSectionText()
             .sectionTextPosition(SignSeekBar.TextPosition.BELOW_SECTION_MARK)
             .sectionTextColor(summaryTextColor)
@@ -89,7 +89,7 @@ class KeyboardFeedbacksFragment : Fragment() {
             .thumbColor(accentColor)
             .thumbRadius(6)
             .thumbRadiusOnDragging(8)
-            .showThumbShadow(false)
+            .showThumbShadow(showThumbShadow = false)
             .showSectionText()
             .sectionTextPosition(SignSeekBar.TextPosition.BELOW_SECTION_MARK)
             .sectionTextColor(summaryTextColor)
@@ -107,28 +107,28 @@ class KeyboardFeedbacksFragment : Fragment() {
                     "默认", "微信点击",
                     "百度红轴", "百度青轴", "百度茶轴", "百度机械",
                     "百度黑莓", "百度轻敲", "百度经典",
-                    "百度可爱", "百度卡通", "百度快板"
+                    "百度可爱", "百度卡通", "百度快板",
                 )
             ),
             Triple(
                 "空格", soundEffectSpaceBarPref, InputFeedbacks.SoundEffect.SpaceBar to arrayOf(
                     "默认", "微信空格",
                     "百度红轴", "百度青轴", "百度茶轴", "百度机械",
-                    "百度黑莓", "百度经典"
+                    "百度黑莓", "百度经典",
                 )
             ),
             Triple(
                 "删除", soundEffectDeletePref, InputFeedbacks.SoundEffect.Delete to arrayOf(
                     "默认", "微信删除",
                     "百度红轴", "百度青轴", "百度茶轴", "百度机械",
-                    "百度黑莓", "百度经典"
+                    "百度黑莓", "百度经典",
                 )
             ),
             Triple(
                 "回车", soundEffectReturnPref, InputFeedbacks.SoundEffect.Return to arrayOf(
                     "默认", "微信回车", "百度动作",
                     "百度红轴", "百度青轴", "百度茶轴", "百度机械",
-                    "百度黑莓"
+                    "百度黑莓",
                 )
             )
         )
@@ -136,7 +136,7 @@ class KeyboardFeedbacksFragment : Fragment() {
         fun createCapsuleDrawable(color: Int, radiusDp: Float = 16f): GradientDrawable {
             return GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
-                cornerRadius = dp(radiusDp).toFloat()
+                cornerRadius = dp(radiusDp)
                 setColor(color)
             }
         }
@@ -198,14 +198,16 @@ class KeyboardFeedbacksFragment : Fragment() {
             var currentRow: LinearLayout? = null
             options.forEachIndexed { optIndex, optionText ->
                 if (optIndex % 2 == 0) {
-                    currentRow = horizontalLayout {
+                    val newRow = horizontalLayout {
                         weightSum = 2f
                     }
-                    optionsContainer.add(currentRow!!, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
+                    currentRow = newRow
+                    optionsContainer.add(newRow, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
                         if (optIndex > 0) topMargin = dp(10)
                     })
                 }
 
+                val activeRow = currentRow ?: return@forEachIndexed
                 val isOptionSelected = (optionText == selectedOptionValue)
                 val optionChip = textView {
                     text = optionText
@@ -226,7 +228,7 @@ class KeyboardFeedbacksFragment : Fragment() {
 
                     background = GradientDrawable().apply {
                         shape = GradientDrawable.RECTANGLE
-                        cornerRadius = dp(16f).toFloat()
+                        cornerRadius = dp(16f)
                         setColor(chipBgCol)
                     }
                     setTextColor(chipTextCol)
@@ -247,18 +249,19 @@ class KeyboardFeedbacksFragment : Fragment() {
                     }
                 }
 
-                currentRow?.add(optionChip, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
+                activeRow.add(optionChip, LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f).apply {
                     if (optIndex % 2 == 1) leftMargin = dp(10)
                 })
             }
 
-            if (options.size % 2 == 1 && currentRow != null) {
+            val lastRow = currentRow
+            if (options.size % 2 == 1 && lastRow != null) {
                 val dummyView = View(context)
-                currentRow?.add(dummyView, LinearLayout.LayoutParams(0, 0, 1f))
+                lastRow.add(dummyView, LinearLayout.LayoutParams(0, 0, 1f))
             }
         }
 
-        val isSoundActive = soundOnKeyPress < 5 || soundOnKeyPress > 10
+        val isSoundActive = (soundOnKeyPress < 5) || (soundOnKeyPress > 10)
         soundSeekBar.isEnabled = isSoundActive
         renderTabsAndOptions(isSoundActive)
 
@@ -410,7 +413,7 @@ class KeyboardFeedbacksFragment : Fragment() {
             val curHour = parts.getOrNull(0)?.toIntOrNull() ?: 15
             val curMin = parts.getOrNull(1)?.toIntOrNull() ?: 0
             android.app.TimePickerDialog(requireContext(), { _, h, m ->
-                val formatted = String.format("%02d:%02d", h, m)
+                val formatted = String.format(java.util.Locale.getDefault(), "%02d:%02d", h, m)
                 soundEndTimePref.setValue(formatted)
                 endTimeValTv.text = formatted
             }, curHour, curMin, true).show()
