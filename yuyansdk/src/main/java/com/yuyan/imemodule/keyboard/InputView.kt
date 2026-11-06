@@ -887,11 +887,13 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
                                     DataBaseKT.instance.clipboardDao().insert(Clipboard(content = trimmed))
                                     internal.clipboardUpdateTime.setValue(System.currentTimeMillis())
                                     internal.clipboardUpdateContent.setValue(trimmed)
+                                }
+                                val updateTime = internal.clipboardUpdateTime.getValue()
+                                val timeoutSec = clipboard.clipboardItemTimeout.getValue()
+                                val elapsedMs = System.currentTimeMillis() - updateTime
+                                if (elapsedMs <= timeoutSec * 1000L) {
                                     kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
-                                        val timeoutSec = clipboard.clipboardItemTimeout.getValue()
-                                        if (System.currentTimeMillis() - internal.clipboardUpdateTime.getValue() <= timeoutSec * 1000L) {
-                                            showSymbols(arrayOf(trimmed))
-                                        }
+                                        showSymbols(arrayOf(trimmed))
                                     }
                                 }
                             }
