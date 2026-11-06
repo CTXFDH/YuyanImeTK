@@ -268,8 +268,13 @@ class ImeService : InputMethodService() {
      * 模拟Enter按键点击
      */
     fun sendEnterKeyEvent() {
-        val inputConnection = getCurrentInputConnection()
-        YuyanEmojiCompat.mEditorInfo?.run {
+        val inputConnection = currentInputConnection
+        val info = currentInputEditorInfo ?: YuyanEmojiCompat.mEditorInfo
+        if (info == null || inputConnection == null) {
+            sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
+            return
+        }
+        info.run {
             if (inputType and InputType.TYPE_MASK_CLASS == InputType.TYPE_NULL || imeOptions.hasFlag(EditorInfo.IME_FLAG_NO_ENTER_ACTION)) {
                 sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
             } else if (!actionLabel.isNullOrEmpty() && actionId != EditorInfo.IME_ACTION_UNSPECIFIED) {

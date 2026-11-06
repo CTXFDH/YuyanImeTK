@@ -531,16 +531,20 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     private fun processFunctionKey(event: KeyEvent) {
         when (val keyCode = event.keyCode) {
             KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_SPACE -> {
-                if (DictDecoder.isCandidatesEmpty || DictDecoder.isAssociate) {
+                if (DictDecoder.isCandidatesEmpty) {
                     sendKeyEvent(keyCode)
                     resetToIdleState()
+                } else {
+                    chooseAndUpdate()
                 }
-                else chooseAndUpdate()
             }
             KeyEvent.KEYCODE_CLEAR -> resetToIdleState()
             KeyEvent.KEYCODE_ENTER -> {
-                if (DictDecoder.isCandidatesEmpty || DictDecoder.isAssociate) sendKeyEvent(keyCode)
-                else commitDecInfoText(DictDecoder.composingStrForCommit)
+                if (!DictDecoder.isCandidatesEmpty && !DictDecoder.isAssociate) {
+                    commitDecInfoText(DictDecoder.composingStrForCommit)
+                } else {
+                    sendKeyEvent(keyCode)
+                }
                 resetToIdleState()
             }
             KeyEvent.KEYCODE_SHIFT_LEFT, KeyEvent.KEYCODE_SHIFT_RIGHT -> {
