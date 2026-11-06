@@ -87,7 +87,7 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
         @StringRes title: Int,
         summary: String? = null,
         @DrawableRes icon: Int,
-        @IdRes destination: Int
+        @IdRes destination: Int,
     ) {
         if (summary != null) {
             addPreference(title, summaryStr = summary, icon = icon) {

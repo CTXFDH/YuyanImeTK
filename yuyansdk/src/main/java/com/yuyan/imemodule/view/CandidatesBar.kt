@@ -540,7 +540,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             showViewVisibility(mCandidatesMenuContainer)
             val mFunItems: MutableList<SkbFunItem> = mutableListOf()
             val barMenus = DataBaseKT.instance.skbFunDao().getALlBarMenu()
-            for (item in barMenus) {
+            barMenus.forEach { item ->
                 val skbMenuMode = SkbMenuMode.decode(item.name)
                 menuSkbFunsPreset[skbMenuMode]?.let { mFunItems.add(it) }
             }
@@ -571,7 +571,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         showViewVisibility(mCandidatesMenuContainer)
         val mFunItems: MutableList<SkbFunItem> = mutableListOf()
         val barMenus = DataBaseKT.instance.skbFunDao().getALlBarMenu()
-        for (item in barMenus) {
+        barMenus.forEach { item ->
             val skbMenuMode = SkbMenuMode.decode(item.name)
             menuSkbFunsPreset[skbMenuMode]?.let { mFunItems.add(it) }
         }
@@ -832,7 +832,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                         return
                     }
 
-                    val logoBmp = decodeSampledBitmapFromFile(customLogoPath, 128, 128)
+                    val logoBmp = decodeSampledBitmapFromFile(customLogoPath)
                     if (logoBmp != null) {
                         val circularBmp = getCircularBitmap(logoBmp)
                         logoCache.put(customLogoPath, circularBmp)
@@ -880,13 +880,14 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         view.setPadding(p, p, p, p)
     }
 
-    @Suppress("UNUSED_PARAMETER")
-    private fun decodeSampledBitmapFromFile(path: String, reqWidth: Int, reqHeight: Int): Bitmap? {
+    private fun decodeSampledBitmapFromFile(path: String): Bitmap? {
+        val reqWidth = 128
+        val reqHeight = 128
         val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         BitmapFactory.decodeFile(path, options)
         options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight)
-        options.inJustDecodeBounds = false
         options.inPreferredConfig = Bitmap.Config.ARGB_8888
+        options.inJustDecodeBounds = false
         return BitmapFactory.decodeFile(path, options)
     }
 
