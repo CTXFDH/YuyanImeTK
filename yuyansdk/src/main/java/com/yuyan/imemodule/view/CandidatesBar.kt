@@ -541,10 +541,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             val barMenus = DataBaseKT.instance.skbFunDao().getALlBarMenu()
             for (item in barMenus) {
                 val skbMenuMode = SkbMenuMode.decode(item.name)
-                val skbFunItem = menuSkbFunsPreset[skbMenuMode]
-                if (skbFunItem != null) {
-                    mFunItems.add(skbFunItem)
-                }
+                menuSkbFunsPreset[skbMenuMode]?.let { mFunItems.add(it) }
             }
             mCandidatesMenuAdapter.items = mFunItems
         } else {

@@ -60,7 +60,7 @@ class FloatCandidateBar(context: Context?, attrs: AttributeSet?) : RelativeLayou
             }
             mComposingView = TextView(context).apply {
                 includeFontPadding = false
-                setSingleLine(true)
+                isSingleLine = true
             }
             mComposingTagContainer.addView(mComposingView)
 
@@ -71,7 +71,7 @@ class FloatCandidateBar(context: Context?, attrs: AttributeSet?) : RelativeLayou
                 setItemAnimator(null)
                 layoutParams = LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT, 1f)
                 layoutManager =
-                    CustomLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                    CustomLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, reverseLayout = false)
             }
             mCandidatesAdapter = CandidatesBarAdapter(context)
             mCandidatesAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
@@ -173,6 +173,7 @@ class FloatCandidateBar(context: Context?, attrs: AttributeSet?) : RelativeLayou
     }
 
     // 刷新主题
+    @Suppress("UNUSED_PARAMETER")
     fun updateTheme(textColor: Int) {
         initCandidateView()
         val activeTheme = ThemeManager.activeTheme

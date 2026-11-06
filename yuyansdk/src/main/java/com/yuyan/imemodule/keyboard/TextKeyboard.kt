@@ -88,7 +88,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
     }
 
     override fun getKeyIndices(x: Int, y: Int): SoftKey? {
-        if (InputModeSwitcher.isTextEditSkb && x < width * 0.52f) {
+        if ((InputModeSwitcher.isTextEditSkb) && (x < width * 0.52f)) {
             val centerX = width * 0.27f
             val centerY = height * 0.39f
             val outerRadius = kotlin.math.min(width * 0.46f, height * 0.68f) / 2f
