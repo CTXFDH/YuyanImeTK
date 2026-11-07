@@ -37,6 +37,7 @@ enum class SkbMenuMode {
     Emoticon,
     LockClipBoard,
     TextEdit,
+    VoiceInput,
     SwitchIME;
 
     companion object : ManagedPreference.StringLikeCodec<SkbMenuMode> {

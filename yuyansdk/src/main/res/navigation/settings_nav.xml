@@ -35,6 +35,9 @@
             android:id="@+id/action_settingsFragment_to_fullDisplayKeyboardFragment"
             app:destination="@id/fullDisplayKeyboardFragment" />
         <action
+            android:id="@+id/action_settingsFragment_to_voiceSettingsFragment"
+            app:destination="@id/voiceSettingsFragment" />
+        <action
             android:id="@+id/action_settingsFragment_to_otherSettingsFragment"
             app:destination="@id/otherSettingsFragment" />
         <action
@@ -88,6 +91,10 @@
         android:id="@+id/fullDisplayKeyboardFragment"
         android:name="com.yuyan.imemodule.ui.fragment.FullDisplayKeyboardFragment"
         android:label="@string/full_display_keyboard" />
+    <fragment
+        android:id="@+id/voiceSettingsFragment"
+        android:name="com.yuyan.imemodule.ui.fragment.VoiceSettingsFragment"
+        android:label="语音识别设置" />
     <fragment
         android:id="@+id/otherSettingsFragment"
         android:name="com.yuyan.imemodule.ui.fragment.OtherSettingsFragment"

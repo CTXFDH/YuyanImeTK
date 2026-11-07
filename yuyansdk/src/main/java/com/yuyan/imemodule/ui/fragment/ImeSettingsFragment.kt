@@ -100,6 +100,23 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    private fun PreferenceGroup.addDestinationPreference(
+        title: String,
+        summary: String? = null,
+        @DrawableRes icon: Int,
+        @IdRes destination: Int,
+    ) {
+        if (summary != null) {
+            addPreference(title, summary = summary, icon = icon) {
+                findNavController().navigate(destination)
+            }
+        } else {
+            addPreference(title, icon = icon) {
+                findNavController().navigate(destination)
+            }
+        }
+    }
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceScreen = preferenceManager.createPreferenceScreen(requireContext()).apply {
             // 1. 输入法
@@ -168,6 +185,12 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                     "手写识别与笔画轨迹设置",
                     R.drawable.ic_menu_handwriting,
                     R.id.action_settingsFragment_to_handwritingSettingsFragment,
+                )
+                addDestinationPreference(
+                    "语音识别设置",
+                    "离线语音识别引擎与模型设置",
+                    R.drawable.ic_menu_touch,
+                    R.id.action_settingsFragment_to_voiceSettingsFragment,
                 )
                 addDestinationPreference(
                     R.string.clipboard,

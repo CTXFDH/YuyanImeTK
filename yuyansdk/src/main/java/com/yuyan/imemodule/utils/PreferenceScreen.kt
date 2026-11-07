@@ -64,3 +64,31 @@ fun PreferenceGroup.addPreference(
     val ctx = context
     addPreference(ctx.getString(title), summaryRes?.let(ctx::getString), icon, onClick)
 }
+
+fun PreferenceGroup.addSwitchPreference(
+    title: String,
+    summary: String? = null,
+    key: String,
+    defaultValue: Boolean = false,
+    @DrawableRes icon: Int? = null,
+    onChange: ((Boolean) -> Unit)? = null
+) {
+    addPreference(CardSwitchPreference(context).apply {
+        isSingleLineTitle = false
+        setTitle(title)
+        this.key = key
+        setDefaultValue(defaultValue)
+        setSummary(summary)
+        if (icon == null) {
+            isIconSpaceReserved = false
+        } else {
+            setIcon(context.drawable(icon))
+        }
+        onChange?.also { listener ->
+            setOnPreferenceChangeListener { _, newValue ->
+                listener.invoke(newValue as Boolean)
+                true
+            }
+        }
+    })
+}
