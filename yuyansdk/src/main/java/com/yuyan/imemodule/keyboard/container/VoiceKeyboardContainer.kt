@@ -37,6 +37,8 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
         onSpectrumChanged = { spec -> voiceSpectrum = spec }
     )
 
+    private var isVoiceActive = false
+
     init {
         voiceHandler.initialize()
 
@@ -53,7 +55,7 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
                     amplitude = voiceAmplitude,
                     spectrum = voiceSpectrum,
                     onDeleteClick = {
-                        inputView.imeService.sendCombinationKeyEvents(KeyEvent.KEYCODE_DEL)
+                        inputView.imeService.deleteSurroundingText(1, 0)
                     },
                     onSendClick = {
                         voiceHandler.sealPendingForSend()
@@ -62,6 +64,7 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
                     onStartVoice = {
                         val ctx = context
                         if (com.hjq.permissions.XXPermissions.isGranted(ctx, com.hjq.permissions.Permission.RECORD_AUDIO)) {
+                            isVoiceActive = true
                             voiceHandler.startRecognition()
                         } else {
                             try {
@@ -76,6 +79,7 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
                         }
                     },
                     onStopVoice = {
+                        isVoiceActive = false
                         voiceHandler.finishRecognition()
                     },
                     onCursorMove = { direction ->
@@ -86,6 +90,36 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
             }
         }
         addView(composeView)
+    }
+
+    override fun dispatchTouchEvent(ev: android.view.MotionEvent?): Boolean {
+        ev?.let { event ->
+            val w = width.toFloat()
+            val h = height.toFloat()
+            if (h > 0 && w > 0 && event.y > h * 0.40f && event.x < w * 0.80f) {
+                when (event.actionMasked) {
+                    android.view.MotionEvent.ACTION_DOWN -> {
+                        val ctx = context
+                        if (com.hjq.permissions.XXPermissions.isGranted(ctx, com.hjq.permissions.Permission.RECORD_AUDIO)) {
+                            if (!isVoiceActive) {
+                                isVoiceActive = true
+                                voiceHandler.startRecognition()
+                            }
+                        }
+                    }
+                    android.view.MotionEvent.ACTION_UP, android.view.MotionEvent.ACTION_CANCEL -> {
+                        if (isVoiceActive) {
+                            isVoiceActive = false
+                            voiceHandler.finishRecognition()
+                        }
+                    }
+                }
+            } else if (isVoiceActive && (event.actionMasked == android.view.MotionEvent.ACTION_UP || event.actionMasked == android.view.MotionEvent.ACTION_CANCEL)) {
+                isVoiceActive = false
+                voiceHandler.finishRecognition()
+            }
+        }
+        return super.dispatchTouchEvent(ev)
     }
 
     override fun onDetachedFromWindow() {
