@@ -119,11 +119,14 @@ class VoiceSettingsFragment : PreferenceFragmentCompat() {
                     false,
                     R.drawable.ic_menu_touch
                 ) { isChecked ->
-                    if (isChecked) {
-                        AsrSupport.warmup(requireContext())
-                    } else {
-                        AsrSupport.releaseModel()
-                    }
+                    val ctx = requireContext()
+                    Thread {
+                        if (isChecked) {
+                            AsrSupport.warmup(ctx)
+                        } else {
+                            AsrSupport.releaseModel()
+                        }
+                    }.start()
                 }
             }
 

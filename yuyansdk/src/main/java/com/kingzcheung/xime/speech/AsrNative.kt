@@ -6,12 +6,10 @@ package com.kingzcheung.xime.speech
 object AsrNative {
     init {
         try {
-            System.loadLibrary("onnxruntime")
-        } catch (_: Throwable) {}
-        try {
-            System.loadLibrary("onnx_env")
-        } catch (_: Throwable) {}
-        System.loadLibrary("asr_jni")
+            System.loadLibrary("asr_jni")
+        } catch (e: Throwable) {
+            android.util.Log.e("AsrNative", "Failed to load asr_jni library", e)
+        }
     }
 
     external fun nativeCreate(
