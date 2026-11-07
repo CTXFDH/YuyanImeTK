@@ -107,7 +107,18 @@ class AsrModelManager(private val context: Context) {
             return models.find { it.id == selectedId }
                 ?: AsrModelRegistry.profileOrDefault(selectedId).toAsrModelInfo()
         }
-        return models.find { isModelInstalled(it.id) }
+        val found = models.find { isModelInstalled(it.id) }
+        if (found != null) return found
+
+        val modelsRoot = File(context.filesDir, "models")
+        if (modelsRoot.isDirectory) {
+            modelsRoot.listFiles()?.forEach { dir ->
+                if (dir.isDirectory && isModelInstalled(dir.name)) {
+                    return getModelInfo(dir.name)
+                }
+            }
+        }
+        return null
     }
 
     fun setModel(modelId: String) {

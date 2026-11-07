@@ -48,6 +48,7 @@ import kotlinx.coroutines.delay
 fun VoiceKeyboardLayout(
     modifier: Modifier = Modifier,
     isDarkTheme: Boolean = false,
+    isVoicePressed: Boolean = false,
     recognitionState: RecognitionState = RecognitionState.IDLE,
     amplitude: Float = 0f,
     spectrum: FloatArray = FloatArray(16),
@@ -68,7 +69,6 @@ fun VoiceKeyboardLayout(
     val dragThresholdPx = with(LocalDensity.current) { 16.dp.toPx() }
 
     var isDeletePressed by remember { mutableStateOf(false) }
-    var isVoicePressed by remember { mutableStateOf(false) }
 
     LaunchedEffect(isDeletePressed) {
         if (isDeletePressed) {
@@ -176,14 +176,12 @@ fun VoiceKeyboardLayout(
                     .pointerInput(Unit) {
                         awaitEachGesture {
                             awaitFirstDown(requireUnconsumed = false)
-                            isVoicePressed = true
                             onStartVoice()
                             do {
                                 val event = awaitPointerEvent()
                                 val up = event.changes.all { !it.pressed }
                                 if (up) break
                             } while (true)
-                            isVoicePressed = false
                             onStopVoice()
                         }
                     },

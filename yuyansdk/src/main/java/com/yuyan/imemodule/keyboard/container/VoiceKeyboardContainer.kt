@@ -29,15 +29,19 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
         context = context,
         onStateChanged = { state ->
             voiceState = state.voiceRecognitionState
+            if (state.voiceRecognitionState == RecognitionState.ERROR) {
+                isVoiceActive = false
+                android.widget.Toast.makeText(context, "语音引擎未就绪：请在【设置-方案与数据-语音识别设置】中导入离线模型包", android.widget.Toast.LENGTH_LONG).show()
+            }
         },
         getState = { com.yuyan.imemodule.service.VoiceState(voiceRecognitionState = voiceState) },
         getInputConnection = { inputView.imeService.currentInputConnection },
-        onVoiceComplete = {},
+        onVoiceComplete = { isVoiceActive = false },
         onAmplitudeChanged = { amp -> voiceAmplitude = amp },
         onSpectrumChanged = { spec -> voiceSpectrum = spec }
     )
 
-    private var isVoiceActive = false
+    private var isVoiceActive by mutableStateOf(false)
 
     init {
         voiceHandler.initialize()
@@ -51,6 +55,7 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
                 val isDark = ThemeManager.activeTheme.isDark
                 VoiceKeyboardLayout(
                     isDarkTheme = isDark,
+                    isVoicePressed = isVoiceActive,
                     recognitionState = voiceState,
                     amplitude = voiceAmplitude,
                     spectrum = voiceSpectrum,
