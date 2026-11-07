@@ -1,5 +1,7 @@
 package com.yuyan.imemodule.ui.fragment
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -53,15 +55,28 @@ class VoiceSettingsFragment : PreferenceFragmentCompat() {
 
                 addPreference(
                     "语音识别模型",
-                    if (isInstalled) "当前使用模型：${selectedInfo.name}" else "未导入离线语音模型（点击下方导入模型）",
+                    if (isInstalled) "当前使用模型：${selectedInfo.name}" else "未导入离线语音模型（点击下方链接下载与导入）",
                     R.drawable.ic_menu_language
                 ) {
                     Toast.makeText(requireContext(), if (isInstalled) "模型已就绪：${selectedInfo.name}" else "请导入 Zipformer 离线语音模型包 (.zip)", Toast.LENGTH_SHORT).show()
                 }
 
                 addPreference(
+                    "下载离线语音模型 (GitHub)",
+                    "跳转至 sherpa-onnx 开源模型发布页下载解压包：\nhttps://github.com/k2-fsa/sherpa-onnx/releases/tag/asr-models",
+                    R.drawable.ic_jump_arrow
+                ) {
+                    try {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/k2-fsa/sherpa-onnx/releases/tag/asr-models"))
+                        startActivity(intent)
+                    } catch (_: Exception) {
+                        Toast.makeText(requireContext(), "无法打开浏览器，请直接访问：https://github.com/k2-fsa/sherpa-onnx/releases/tag/asr-models", Toast.LENGTH_LONG).show()
+                    }
+                }
+
+                addPreference(
                     "导入离线语音模型 (.zip)",
-                    "选择并解压导入 Sherpa-onnx Zipformer 本地语音模型包",
+                    "选择并解压导入本地下载的 Sherpa-onnx Zipformer 语音模型包",
                     R.drawable.ic_menu_edit
                 ) {
                     importModelLauncher.launch("application/zip")
