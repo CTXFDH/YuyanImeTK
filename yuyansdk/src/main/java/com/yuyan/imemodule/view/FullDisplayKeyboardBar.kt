@@ -53,20 +53,7 @@ class FullDisplayKeyboardBar(context: Context?, inputView: InputView) : LinearLa
                 onClick(FullDisplayKeyMode.decode(AppPrefs.getInstance().internal.fullDisplayKeyModeLeft.getValue()))
             }
         }
-        mLLCenter = LinearLayout(context).apply {
-            gravity = Gravity.CENTER
-            if (mCenterModeMove) {
-                val centerHandle = View(context).apply {
-                    val bgDrawable = android.graphics.drawable.GradientDrawable().apply {
-                        shape = android.graphics.drawable.GradientDrawable.RECTANGLE
-                        cornerRadius = dp(2f)
-                        setColor(0x55808080.toInt())
-                    }
-                    background = bgDrawable
-                }
-                addView(centerHandle, LayoutParams(dp(48), dp(4)))
-            }
-        }
+        mLLCenter = LinearLayout(context)
         mIVKeyRight = ImageView(context).apply {
             scaleType = ImageView.ScaleType.FIT_CENTER
             val iconId = getIcon(FullDisplayKeyMode.decode(fullDisplayKeyRight))
@@ -77,9 +64,9 @@ class FullDisplayKeyboardBar(context: Context?, inputView: InputView) : LinearLa
                 onClick(FullDisplayKeyMode.decode(AppPrefs.getInstance().internal.fullDisplayKeyModeRight.getValue()))
             }
         }
-        add(mIVKeyLeft, lParams(width = dp(32), height = dp(32), weight = 0f))
+        add(mIVKeyLeft, lParams(width = dp(38), height = dp(38), weight = 0f))
         add(mLLCenter, lParams(width = 0, height = wrapContent, weight = 1f))
-        add(mIVKeyRight, lParams(width = dp(32), height = dp(32), weight = 0f))
+        add(mIVKeyRight, lParams(width = dp(38), height = dp(38), weight = 0f))
         isClickable = true
         isEnabled = true
     }
@@ -145,7 +132,5 @@ class FullDisplayKeyboardBar(context: Context?, inputView: InputView) : LinearLa
     fun updateTheme(textColor: Int) {
         mIVKeyLeft.drawable?.setTint(textColor)
         mIVKeyRight.drawable?.setTint(textColor)
-        val handleView = mLLCenter.getChildAt(0)
-        (handleView?.background as? android.graphics.drawable.GradientDrawable)?.setColor((textColor and 0x00FFFFFF) or 0x55000000)
     }
 }
