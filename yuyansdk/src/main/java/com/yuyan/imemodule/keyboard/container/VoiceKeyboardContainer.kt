@@ -60,19 +60,19 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
                         inputView.imeService.sendEnterKeyEvent()
                     },
                     onStartVoice = {
-                        val ctx = inputView.context
+                        val ctx = context
                         if (com.hjq.permissions.XXPermissions.isGranted(ctx, com.hjq.permissions.Permission.RECORD_AUDIO)) {
                             voiceHandler.startRecognition()
                         } else {
-                            com.hjq.permissions.XXPermissions.with(ctx)
-                                .permission(com.hjq.permissions.Permission.RECORD_AUDIO)
-                                .request { _, allGranted ->
-                                    if (allGranted) {
-                                        voiceHandler.startRecognition()
-                                    } else {
-                                        android.widget.Toast.makeText(ctx, "请先授予麦克风录音权限以开启语音识别", android.widget.Toast.LENGTH_SHORT).show()
-                                    }
+                            try {
+                                val intent = android.content.Intent(ctx, com.yuyan.imemodule.ui.activity.LauncherActivity::class.java).apply {
+                                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
                                 }
+                                ctx.startActivity(intent)
+                                android.widget.Toast.makeText(ctx, "使用语音功能前，请先在权限列表中勾选麦克风录音权限", android.widget.Toast.LENGTH_LONG).show()
+                            } catch (_: Exception) {
+                                android.widget.Toast.makeText(ctx, "请先授予应用麦克风录音权限以开启语音识别", android.widget.Toast.LENGTH_LONG).show()
+                            }
                         }
                     },
                     onStopVoice = {

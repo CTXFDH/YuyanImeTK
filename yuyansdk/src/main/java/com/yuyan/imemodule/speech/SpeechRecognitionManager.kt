@@ -321,6 +321,7 @@ class SpeechRecognitionManager(private val context: Context) {
         return AsrBackendFactory.create(context)
     }
 
+    @android.annotation.SuppressLint("MissingPermission")
     private fun createAudioRecord(bufferSecs: Float = 2.0f): AudioRecord? {
         val bufferSize = (SAMPLE_RATE * bufferSecs).toInt()
         return try {
@@ -376,8 +377,16 @@ class SpeechRecognitionManager(private val context: Context) {
                 return
             }
 
-            if (audioRecord.recordingState != AudioRecord.RECORDSTATE_RECORDING) {
-                audioRecord.startRecording()
+            try {
+                if (audioRecord.recordingState != AudioRecord.RECORDSTATE_RECORDING) {
+                    audioRecord.startRecording()
+                }
+            } catch (e: Exception) {
+                mainHandler.post {
+                    errorCallback?.invoke("录音启动失败，请检查麦克风权限", true)
+                    setState(RecognitionState.ERROR)
+                }
+                return
             }
             mainHandler.post {
                 setState(RecognitionState.LISTENING)
