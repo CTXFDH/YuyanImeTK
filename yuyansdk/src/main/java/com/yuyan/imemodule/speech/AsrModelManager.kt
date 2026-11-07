@@ -60,12 +60,30 @@ class AsrModelManager(private val context: Context) {
         getAsrModels().find { it.id == modelId }
             ?: AsrModelRegistry.profileOrDefault(modelId).toAsrModelInfo()
 
+    fun findEncoderFile(dir: File): File? = findFileMatching(dir) { it.name.contains("encoder", ignoreCase = true) && it.name.endsWith(".onnx", ignoreCase = true) }
+    fun findDecoderFile(dir: File): File? = findFileMatching(dir) { it.name.contains("decoder", ignoreCase = true) && it.name.endsWith(".onnx", ignoreCase = true) }
+    fun findJoinerFile(dir: File): File? = findFileMatching(dir) { it.name.contains("joiner", ignoreCase = true) && it.name.endsWith(".onnx", ignoreCase = true) }
+    fun findTokensFile(dir: File): File? = findFileMatching(dir) { it.name.contains("tokens", ignoreCase = true) && it.name.endsWith(".txt", ignoreCase = true) }
+
+    fun findFileMatching(dir: File, predicate: (File) -> Boolean): File? {
+        dir.listFiles()?.forEach { child ->
+            if (child.isFile && predicate(child) && child.length() > 0) return child
+            if (child.isDirectory) {
+                val found = findFileMatching(child, predicate)
+                if (found != null) return found
+            }
+        }
+        return null
+    }
+
     fun isModelInstalled(modelId: String): Boolean {
         val dir = getModelDir(modelId)
         if (!dir.isDirectory) return false
-        val info = getModelInfo(modelId)
-        return listOf(info.encoderFile, info.decoderFile, info.joinerFile, TOKENS_FILE)
-            .all { name -> findFile(dir, name)?.let { it.exists() && it.length() > 0 } == true }
+        val enc = findEncoderFile(dir)
+        val dec = findDecoderFile(dir)
+        val jn = findJoinerFile(dir)
+        val tok = findTokensFile(dir)
+        return enc != null && dec != null && jn != null && tok != null
     }
 
     fun getModelDir(modelId: String): File {

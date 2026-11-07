@@ -156,12 +156,12 @@ class AsrInferenceService : Service() {
     private fun createAsrHandle(modelDir: String): Long {
         return try {
             val dir = File(modelDir)
-            val info = AsrModelManager(this).getModelInfo(dir.name)
-            val encoder = File(dir, info.encoderFile)
-            val decoder = File(dir, info.decoderFile)
-            val joiner = File(dir, info.joinerFile)
-            val tokens = File(dir, "tokens.txt")
-            if (!encoder.exists() || !decoder.exists() || !joiner.exists() || !tokens.exists()) {
+            val manager = AsrModelManager(this)
+            val encoder = manager.findEncoderFile(dir)
+            val decoder = manager.findDecoderFile(dir)
+            val joiner = manager.findJoinerFile(dir)
+            val tokens = manager.findTokensFile(dir)
+            if (encoder == null || decoder == null || joiner == null || tokens == null) {
                 Log.e(TAG, "ASR model files incomplete in $modelDir")
                 return 0L
             }
