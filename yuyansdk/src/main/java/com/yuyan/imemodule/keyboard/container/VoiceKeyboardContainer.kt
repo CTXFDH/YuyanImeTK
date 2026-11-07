@@ -93,10 +93,14 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
             }
         } else {
             try {
-                com.hjq.permissions.XXPermissions.startPermissionActivity(ctx, com.hjq.permissions.Permission.RECORD_AUDIO)
-                android.widget.Toast.makeText(ctx, "使用语音识别前，请先开启【麦克风录音权限】", android.widget.Toast.LENGTH_LONG).show()
+                val intent = android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = android.net.Uri.fromParts("package", ctx.packageName, null)
+                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                ctx.startActivity(intent)
+                android.widget.Toast.makeText(ctx, "请在权限设置中开启【麦克风录音权限】以开启语音识别", android.widget.Toast.LENGTH_LONG).show()
             } catch (_: Exception) {
-                android.widget.Toast.makeText(ctx, "请先在系统应用设置中开启语燕输入法的【麦克风权限】", android.widget.Toast.LENGTH_LONG).show()
+                android.widget.Toast.makeText(ctx, "请先在系统设置中为语燕输入法开启【麦克风权限】", android.widget.Toast.LENGTH_LONG).show()
             }
         }
     }
