@@ -76,19 +76,6 @@ class VoiceSettingsFragment : PreferenceFragmentCompat() {
                 }
 
                 addPreference(
-                    "下载更多离线模型 (GitHub)",
-                    "跳转至 sherpa-onnx 开源模型发布页下载更多语言与体量的模型包：\nhttps://github.com/k2-fsa/sherpa-onnx/releases/tag/asr-models",
-                    R.drawable.ic_jump_arrow
-                ) {
-                    try {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/k2-fsa/sherpa-onnx/releases/tag/asr-models"))
-                        startActivity(intent)
-                    } catch (_: Exception) {
-                        Toast.makeText(requireContext(), "无法打开浏览器，请直接访问：https://github.com/k2-fsa/sherpa-onnx/releases/tag/asr-models", Toast.LENGTH_LONG).show()
-                    }
-                }
-
-                addPreference(
                     "导入离线语音模型 (.tar.bz2 / .zip)",
                     "选择并解压导入本地下载的 Sherpa-onnx 语音模型包 (.tar.bz2 / .zip)",
                     R.drawable.ic_menu_edit
