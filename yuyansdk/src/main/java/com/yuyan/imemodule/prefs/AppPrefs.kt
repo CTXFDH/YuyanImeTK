@@ -151,10 +151,19 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
         val categoryLayout = category(R.string.category_layout_habit)
 
-        val oneHandedMod = stringLike(
+        val oneHandedMod = list(
+            R.string.holding_habit,
             "keyboard_one_handed_mod",
             KeyboardOneHandedMod.RIGHT,
-            KeyboardOneHandedMod
+            KeyboardOneHandedMod,
+            listOf(
+                KeyboardOneHandedMod.LEFT,
+                KeyboardOneHandedMod.RIGHT
+            ),
+            listOf(
+                R.string.holding_habit_left,
+                R.string.holding_habit_right
+            )
         )
 
         val oneHandedModSwitch = bool("keyboard_one_handed_mod_enable", false)
