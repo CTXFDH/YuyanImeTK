@@ -74,9 +74,7 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
         val titleChinese = category(R.string.chinese_input_setting)
 
-        val chineseFanTi = switch(
-            R.string.setting_jian_fan, "chinese_jian_fan_enable", false
-        )
+        val chineseFanTi = bool("chinese_jian_fan_enable", false)
 
         val doublePYSchemaMode =
             list(
