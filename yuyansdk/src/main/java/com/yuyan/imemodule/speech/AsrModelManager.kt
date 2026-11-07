@@ -3,6 +3,7 @@ package com.yuyan.imemodule.speech
 import android.content.Context
 import com.yuyan.imemodule.speech.models.AsrModelProfile
 import com.yuyan.imemodule.speech.models.AsrModelRegistry
+import com.yuyan.imemodule.utils.queryFileName
 import java.io.File
 
 class AsrModelManager(private val context: Context) {
@@ -91,25 +92,100 @@ class AsrModelManager(private val context: Context) {
 
     fun importModelFromArchive(uri: android.net.Uri, modelId: String = "zipformer-zh-int8"): Boolean {
         val targetDir = getModelDir(modelId).apply { mkdirs() }
+        val cr = context.contentResolver
         return try {
-            val cr = context.contentResolver
+            val fileName = cr.queryFileName(uri)?.lowercase() ?: ""
             val inputStream = cr.openInputStream(uri) ?: return false
+
+            val success = when {
+                fileName.endsWith(".tar.bz2") || fileName.endsWith(".tbz2") || fileName.endsWith(".bz2") -> {
+                    extractTarBz2(inputStream, targetDir)
+                }
+                fileName.endsWith(".tar.gz") || fileName.endsWith(".tgz") -> {
+                    extractTarGz(inputStream, targetDir)
+                }
+                fileName.endsWith(".tar") -> {
+                    extractTar(inputStream, targetDir)
+                }
+                else -> {
+                    if (!extractZip(inputStream, targetDir)) {
+                        cr.openInputStream(uri)?.use { stream -> extractTarBz2(stream, targetDir) } ?: false
+                    } else true
+                }
+            }
+            if (success) setModel(modelId)
+            isModelInstalled(modelId)
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    private fun extractZip(inputStream: java.io.InputStream, targetDir: File): Boolean {
+        return try {
             val zipIn = java.util.zip.ZipInputStream(inputStream)
             var entry = zipIn.nextEntry
+            var count = 0
             while (entry != null) {
-                val fileName = File(entry.name).name
-                if (!entry.isDirectory && fileName.isNotBlank()) {
-                    val destFile = File(targetDir, fileName)
-                    destFile.outputStream().use { out ->
-                        zipIn.copyTo(out)
-                    }
+                val fName = File(entry.name).name
+                if (!entry.isDirectory && fName.isNotBlank()) {
+                    val destFile = File(targetDir, fName)
+                    destFile.outputStream().use { out -> zipIn.copyTo(out) }
+                    count++
                 }
                 zipIn.closeEntry()
                 entry = zipIn.nextEntry
             }
             zipIn.close()
-            setModel(modelId)
-            isModelInstalled(modelId)
+            count > 0
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    private fun extractTarBz2(inputStream: java.io.InputStream, targetDir: File): Boolean {
+        return try {
+            val bz2In = org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream(inputStream)
+            val tarIn = org.apache.commons.compress.archivers.tar.TarArchiveInputStream(bz2In)
+            extractTarStream(tarIn, targetDir)
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    private fun extractTarGz(inputStream: java.io.InputStream, targetDir: File): Boolean {
+        return try {
+            val gzIn = org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream(inputStream)
+            val tarIn = org.apache.commons.compress.archivers.tar.TarArchiveInputStream(gzIn)
+            extractTarStream(tarIn, targetDir)
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    private fun extractTar(inputStream: java.io.InputStream, targetDir: File): Boolean {
+        return try {
+            val tarIn = org.apache.commons.compress.archivers.tar.TarArchiveInputStream(inputStream)
+            extractTarStream(tarIn, targetDir)
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    private fun extractTarStream(tarIn: org.apache.commons.compress.archivers.tar.TarArchiveInputStream, targetDir: File): Boolean {
+        return try {
+            var entry = tarIn.nextEntry
+            var count = 0
+            while (entry != null) {
+                val fName = File(entry.name).name
+                if (!entry.isDirectory && fName.isNotBlank()) {
+                    val destFile = File(targetDir, fName)
+                    destFile.outputStream().use { out -> tarIn.copyTo(out) }
+                    count++
+                }
+                entry = tarIn.nextEntry
+            }
+            tarIn.close()
+            count > 0
         } catch (_: Exception) {
             false
         }

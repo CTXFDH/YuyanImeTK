@@ -36,7 +36,7 @@ class VoiceSettingsFragment : PreferenceFragmentCompat() {
                         Toast.makeText(ctx, "离线语音识别模型导入并就绪成功！", Toast.LENGTH_LONG).show()
                         onCreatePreferences(null, null)
                     } else {
-                        Toast.makeText(ctx, "模型导入失败，请检查 zip 文件中是否包含 onnx 模型文件", Toast.LENGTH_LONG).show()
+                        Toast.makeText(ctx, "模型导入失败，请检查压缩包中是否包含 onnx 模型文件", Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -75,11 +75,11 @@ class VoiceSettingsFragment : PreferenceFragmentCompat() {
                 }
 
                 addPreference(
-                    "导入离线语音模型 (.zip)",
-                    "选择并解压导入本地下载的 Sherpa-onnx Zipformer 语音模型包",
+                    "导入离线语音模型 (.tar.bz2 / .zip)",
+                    "选择并解压导入本地下载的 Sherpa-onnx 语音模型包 (.tar.bz2 / .zip)",
                     R.drawable.ic_menu_edit
                 ) {
-                    importModelLauncher.launch("application/zip")
+                    importModelLauncher.launch("*/*")
                 }
 
                 addSwitchPreference(
