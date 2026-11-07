@@ -157,12 +157,12 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             KeyboardOneHandedMod.RIGHT,
             KeyboardOneHandedMod,
             listOf(
-                KeyboardOneHandedMod.LEFT,
-                KeyboardOneHandedMod.RIGHT
+                KeyboardOneHandedMod.RIGHT,
+                KeyboardOneHandedMod.LEFT
             ),
             listOf(
-                R.string.holding_habit_left,
-                R.string.holding_habit_right
+                R.string.holding_habit_right,
+                R.string.holding_habit_left
             )
         )
 
