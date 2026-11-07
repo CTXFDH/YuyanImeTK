@@ -9,6 +9,9 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
+import androidx.lifecycle.setViewTreeLifecycleOwner
+import androidx.lifecycle.setViewTreeViewModelStoreOwner
+import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.keyboard.InputView
 import com.yuyan.imemodule.service.VoiceRecognitionHandler
@@ -38,7 +41,10 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
         voiceHandler.initialize()
 
         val composeView = ComposeView(context).apply {
-            layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+            setViewTreeLifecycleOwner(inputView.imeService)
+            setViewTreeSavedStateRegistryOwner(inputView.imeService)
+            setViewTreeViewModelStoreOwner(inputView.imeService)
             setContent {
                 val isDark = ThemeManager.activeTheme.isDark
                 VoiceKeyboardLayout(

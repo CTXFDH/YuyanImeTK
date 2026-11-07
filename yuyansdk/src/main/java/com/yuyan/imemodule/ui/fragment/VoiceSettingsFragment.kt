@@ -2,6 +2,9 @@ package com.yuyan.imemodule.ui.fragment
 
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceFragmentCompat
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.speech.AsrModelManager
@@ -9,8 +12,34 @@ import com.yuyan.imemodule.speech.AsrSupport
 import com.yuyan.imemodule.utils.addCategory
 import com.yuyan.imemodule.utils.addPreference
 import com.yuyan.imemodule.utils.addSwitchPreference
+import com.yuyan.imemodule.view.widget.withLoadingDialog
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class VoiceSettingsFragment : PreferenceFragmentCompat() {
+
+    private lateinit var importModelLauncher: ActivityResultLauncher<String>
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        importModelLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            if (uri == null) return@registerForActivityResult
+            val ctx = requireContext()
+            lifecycleScope.withLoadingDialog(ctx) {
+                val ok = withContext(Dispatchers.IO) {
+                    AsrModelManager(ctx).importModelFromArchive(uri)
+                }
+                withContext(Dispatchers.Main) {
+                    if (ok) {
+                        Toast.makeText(ctx, "离线语音识别模型导入并就绪成功！", Toast.LENGTH_LONG).show()
+                        onCreatePreferences(null, null)
+                    } else {
+                        Toast.makeText(ctx, "模型导入失败，请检查 zip 文件中是否包含 onnx 模型文件", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+    }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceScreen = preferenceManager.createPreferenceScreen(requireContext()).apply {
@@ -24,15 +53,23 @@ class VoiceSettingsFragment : PreferenceFragmentCompat() {
 
                 addPreference(
                     "语音识别模型",
-                    if (isInstalled) "当前使用模型：${selectedInfo?.name}" else "未下载离线语音模型（需要下载模型）",
+                    if (isInstalled) "当前使用模型：${selectedInfo.name}" else "未导入离线语音模型（点击下方导入模型）",
                     R.drawable.ic_menu_language
                 ) {
-                    Toast.makeText(requireContext(), if (isInstalled) "模型已就绪：${selectedInfo?.name}" else "请下载或导入 Zipformer 离线语音模型", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), if (isInstalled) "模型已就绪：${selectedInfo.name}" else "请导入 Zipformer 离线语音模型包 (.zip)", Toast.LENGTH_SHORT).show()
+                }
+
+                addPreference(
+                    "导入离线语音模型 (.zip)",
+                    "选择并解压导入 Sherpa-onnx Zipformer 本地语音模型包",
+                    R.drawable.ic_menu_edit
+                ) {
+                    importModelLauncher.launch("application/zip")
                 }
 
                 addSwitchPreference(
                     "离线模型常驻内存",
-                    "保持语音引擎常驻，消除首次点击按住说话时的 1 秒模型加载延时",
+                    "保持语音引擎常驻，消除首次点击按住说话时的模型加载延时",
                     "asr_keep_engine_alive",
                     false,
                     R.drawable.ic_menu_touch

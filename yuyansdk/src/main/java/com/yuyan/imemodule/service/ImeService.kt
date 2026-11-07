@@ -41,10 +41,30 @@ import kotlinx.coroutines.launch
 import splitties.bitflags.hasFlag
 import splitties.dimensions.dp
 
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.setViewTreeLifecycleOwner
+import androidx.lifecycle.setViewTreeViewModelStoreOwner
+import androidx.savedstate.SavedStateRegistry
+import androidx.savedstate.SavedStateRegistryController
+import androidx.savedstate.SavedStateRegistryOwner
+import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+
 /**
  * Main class of the Pinyin input method. 输入法服务
  */
-class ImeService : InputMethodService() {
+class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner, ViewModelStoreOwner {
+
+    private val lifecycleRegistry = LifecycleRegistry(this)
+    private val savedStateRegistryController = SavedStateRegistryController.create(this)
+    private val store = ViewModelStore()
+
+    override val lifecycle: Lifecycle get() = lifecycleRegistry
+    override val savedStateRegistry: SavedStateRegistry get() = savedStateRegistryController.savedStateRegistry
+    override val viewModelStore: ViewModelStore get() = store
     private var isHardwareKeyboard = false
     private var showVirtualKeyboardOnPhysicalKeyboard = false
     private lateinit var  candidateView:CandidateView
@@ -75,6 +95,8 @@ class ImeService : InputMethodService() {
     override fun onCreate() {
         android.util.Log.w("ImeLifecycle", "ImeService onCreate")
         super.onCreate()
+        savedStateRegistryController.performRestore(null)
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
         addOnChangedListener(onThemeChangeListener)
         getInstance().keyboardSetting.showVirtualKeyboardOnPhysicalKeyboard.registerOnChangeListener(showVirtualKeyboardOnPhysicalKeyboardListener)
         getInstance().internal.clipboardUpdateContent.registerOnChangeListener(clipboardUpdateContentListener)
@@ -83,6 +105,11 @@ class ImeService : InputMethodService() {
     }
 
     override fun onCreateInputView(): View {
+        window?.window?.decorView?.let { decor ->
+            decor.setViewTreeLifecycleOwner(this)
+            decor.setViewTreeSavedStateRegistryOwner(this)
+            decor.setViewTreeViewModelStoreOwner(this)
+        }
         if (!::inputView.isInitialized) inputView = InputView(baseContext, this)
         mInputView = inputView
         return inputView
@@ -166,6 +193,8 @@ class ImeService : InputMethodService() {
 
     override fun onDestroy() {
         android.util.Log.w("ImeLifecycle", "ImeService onDestroy")
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+        store.clear()
         super.onDestroy()
         DictDecoder.candidatesLiveData.removeObserver(candidatesObserver)
         getInstance().keyboardSetting.showVirtualKeyboardOnPhysicalKeyboard.unregisterOnChangeListener(showVirtualKeyboardOnPhysicalKeyboardListener)

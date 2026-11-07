@@ -89,6 +89,32 @@ class AsrModelManager(private val context: Context) {
         sharedPrefs.edit().putString(KEY_SELECTED_MODEL, modelId).apply()
     }
 
+    fun importModelFromArchive(uri: android.net.Uri, modelId: String = "zipformer-zh-int8"): Boolean {
+        val targetDir = getModelDir(modelId).apply { mkdirs() }
+        return try {
+            val cr = context.contentResolver
+            val inputStream = cr.openInputStream(uri) ?: return false
+            val zipIn = java.util.zip.ZipInputStream(inputStream)
+            var entry = zipIn.nextEntry
+            while (entry != null) {
+                val fileName = File(entry.name).name
+                if (!entry.isDirectory && fileName.isNotBlank()) {
+                    val destFile = File(targetDir, fileName)
+                    destFile.outputStream().use { out ->
+                        zipIn.copyTo(out)
+                    }
+                }
+                zipIn.closeEntry()
+                entry = zipIn.nextEntry
+            }
+            zipIn.close()
+            setModel(modelId)
+            isModelInstalled(modelId)
+        } catch (_: Exception) {
+            false
+        }
+    }
+
     fun findFile(dir: File, fileName: String): File? {
         val direct = File(dir, fileName)
         if (direct.exists()) return direct
