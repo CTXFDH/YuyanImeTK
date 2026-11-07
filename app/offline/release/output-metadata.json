@@ -11,9 +11,9 @@
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 2026110620,
-      "versionName": "K45",
-      "outputFile": "YuyanImeK-K45_2026110620.apk"
+      "versionCode": 2026110712,
+      "versionName": "K46",
+      "outputFile": "YuyanImeK-K46_2026110712.apk"
     }
   ],
   "elementType": "File",
@@ -22,14 +22,14 @@
       "minApi": 28,
       "maxApi": 30,
       "baselineProfiles": [
-        "baselineProfiles/1/YuyanImeK-K45_2026110620.dm"
+        "baselineProfiles/1/YuyanImeK-K46_2026110712.dm"
       ]
     },
     {
       "minApi": 31,
       "maxApi": 2147483647,
       "baselineProfiles": [
-        "baselineProfiles/0/YuyanImeK-K45_2026110620.dm"
+        "baselineProfiles/0/YuyanImeK-K46_2026110712.dm"
       ]
     }
   ],
