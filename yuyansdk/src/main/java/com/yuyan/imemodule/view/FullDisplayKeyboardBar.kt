@@ -52,7 +52,20 @@ class FullDisplayKeyboardBar(context: Context?, inputView: InputView) : LinearLa
                 onClick(FullDisplayKeyMode.decode(AppPrefs.getInstance().internal.fullDisplayKeyModeLeft.getValue()))
             }
         }
-        mLLCenter = LinearLayout(context)
+        mLLCenter = LinearLayout(context).apply {
+            gravity = Gravity.CENTER
+            if (mCenterModeMove) {
+                val centerHandle = View(context).apply {
+                    val bgDrawable = android.graphics.drawable.GradientDrawable().apply {
+                        shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                        cornerRadius = dp(2f)
+                        setColor(0x55808080.toInt())
+                    }
+                    background = bgDrawable
+                }
+                addView(centerHandle, LayoutParams(dp(48), dp(4)))
+            }
+        }
         mIVKeyRight = ImageView(context).apply {
             val iconId = getIcon(FullDisplayKeyMode.decode(fullDisplayKeyRight))
             if(iconId != 0)setImageResource(iconId)
@@ -130,5 +143,7 @@ class FullDisplayKeyboardBar(context: Context?, inputView: InputView) : LinearLa
     fun updateTheme(textColor: Int) {
         mIVKeyLeft.drawable?.setTint(textColor)
         mIVKeyRight.drawable?.setTint(textColor)
+        val handleView = mLLCenter.getChildAt(0)
+        (handleView?.background as? android.graphics.drawable.GradientDrawable)?.setColor((textColor and 0x00FFFFFF) or 0x55000000)
     }
 }

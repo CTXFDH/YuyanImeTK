@@ -924,6 +924,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
 
     override fun onWindowShown() {
         chinesePredictionMode = appPrefs.input.chinesePredictionMode.getValue()
+        initView(context)
         updateTheme()
         ensureKeyboardVisible()
     }
