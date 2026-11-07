@@ -76,6 +76,40 @@ class AsrModelManager(private val context: Context) {
         return null
     }
 
+    fun flattenModelDirectory(targetDir: File) {
+        if (!targetDir.isDirectory) return
+        val children = targetDir.listFiles() ?: return
+        if (children.size == 1 && children[0].isDirectory) {
+            val subDir = children[0]
+            subDir.listFiles()?.forEach { file ->
+                val dest = File(targetDir, file.name)
+                file.renameTo(dest)
+            }
+            subDir.delete()
+        }
+        targetDir.listFiles()?.forEach { file ->
+            if (file.isFile) {
+                val name = file.name.lowercase()
+                when {
+                    name.contains("encoder") && name.endsWith(".onnx") && file.name != "encoder.int8.onnx" && file.name != "encoder.onnx" -> {
+                        val targetName = if (name.contains("int8")) "encoder.int8.onnx" else "encoder.onnx"
+                        file.renameTo(File(targetDir, targetName))
+                    }
+                    name.contains("decoder") && name.endsWith(".onnx") && file.name != "decoder.onnx" -> {
+                        file.renameTo(File(targetDir, "decoder.onnx"))
+                    }
+                    name.contains("joiner") && name.endsWith(".onnx") && file.name != "joiner.int8.onnx" && file.name != "joiner.onnx" -> {
+                        val targetName = if (name.contains("int8")) "joiner.int8.onnx" else "joiner.onnx"
+                        file.renameTo(File(targetDir, targetName))
+                    }
+                    name.contains("tokens") && name.endsWith(".txt") && file.name != "tokens.txt" -> {
+                        file.renameTo(File(targetDir, "tokens.txt"))
+                    }
+                }
+            }
+        }
+    }
+
     fun isModelInstalled(modelId: String): Boolean {
         val dir = getModelDir(modelId)
         if (!dir.isDirectory) return false
@@ -164,7 +198,10 @@ class AsrModelManager(private val context: Context) {
                     extractTarBz2(bufferedStream, targetDir) || extractZip(bufferedStream, targetDir)
                 }
             }
-            if (success) setModel(modelId)
+            if (success) {
+                flattenModelDirectory(targetDir)
+                setModel(modelId)
+            }
             isModelInstalled(modelId)
         } catch (_: Exception) {
             false
