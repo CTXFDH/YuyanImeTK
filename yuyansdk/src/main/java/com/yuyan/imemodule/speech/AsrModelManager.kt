@@ -176,7 +176,12 @@ class AsrModelManager(private val context: Context) {
     }
 
     fun importModelFromArchive(uri: android.net.Uri, modelId: String = "zipformer-zh-int8"): Boolean {
-        val targetDir = getModelDir(modelId).apply { mkdirs() }
+        val targetDir = getModelDir(modelId)
+        if (targetDir.exists()) {
+            targetDir.deleteRecursively()
+        }
+        targetDir.mkdirs()
+
         val cr = context.contentResolver
         return try {
             val rawStream = cr.openInputStream(uri) ?: return false
@@ -207,8 +212,11 @@ class AsrModelManager(private val context: Context) {
                 flattenModelDirectory(targetDir)
                 setModel(modelId)
             }
-            isModelInstalled(modelId)
-        } catch (_: Exception) {
+            val installed = isModelInstalled(modelId)
+            android.util.Log.i("AsrModelManager", "importModelFromArchive: modelId=$modelId, installed=$installed, files=${targetDir.list()?.joinToString()}")
+            installed
+        } catch (e: Exception) {
+            android.util.Log.e("AsrModelManager", "importModelFromArchive failed", e)
             false
         }
     }
