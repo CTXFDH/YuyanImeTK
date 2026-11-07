@@ -62,8 +62,8 @@ fun VoiceKeyboardLayout(
     val circleButtonBgColor = if (isDarkTheme) Color(0xFF33374B) else Color(0xFFE2E8F0)
     val buttonIconColor = if (isDarkTheme) Color.White else Color(0xFF1E293B)
 
-    val primaryAccent = Color(0xFF6366F1)
-    val primaryAccentPressed = Color(0xFF4F46E5)
+    val primaryAccent = Color(0xFF07C160)
+    val primaryAccentPressed = Color(0xFF06AD56)
 
     var accumulativeDrag by remember { mutableFloatStateOf(0f) }
     val dragThresholdPx = with(LocalDensity.current) { 16.dp.toPx() }
@@ -136,7 +136,7 @@ fun VoiceKeyboardLayout(
                 modifier = Modifier
                     .size(54.dp)
                     .clip(CircleShape)
-                    .background(if (isDeletePressed) primaryAccentPressed else circleButtonBgColor)
+                    .background(if (isDeletePressed) primaryAccent else circleButtonBgColor)
                     .pointerInput(Unit) {
                         awaitEachGesture {
                             awaitFirstDown(requireUnconsumed = false)
@@ -167,12 +167,15 @@ fun VoiceKeyboardLayout(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            val voiceBtnBgColor = if (isVoicePressed) primaryAccent else circleButtonBgColor
+            val voiceBtnTextColor = if (isVoicePressed) Color.White else buttonIconColor
+
             Box(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
                     .clip(RoundedCornerShape(32.dp))
-                    .background(if (isVoicePressed) primaryAccentPressed else primaryAccent)
+                    .background(voiceBtnBgColor)
                     .pointerInput(Unit) {
                         awaitEachGesture {
                             awaitFirstDown(requireUnconsumed = false)
@@ -189,7 +192,7 @@ fun VoiceKeyboardLayout(
             ) {
                 Text(
                     text = if (isVoicePressed) "松 开 结 束" else "按 住 说 话",
-                    color = Color.White,
+                    color = voiceBtnTextColor,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
