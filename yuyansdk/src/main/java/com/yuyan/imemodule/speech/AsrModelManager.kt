@@ -4,7 +4,14 @@ import android.content.Context
 import com.yuyan.imemodule.speech.models.AsrModelProfile
 import com.yuyan.imemodule.speech.models.AsrModelRegistry
 import com.yuyan.imemodule.utils.queryFileName
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream
+import java.io.BufferedInputStream
+import java.io.BufferedOutputStream
 import java.io.File
+import java.io.InputStream
+import java.util.zip.ZipInputStream
 
 class AsrModelManager(private val context: Context) {
 
@@ -94,23 +101,28 @@ class AsrModelManager(private val context: Context) {
         val targetDir = getModelDir(modelId).apply { mkdirs() }
         val cr = context.contentResolver
         return try {
+            val rawStream = cr.openInputStream(uri) ?: return false
+            val bufferedStream = BufferedInputStream(rawStream, 128 * 1024)
+
+            bufferedStream.mark(4)
+            val header = ByteArray(4)
+            val readCount = bufferedStream.read(header, 0, 4)
+            bufferedStream.reset()
+
             val fileName = cr.queryFileName(uri)?.lowercase() ?: ""
-            val inputStream = cr.openInputStream(uri) ?: return false
 
             val success = when {
-                fileName.endsWith(".tar.bz2") || fileName.endsWith(".tbz2") || fileName.endsWith(".bz2") -> {
-                    extractTarBz2(inputStream, targetDir)
+                (readCount >= 2 && header[0] == 'B'.code.toByte() && header[1] == 'Z'.code.toByte()) || fileName.contains(".bz2") -> {
+                    extractTarBz2(bufferedStream, targetDir)
                 }
-                fileName.endsWith(".tar.gz") || fileName.endsWith(".tgz") -> {
-                    extractTarGz(inputStream, targetDir)
+                (readCount >= 2 && header[0] == 0x1F.toByte() && header[1] == 0x8B.toByte()) || fileName.contains(".gz") -> {
+                    extractTarGz(bufferedStream, targetDir)
                 }
-                fileName.endsWith(".tar") -> {
-                    extractTar(inputStream, targetDir)
+                (readCount >= 4 && header[0] == 'P'.code.toByte() && header[1] == 'K'.code.toByte() && header[2] == 3.toByte() && header[3] == 4.toByte()) || fileName.endsWith(".zip") -> {
+                    extractZip(bufferedStream, targetDir)
                 }
                 else -> {
-                    if (!extractZip(inputStream, targetDir)) {
-                        cr.openInputStream(uri)?.use { stream -> extractTarBz2(stream, targetDir) } ?: false
-                    } else true
+                    extractTarBz2(bufferedStream, targetDir) || extractZip(bufferedStream, targetDir)
                 }
             }
             if (success) setModel(modelId)
@@ -120,16 +132,22 @@ class AsrModelManager(private val context: Context) {
         }
     }
 
-    private fun extractZip(inputStream: java.io.InputStream, targetDir: File): Boolean {
+    private fun extractZip(inputStream: InputStream, targetDir: File): Boolean {
         return try {
-            val zipIn = java.util.zip.ZipInputStream(inputStream)
+            val zipIn = ZipInputStream(inputStream)
             var entry = zipIn.nextEntry
             var count = 0
+            val buffer = ByteArray(64 * 1024)
             while (entry != null) {
                 val fName = File(entry.name).name
                 if (!entry.isDirectory && fName.isNotBlank()) {
                     val destFile = File(targetDir, fName)
-                    destFile.outputStream().use { out -> zipIn.copyTo(out) }
+                    BufferedOutputStream(destFile.outputStream(), 64 * 1024).use { out ->
+                        var len: Int
+                        while (zipIn.read(buffer).also { len = it } != -1) {
+                            out.write(buffer, 0, len)
+                        }
+                    }
                     count++
                 }
                 zipIn.closeEntry()
@@ -142,44 +160,41 @@ class AsrModelManager(private val context: Context) {
         }
     }
 
-    private fun extractTarBz2(inputStream: java.io.InputStream, targetDir: File): Boolean {
+    private fun extractTarBz2(inputStream: InputStream, targetDir: File): Boolean {
         return try {
-            val bz2In = org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream(inputStream)
-            val tarIn = org.apache.commons.compress.archivers.tar.TarArchiveInputStream(bz2In)
+            val bz2In = BZip2CompressorInputStream(inputStream, true)
+            val tarIn = TarArchiveInputStream(bz2In)
             extractTarStream(tarIn, targetDir)
         } catch (_: Exception) {
             false
         }
     }
 
-    private fun extractTarGz(inputStream: java.io.InputStream, targetDir: File): Boolean {
+    private fun extractTarGz(inputStream: InputStream, targetDir: File): Boolean {
         return try {
-            val gzIn = org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream(inputStream)
-            val tarIn = org.apache.commons.compress.archivers.tar.TarArchiveInputStream(gzIn)
+            val gzIn = GzipCompressorInputStream(inputStream, true)
+            val tarIn = TarArchiveInputStream(gzIn)
             extractTarStream(tarIn, targetDir)
         } catch (_: Exception) {
             false
         }
     }
 
-    private fun extractTar(inputStream: java.io.InputStream, targetDir: File): Boolean {
-        return try {
-            val tarIn = org.apache.commons.compress.archivers.tar.TarArchiveInputStream(inputStream)
-            extractTarStream(tarIn, targetDir)
-        } catch (_: Exception) {
-            false
-        }
-    }
-
-    private fun extractTarStream(tarIn: org.apache.commons.compress.archivers.tar.TarArchiveInputStream, targetDir: File): Boolean {
+    private fun extractTarStream(tarIn: TarArchiveInputStream, targetDir: File): Boolean {
         return try {
             var entry = tarIn.nextEntry
             var count = 0
+            val buffer = ByteArray(64 * 1024)
             while (entry != null) {
                 val fName = File(entry.name).name
                 if (!entry.isDirectory && fName.isNotBlank()) {
                     val destFile = File(targetDir, fName)
-                    destFile.outputStream().use { out -> tarIn.copyTo(out) }
+                    BufferedOutputStream(destFile.outputStream(), 64 * 1024).use { out ->
+                        var len: Int
+                        while (tarIn.read(buffer).also { len = it } != -1) {
+                            out.write(buffer, 0, len)
+                        }
+                    }
                     count++
                 }
                 entry = tarIn.nextEntry
