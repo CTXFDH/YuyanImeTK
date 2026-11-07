@@ -92,7 +92,17 @@ class AsrModelManager(private val context: Context) {
 
     fun getSelectedModelDir(): File? {
         val info = getSelectedModelInfo() ?: return null
-        return getModelDir(info.id)
+        val dir = getModelDir(info.id)
+        if (dir.isDirectory && isModelInstalled(info.id)) return dir
+        val modelsRoot = File(context.filesDir, "models")
+        if (modelsRoot.isDirectory) {
+            modelsRoot.listFiles()?.forEach { sub ->
+                if (sub.isDirectory && isModelInstalled(sub.name)) {
+                    return sub
+                }
+            }
+        }
+        return dir
     }
 
     fun getSelectedModelId(): String? {

@@ -90,24 +90,12 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
                 voiceHandler.startRecognition()
             }
         } else {
-            com.hjq.permissions.XXPermissions.with(ctx)
-                .permission(com.hjq.permissions.Permission.RECORD_AUDIO)
-                .request(object : com.hjq.permissions.OnPermissionCallback {
-                    override fun onGranted(permissions: MutableList<String>, allGranted: Boolean) {
-                        if (allGranted && !isVoiceActive) {
-                            isVoiceActive = true
-                            voiceHandler.startRecognition()
-                        }
-                    }
-
-                    override fun onDenied(permissions: MutableList<String>, doNotAskAgain: Boolean) {
-                        if (doNotAskAgain) {
-                            com.hjq.permissions.XXPermissions.startPermissionActivity(ctx, permissions)
-                        } else {
-                            android.widget.Toast.makeText(ctx, "请授予麦克风录音权限以开启语音识别", android.widget.Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                })
+            try {
+                com.hjq.permissions.XXPermissions.startPermissionActivity(ctx, com.hjq.permissions.Permission.RECORD_AUDIO)
+                android.widget.Toast.makeText(ctx, "使用语音识别前，请先开启【麦克风录音权限】", android.widget.Toast.LENGTH_LONG).show()
+            } catch (_: Exception) {
+                android.widget.Toast.makeText(ctx, "请先在系统应用设置中开启语燕输入法的【麦克风权限】", android.widget.Toast.LENGTH_LONG).show()
+            }
         }
     }
 

@@ -326,24 +326,30 @@ class SpeechRecognitionManager(private val context: Context) {
     @android.annotation.SuppressLint("MissingPermission")
     private fun createAudioRecord(bufferSecs: Float = 2.0f): AudioRecord? {
         val bufferSize = (SAMPLE_RATE * bufferSecs).toInt()
-        return try {
-            val record = AudioRecord(
-                MediaRecorder.AudioSource.VOICE_RECOGNITION,
-                SAMPLE_RATE,
-                CHANNEL_CONFIG,
-                AUDIO_FORMAT,
-                bufferSize * 2
-            )
-            if (record.state != AudioRecord.STATE_INITIALIZED) {
-                record.release()
-                null
-            } else {
-                record
+        val sources = intArrayOf(
+            MediaRecorder.AudioSource.VOICE_RECOGNITION,
+            MediaRecorder.AudioSource.MIC,
+            MediaRecorder.AudioSource.DEFAULT
+        )
+        for (source in sources) {
+            try {
+                val record = AudioRecord(
+                    source,
+                    SAMPLE_RATE,
+                    CHANNEL_CONFIG,
+                    AUDIO_FORMAT,
+                    bufferSize * 2
+                )
+                if (record.state == AudioRecord.STATE_INITIALIZED) {
+                    return record
+                } else {
+                    record.release()
+                }
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to create AudioRecord with source $source", e)
             }
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to create AudioRecord", e)
-            null
         }
+        return null
     }
 
     private inner class RecordingThread(
