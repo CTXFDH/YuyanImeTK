@@ -38,7 +38,7 @@ class FullDisplayKeyboardBar(context: Context?, inputView: InputView) : LinearLa
     private val mIVKeyRight: ImageView
     private val mCenterModeMove: Boolean
     init {
-        setPadding(dp(20), dp(10), dp(20), dp(10))
+        setPadding(dp(20), dp(4), dp(20), dp(4))
         val fullDisplayKeyLeft = AppPrefs.getInstance().internal.fullDisplayKeyModeLeft.getValue()
         val fullDisplayKeyRight = AppPrefs.getInstance().internal.fullDisplayKeyModeRight.getValue()
         val centerMode = FullDisplayCenterMode.decode(AppPrefs.getInstance().internal.fullDisplayCenterMode.getValue())

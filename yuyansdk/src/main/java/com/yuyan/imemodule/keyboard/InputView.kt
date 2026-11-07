@@ -238,7 +238,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
             mSkbRoot.bottomPadding = mBottomPaddingKey.getValue()
             mSkbRoot.rightPadding = mRightPaddingKey.getValue()
             val mLlForegroundContent = mSkbRoot.findViewById<LinearLayout>(R.id.ll_foreground_content)
-            mLlForegroundContent?.setPadding(0, 0, 0, dp(12))
+            mLlForegroundContent?.setPadding(0, 0, 0, if (fullDisplayEnable) 0 else dp(12))
         }
         KeyboardManager.instance.switchKeyboard()
         applyTopWindowCornerRadius()

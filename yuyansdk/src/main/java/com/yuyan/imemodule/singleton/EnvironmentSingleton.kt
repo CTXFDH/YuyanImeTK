@@ -96,7 +96,7 @@ class EnvironmentSingleton private constructor() {
         heightForCandidatesArea = (heightForcomposing * 2.9).toInt()
         composingTextSize = DevicesUtils.px2sp(heightForcomposing)
         candidateTextSize = DevicesUtils.px2sp(heightForCandidates)
-        heightForFullDisplayBar = (skbHeight * 0.25f).toInt()
+        heightForFullDisplayBar = (skbHeight * 0.14f).toInt().coerceAtLeast(DevicesUtils.dip2px(36f))
         heightForKeyboardMove = (heightForCandidatesArea * 0.2f).toInt()
 
         val keyboardFontSizeRatio = prefs.keyboardFontSize.getValue()/100f
