@@ -1,43 +1,67 @@
 package com.yuyan.imemodule.ui.fragment
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
+import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceViewHolder
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.speech.AsrModelManager
 import com.yuyan.imemodule.speech.AsrSupport
 import com.yuyan.imemodule.utils.addCategory
 import com.yuyan.imemodule.utils.addPreference
 import com.yuyan.imemodule.utils.addSwitchPreference
-import com.yuyan.imemodule.view.widget.withLoadingDialog
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class VoiceSettingsFragment : PreferenceFragmentCompat() {
 
     private lateinit var importModelLauncher: ActivityResultLauncher<String>
+    private var progressPreference: InlineProgressBarPreference? = null
+
+    class InlineProgressBarPreference(context: Context) : Preference(context) {
+        var statusText: String = "正在解压并导入语音模型文件，请稍候..."
+            set(value) {
+                field = value
+                notifyChanged()
+            }
+
+        init {
+            isSelectable = false
+            layoutResource = R.layout.sdk_layout_preference_progress
+        }
+
+        override fun onBindViewHolder(holder: PreferenceViewHolder) {
+            super.onBindViewHolder(holder)
+            val tvStatus = holder.findViewById(R.id.tv_import_status) as? TextView
+            tvStatus?.text = statusText
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         importModelLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             if (uri == null) return@registerForActivityResult
             val ctx = requireContext()
-            lifecycleScope.withLoadingDialog(ctx) {
+            progressPreference?.isVisible = true
+            lifecycleScope.launch {
                 val ok = withContext(Dispatchers.IO) {
                     AsrModelManager(ctx).importModelFromArchive(uri)
                 }
-                withContext(Dispatchers.Main) {
-                    if (ok) {
-                        Toast.makeText(ctx, "离线语音识别模型导入并就绪成功！", Toast.LENGTH_LONG).show()
-                        onCreatePreferences(null, null)
-                    } else {
-                        Toast.makeText(ctx, "模型导入失败，请检查压缩包中是否包含 onnx 模型文件", Toast.LENGTH_LONG).show()
-                    }
+                progressPreference?.isVisible = false
+                if (ok) {
+                    Toast.makeText(ctx, "离线语音识别模型导入并就绪成功！", Toast.LENGTH_LONG).show()
+                    onCreatePreferences(null, null)
+                } else {
+                    Toast.makeText(ctx, "模型导入失败，请检查压缩包中是否包含 onnx 模型文件", Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -82,6 +106,11 @@ class VoiceSettingsFragment : PreferenceFragmentCompat() {
                 ) {
                     importModelLauncher.launch("*/*")
                 }
+
+                progressPreference = InlineProgressBarPreference(requireContext()).apply {
+                    isVisible = false
+                }
+                addPreference(progressPreference!!)
 
                 addSwitchPreference(
                     "离线模型常驻内存",
