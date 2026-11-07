@@ -13,5 +13,8 @@ class BaseApplication : Application(){
         super.onCreate()
         CrashHandler.instance.init(this)
         Launcher.instance.initData(baseContext)
+        try {
+            System.loadLibrary("onnxruntime")
+        } catch (_: Throwable) {}
     }
 }

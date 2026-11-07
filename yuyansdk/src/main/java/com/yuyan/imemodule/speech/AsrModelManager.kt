@@ -54,7 +54,13 @@ class AsrModelManager(private val context: Context) {
         return AsrModelRegistry.profiles.map { it.toAsrModelInfo() }
     }
 
-    fun isModelReady(): Boolean = getSelectedModelInfo() != null
+    fun isModelReady(): Boolean {
+        return getSelectedModelInfo() != null
+    }
+
+    fun ensureAssetsModelInstalled(modelId: String = "zipformer-zh-int8") {
+        // 已解除内置模型自动安装，由用户手动导入模型包
+    }
 
     fun getModelInfo(modelId: String): AsrModelInfo =
         getAsrModels().find { it.id == modelId }
@@ -78,15 +84,21 @@ class AsrModelManager(private val context: Context) {
 
     fun flattenModelDirectory(targetDir: File) {
         if (!targetDir.isDirectory) return
-        val children = targetDir.listFiles() ?: return
-        if (children.size == 1 && children[0].isDirectory) {
-            val subDir = children[0]
-            subDir.listFiles()?.forEach { file ->
-                val dest = File(targetDir, file.name)
-                file.renameTo(dest)
+
+        fun promoteFiles(dir: File) {
+            dir.listFiles()?.forEach { child ->
+                if (child.isDirectory) {
+                    promoteFiles(child)
+                    child.delete()
+                } else if (child.isFile) {
+                    if (child.parentFile != targetDir) {
+                        val dest = File(targetDir, child.name)
+                        child.renameTo(dest)
+                    }
+                }
             }
-            subDir.delete()
         }
+        promoteFiles(targetDir)
         targetDir.listFiles()?.forEach { file ->
             if (file.isFile) {
                 val name = file.name.lowercase()
@@ -271,12 +283,13 @@ class AsrModelManager(private val context: Context) {
 
     private fun extractTarStream(tarIn: TarArchiveInputStream, targetDir: File): Boolean {
         return try {
-            var entry = tarIn.nextEntry
+            var entry = tarIn.nextTarEntry
             var count = 0
             val buffer = ByteArray(64 * 1024)
+            val maxFileSize = 500 * 1024 * 1024L
             while (entry != null) {
                 val fName = File(entry.name).name
-                if (!entry.isDirectory && fName.isNotBlank()) {
+                if (!entry.isDirectory && fName.isNotBlank() && entry.size < maxFileSize) {
                     val destFile = File(targetDir, fName)
                     BufferedOutputStream(destFile.outputStream(), 64 * 1024).use { out ->
                         var len: Int
@@ -286,24 +299,12 @@ class AsrModelManager(private val context: Context) {
                     }
                     count++
                 }
-                entry = tarIn.nextEntry
+                entry = tarIn.nextTarEntry
             }
             tarIn.close()
             count > 0
         } catch (_: Exception) {
             false
         }
-    }
-
-    fun findFile(dir: File, fileName: String): File? {
-        val direct = File(dir, fileName)
-        if (direct.exists()) return direct
-        dir.listFiles()?.forEach { child ->
-            if (child.isDirectory) {
-                val found = findFile(child, fileName)
-                if (found != null) return found
-            }
-        }
-        return null
     }
 }
