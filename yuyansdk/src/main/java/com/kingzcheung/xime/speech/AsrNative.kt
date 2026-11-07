@@ -7,12 +7,11 @@ object AsrNative {
     init {
         try {
             System.loadLibrary("onnxruntime")
+        } catch (_: Throwable) {}
+        try {
             System.loadLibrary("onnx_env")
-            System.loadLibrary("onnx_jni")
-            System.loadLibrary("asr_jni")
-        } catch (e: Throwable) {
-            android.util.Log.e("AsrNative", "Failed to load asr_jni libraries", e)
-        }
+        } catch (_: Throwable) {}
+        System.loadLibrary("asr_jni")
     }
 
     external fun nativeCreate(

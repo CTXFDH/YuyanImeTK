@@ -33,7 +33,9 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
             voiceState = state.voiceRecognitionState
             if (state.voiceRecognitionState == RecognitionState.ERROR) {
                 isVoiceActive = false
-                android.widget.Toast.makeText(context, "语音引擎未就绪：请在【设置-方案与数据-语音识别设置】中导入离线模型包", android.widget.Toast.LENGTH_LONG).show()
+                val isModelReady = com.yuyan.imemodule.speech.AsrModelManager(context).isModelReady()
+                val msg = if (isModelReady) "语音引擎启动异常，请重试" else "未导入离线语音模型：请在【设置-方案与数据-语音识别设置】中导入模型包"
+                android.widget.Toast.makeText(context, msg, android.widget.Toast.LENGTH_LONG).show()
             }
         },
         getState = { com.yuyan.imemodule.service.VoiceState(voiceRecognitionState = voiceState) },
