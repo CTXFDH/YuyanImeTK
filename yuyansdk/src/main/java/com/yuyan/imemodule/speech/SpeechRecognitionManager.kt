@@ -216,7 +216,9 @@ class SpeechRecognitionManager(private val context: Context) {
 
     private fun setState(state: RecognitionState) {
         currentState = state
-        stateCallback?.invoke(state)
+        mainHandler.post {
+            stateCallback?.invoke(state)
+        }
     }
 
     fun setCallbacks(
