@@ -3,7 +3,7 @@ package com.yuyan.imemodule.keyboard.container
 import android.annotation.SuppressLint
 import android.content.Context
 import android.view.KeyEvent
-import android.view.ViewGroup
+import android.view.MotionEvent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -25,6 +25,8 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
     private var voiceAmplitude by mutableFloatStateOf(0f)
     private var voiceSpectrum by mutableStateOf(FloatArray(16))
 
+    private var isVoiceActive by mutableStateOf(false)
+
     private val voiceHandler = VoiceRecognitionHandler(
         context = context,
         onStateChanged = { state ->
@@ -40,8 +42,6 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
         onAmplitudeChanged = { amp -> voiceAmplitude = amp },
         onSpectrumChanged = { spec -> voiceSpectrum = spec }
     )
-
-    private var isVoiceActive by mutableStateOf(false)
 
     init {
         voiceHandler.initialize()
@@ -67,25 +67,10 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
                         inputView.imeService.sendEnterKeyEvent()
                     },
                     onStartVoice = {
-                        val ctx = context
-                        if (com.hjq.permissions.XXPermissions.isGranted(ctx, com.hjq.permissions.Permission.RECORD_AUDIO)) {
-                            isVoiceActive = true
-                            voiceHandler.startRecognition()
-                        } else {
-                            try {
-                                val intent = android.content.Intent(ctx, com.yuyan.imemodule.ui.activity.LauncherActivity::class.java).apply {
-                                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-                                }
-                                ctx.startActivity(intent)
-                                android.widget.Toast.makeText(ctx, "使用语音功能前，请先在权限列表中勾选麦克风录音权限", android.widget.Toast.LENGTH_LONG).show()
-                            } catch (_: Exception) {
-                                android.widget.Toast.makeText(ctx, "请先授予应用麦克风录音权限以开启语音识别", android.widget.Toast.LENGTH_LONG).show()
-                            }
-                        }
+                        startVoiceInternal()
                     },
                     onStopVoice = {
-                        isVoiceActive = false
-                        voiceHandler.finishRecognition()
+                        stopVoiceInternal()
                     },
                     onCursorMove = { direction ->
                         val keyCode = if (direction < 0) KeyEvent.KEYCODE_DPAD_LEFT else KeyEvent.KEYCODE_DPAD_RIGHT
@@ -97,31 +82,48 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
         addView(composeView)
     }
 
-    override fun dispatchTouchEvent(ev: android.view.MotionEvent?): Boolean {
+    private fun startVoiceInternal() {
+        val ctx = context
+        if (com.hjq.permissions.XXPermissions.isGranted(ctx, com.hjq.permissions.Permission.RECORD_AUDIO)) {
+            if (!isVoiceActive) {
+                isVoiceActive = true
+                voiceHandler.startRecognition()
+            }
+        } else {
+            try {
+                val intent = android.content.Intent(ctx, com.yuyan.imemodule.ui.activity.LauncherActivity::class.java).apply {
+                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                ctx.startActivity(intent)
+                android.widget.Toast.makeText(ctx, "使用语音功能前，请先在权限列表中勾选麦克风录音权限", android.widget.Toast.LENGTH_LONG).show()
+            } catch (_: Exception) {
+                android.widget.Toast.makeText(ctx, "请先授予应用麦克风录音权限以开启语音识别", android.widget.Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun stopVoiceInternal() {
+        if (isVoiceActive) {
+            isVoiceActive = false
+            voiceHandler.finishRecognition()
+        }
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         ev?.let { event ->
             val w = width.toFloat()
             val h = height.toFloat()
             if (h > 0 && w > 0 && event.y > h * 0.40f && event.x < w * 0.80f) {
                 when (event.actionMasked) {
-                    android.view.MotionEvent.ACTION_DOWN -> {
-                        val ctx = context
-                        if (com.hjq.permissions.XXPermissions.isGranted(ctx, com.hjq.permissions.Permission.RECORD_AUDIO)) {
-                            if (!isVoiceActive) {
-                                isVoiceActive = true
-                                voiceHandler.startRecognition()
-                            }
-                        }
+                    MotionEvent.ACTION_DOWN -> {
+                        startVoiceInternal()
                     }
-                    android.view.MotionEvent.ACTION_UP, android.view.MotionEvent.ACTION_CANCEL -> {
-                        if (isVoiceActive) {
-                            isVoiceActive = false
-                            voiceHandler.finishRecognition()
-                        }
+                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                        stopVoiceInternal()
                     }
                 }
-            } else if (isVoiceActive && (event.actionMasked == android.view.MotionEvent.ACTION_UP || event.actionMasked == android.view.MotionEvent.ACTION_CANCEL)) {
-                isVoiceActive = false
-                voiceHandler.finishRecognition()
+            } else if (isVoiceActive && (event.actionMasked == MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_CANCEL)) {
+                stopVoiceInternal()
             }
         }
         return super.dispatchTouchEvent(ev)
