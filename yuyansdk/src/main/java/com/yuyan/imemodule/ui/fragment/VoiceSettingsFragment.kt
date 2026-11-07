@@ -62,8 +62,22 @@ class VoiceSettingsFragment : PreferenceFragmentCompat() {
                 }
 
                 addPreference(
-                    "下载离线语音模型 (GitHub)",
-                    "跳转至 sherpa-onnx 开源模型发布页下载解压包：\nhttps://github.com/k2-fsa/sherpa-onnx/releases/tag/asr-models",
+                    "下载首选模型：X-ASR 中英文+标点模型",
+                    "点击直接下载 X-ASR 离线语音模型包 (.tar.bz2，133.9MB，中英文混合+自动标点)",
+                    R.drawable.ic_jump_arrow
+                ) {
+                    try {
+                        val url = "https://www.modelscope.cn/models/adaada88/sherpa-onnx-x-asr-480ms-streaming-zipformer-transducer-zh-en-punct-int8/resolve/master/sherpa-onnx-x-asr-480ms-streaming-zipformer-transducer-zh-en-punct-int8-2026-06-05.tar.bz2"
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                        startActivity(intent)
+                    } catch (_: Exception) {
+                        Toast.makeText(requireContext(), "无法唤起浏览器下载，请在电脑或手机浏览器中打开下载", Toast.LENGTH_LONG).show()
+                    }
+                }
+
+                addPreference(
+                    "下载更多离线模型 (GitHub)",
+                    "跳转至 sherpa-onnx 开源模型发布页下载更多语言与体量的模型包：\nhttps://github.com/k2-fsa/sherpa-onnx/releases/tag/asr-models",
                     R.drawable.ic_jump_arrow
                 ) {
                     try {
