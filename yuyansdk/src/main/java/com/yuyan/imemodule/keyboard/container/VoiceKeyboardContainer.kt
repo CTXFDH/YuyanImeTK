@@ -90,15 +90,24 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
                 voiceHandler.startRecognition()
             }
         } else {
-            try {
-                val intent = android.content.Intent(ctx, com.yuyan.imemodule.ui.activity.LauncherActivity::class.java).apply {
-                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
-                ctx.startActivity(intent)
-                android.widget.Toast.makeText(ctx, "使用语音功能前，请先在权限列表中勾选麦克风录音权限", android.widget.Toast.LENGTH_LONG).show()
-            } catch (_: Exception) {
-                android.widget.Toast.makeText(ctx, "请先授予应用麦克风录音权限以开启语音识别", android.widget.Toast.LENGTH_LONG).show()
-            }
+            com.hjq.permissions.XXPermissions.with(ctx)
+                .permission(com.hjq.permissions.Permission.RECORD_AUDIO)
+                .request(object : com.hjq.permissions.OnPermissionCallback {
+                    override fun onGranted(permissions: MutableList<String>, allGranted: Boolean) {
+                        if (allGranted && !isVoiceActive) {
+                            isVoiceActive = true
+                            voiceHandler.startRecognition()
+                        }
+                    }
+
+                    override fun onDenied(permissions: MutableList<String>, doNotAskAgain: Boolean) {
+                        if (doNotAskAgain) {
+                            com.hjq.permissions.XXPermissions.startPermissionActivity(ctx, permissions)
+                        } else {
+                            android.widget.Toast.makeText(ctx, "请授予麦克风录音权限以开启语音识别", android.widget.Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                })
         }
     }
 
