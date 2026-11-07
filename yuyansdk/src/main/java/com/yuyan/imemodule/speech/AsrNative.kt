@@ -1,29 +1,21 @@
 package com.yuyan.imemodule.speech
 
-/**
- * JNI bridge to the streaming zipformer2 ASR (libasr_jni.so).
- */
 object AsrNative {
-    init {
-        try {
-            System.loadLibrary("asr_jni")
-        } catch (_: Throwable) {}
-    }
+    fun nativeCreate(encoder: String, decoder: String, joiner: String, tokens: String): Long =
+        com.kingzcheung.xime.speech.AsrNative.nativeCreate(encoder, decoder, joiner, tokens)
 
-    external fun nativeCreate(
-        encoder: String,
-        decoder: String,
-        joiner: String,
-        tokens: String
-    ): Long
+    fun nativeReset(handle: Long) =
+        com.kingzcheung.xime.speech.AsrNative.nativeReset(handle)
 
-    external fun nativeReset(handle: Long)
+    fun nativeAcceptPcm(handle: Long, pcm: ByteArray) =
+        com.kingzcheung.xime.speech.AsrNative.nativeAcceptPcm(handle, pcm)
 
-    external fun nativeAcceptPcm(handle: Long, pcm: ByteArray)
+    fun nativeGetPartial(handle: Long): String =
+        com.kingzcheung.xime.speech.AsrNative.nativeGetPartial(handle)
 
-    external fun nativeGetPartial(handle: Long): String
+    fun nativeFinalize(handle: Long): String =
+        com.kingzcheung.xime.speech.AsrNative.nativeFinalize(handle)
 
-    external fun nativeFinalize(handle: Long): String
-
-    external fun nativeRelease(handle: Long)
+    fun nativeRelease(handle: Long) =
+        com.kingzcheung.xime.speech.AsrNative.nativeRelease(handle)
 }

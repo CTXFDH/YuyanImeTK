@@ -60,7 +60,20 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
                         inputView.imeService.sendEnterKeyEvent()
                     },
                     onStartVoice = {
-                        voiceHandler.startRecognition()
+                        val ctx = inputView.context
+                        if (com.hjq.permissions.XXPermissions.isGranted(ctx, com.hjq.permissions.Permission.RECORD_AUDIO)) {
+                            voiceHandler.startRecognition()
+                        } else {
+                            com.hjq.permissions.XXPermissions.with(ctx)
+                                .permission(com.hjq.permissions.Permission.RECORD_AUDIO)
+                                .request { _, allGranted ->
+                                    if (allGranted) {
+                                        voiceHandler.startRecognition()
+                                    } else {
+                                        android.widget.Toast.makeText(ctx, "请先授予麦克风录音权限以开启语音识别", android.widget.Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                        }
                     },
                     onStopVoice = {
                         voiceHandler.finishRecognition()
