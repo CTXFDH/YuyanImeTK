@@ -112,12 +112,17 @@ class AsrModelManager(private val context: Context) {
 
     fun isModelInstalled(modelId: String): Boolean {
         val dir = getModelDir(modelId)
-        if (!dir.isDirectory) return false
+        if (!dir.isDirectory) {
+            android.util.Log.d("AsrModelManager", "isModelInstalled: $modelId dir does not exist (${dir.absolutePath})")
+            return false
+        }
         val enc = findEncoderFile(dir)
         val dec = findDecoderFile(dir)
         val jn = findJoinerFile(dir)
         val tok = findTokensFile(dir)
-        return enc != null && dec != null && jn != null && tok != null
+        val installed = enc != null && dec != null && jn != null && tok != null
+        android.util.Log.d("AsrModelManager", "isModelInstalled: $modelId -> enc=$enc, dec=$dec, jn=$jn, tok=$tok => installed=$installed")
+        return installed
     }
 
     fun getModelDir(modelId: String): File {

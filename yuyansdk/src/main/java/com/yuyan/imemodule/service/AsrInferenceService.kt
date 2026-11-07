@@ -157,21 +157,29 @@ class AsrInferenceService : Service() {
         return try {
             val dir = File(modelDir)
             val manager = AsrModelManager(this)
+            manager.flattenModelDirectory(dir)
+
             val encoder = manager.findEncoderFile(dir)
             val decoder = manager.findDecoderFile(dir)
             val joiner = manager.findJoinerFile(dir)
             val tokens = manager.findTokensFile(dir)
+
+            Log.i(TAG, "createAsrHandle dir=${dir.absolutePath}, enc=$encoder, dec=$decoder, jn=$joiner, tok=$tokens")
+
             if (encoder == null || decoder == null || joiner == null || tokens == null) {
                 Log.e(TAG, "ASR model files incomplete in $modelDir")
                 return 0L
             }
-            AsrNative.nativeCreate(
+
+            val handle = AsrNative.nativeCreate(
                 encoder.absolutePath,
                 decoder.absolutePath,
                 joiner.absolutePath,
                 tokens.absolutePath
             )
-        } catch (e: Exception) {
+            Log.i(TAG, "nativeCreate result handle=$handle")
+            handle
+        } catch (e: Throwable) {
             Log.e(TAG, "createAsrHandle failed", e)
             0L
         }
