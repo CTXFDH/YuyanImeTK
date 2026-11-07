@@ -1,6 +1,7 @@
 package com.yuyan.imemodule.speech
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.media.AudioFormat
 import android.media.AudioRecord
@@ -21,7 +22,6 @@ class SpeechRecognitionManager(private val context: Context) {
         private const val BUFFER_SIZE_SECONDS = 0.1f
         private const val SPEECH_THRESHOLD = 25
         private const val JOIN_TIMEOUT_MS = 5000L
-        private const val BACKEND_RELEASE_DELAY_MS = 3500L
     }
 
     private var backend: AsrBackend? = null
@@ -29,23 +29,6 @@ class SpeechRecognitionManager(private val context: Context) {
     private val mainHandler = Handler(Looper.getMainLooper())
 
     private var sessionId = 0
-
-    @Volatile
-    private var pendingReleaseSession = -1
-    private val pendingBackendRelease = Runnable {
-        val session = pendingReleaseSession
-        pendingReleaseSession = -1
-        val b = synchronized(preloadLock) {
-            if (session != -1 && sessionId == session) {
-                val tmp = backend
-                backend = null
-                tmp
-            } else null
-        }
-        if (b != null) {
-            Thread { b.release() }.start()
-        }
-    }
 
     @Volatile
     private var loadingInProgress = false
@@ -64,6 +47,22 @@ class SpeechRecognitionManager(private val context: Context) {
     private var preStartedRecord: AudioRecord? = null
     private val preStartTimeoutRunnable = Runnable { cancelPreStart() }
 
+    fun setCallbacks(
+        onResult: (String) -> Unit,
+        onPartialResult: (String) -> Unit,
+        onStateChange: (RecognitionState) -> Unit,
+        onError: (String, Boolean) -> Unit,
+        onAmplitude: (Float) -> Unit,
+        onSpectrum: (FloatArray) -> Unit
+    ) {
+        resultCallback = onResult
+        partialResultCallback = onPartialResult
+        stateCallback = onStateChange
+        errorCallback = onError
+        amplitudeCallback = onAmplitude
+        spectrumCallback = onSpectrum
+    }
+
     @RequiresPermission(Manifest.permission.RECORD_AUDIO)
     fun startRecognition() {
         synchronized(preloadLock) {
@@ -76,7 +75,7 @@ class SpeechRecognitionManager(private val context: Context) {
                 }
             }
         }
-        
+
         if (recordingThread != null) {
             return
         }
@@ -97,7 +96,7 @@ class SpeechRecognitionManager(private val context: Context) {
                     val ok = preload()
                     if (!ok || synchronized(preloadLock) { backend } == null) {
                         mainHandler.post {
-                            errorCallback?.invoke("无法初始化语音引擎", true)
+                            errorCallback?.invoke("未导入离线语音模型：请在【设置-方案与数据-语音识别设置】中导入模型包", true)
                             setState(RecognitionState.ERROR)
                         }
                         return@Thread
@@ -127,11 +126,11 @@ class SpeechRecognitionManager(private val context: Context) {
     }
 
     private fun startRecording() {
-        val currentBackend = synchronized(preloadLock) { backend } ?: return
+        val currentBackend = synchronized(preloadLock) { backend } ?: run {
+            setState(RecognitionState.ERROR)
+            return
+        }
         synchronized(preloadLock) { sessionId++ }
-
-        mainHandler.removeCallbacks(pendingBackendRelease)
-        pendingReleaseSession = -1
 
         var preStarted: AudioRecord? = null
         synchronized(this) {
@@ -141,13 +140,18 @@ class SpeechRecognitionManager(private val context: Context) {
         mainHandler.removeCallbacks(preStartTimeoutRunnable)
 
         recordingThread = RecordingThread(currentBackend, preStarted)
+        recordingThread!!.setCallbacks(
+            onResult = { text -> resultCallback?.invoke(text) },
+            onPartialResult = { text -> partialResultCallback?.invoke(text) },
+            onError = { err -> errorCallback?.invoke(err, false) }
+        )
+        currentBackend.setCallbacks(
+            onResult = { text -> resultCallback?.invoke(text) },
+            onPartialResult = { text -> partialResultCallback?.invoke(text) },
+            onStateChange = { state -> setState(state) },
+            onError = { err -> errorCallback?.invoke(err, false) }
+        )
         recordingThread!!.start()
-    }
-
-    private fun scheduleBackendRelease(session: Int) {
-        pendingReleaseSession = session
-        mainHandler.removeCallbacks(pendingBackendRelease)
-        mainHandler.postDelayed(pendingBackendRelease, BACKEND_RELEASE_DELAY_MS)
     }
 
     fun stopRecognition() {
@@ -155,201 +159,92 @@ class SpeechRecognitionManager(private val context: Context) {
         if (thread == null) {
             if (loadingInProgress) {
                 loadingCancelled = true
-                mainHandler.post {
-                    setState(RecognitionState.IDLE)
-                }
+                setState(RecognitionState.IDLE)
             }
             return
         }
-        recordingThread = null
         thread.stopRequested = true
-        val session = synchronized(preloadLock) { sessionId }
-        thread.forceStopAudio()
+        recordingThread = null
+        setState(RecognitionState.PROCESSING)
+
         Thread {
             try {
                 thread.join(JOIN_TIMEOUT_MS)
             } catch (_: InterruptedException) {
                 Thread.currentThread().interrupt()
             }
-            if (thread.isAlive) {
-                thread.interrupt()
-            }
-            scheduleBackendRelease(session)
             mainHandler.post {
                 setState(RecognitionState.IDLE)
             }
         }.start()
-    }
-
-    fun cancelRecognition() {
-        val thread = recordingThread
-        if (thread == null) {
-            if (loadingInProgress) {
-                loadingCancelled = true
-                mainHandler.post {
-                    setState(RecognitionState.IDLE)
-                }
-            }
-            return
-        }
-        recordingThread = null
-        thread.stopRequested = true
-        val session = synchronized(preloadLock) { sessionId }
-        thread.forceStopAudio()
-        Thread {
-            try {
-                thread.join(JOIN_TIMEOUT_MS)
-            } catch (_: InterruptedException) {
-                Thread.currentThread().interrupt()
-            }
-            if (thread.isAlive) {
-                thread.interrupt()
-            }
-            scheduleBackendRelease(session)
-            mainHandler.post {
-                setState(RecognitionState.IDLE)
-            }
-        }.start()
-    }
-
-    fun getState(): RecognitionState = currentState
-
-    private fun setState(state: RecognitionState) {
-        currentState = state
-        mainHandler.post {
-            stateCallback?.invoke(state)
-        }
-    }
-
-    fun setCallbacks(
-        onResult: (String) -> Unit,
-        onPartialResult: ((String) -> Unit)? = null,
-        onStateChange: (RecognitionState) -> Unit,
-        onError: (message: String, userVisible: Boolean) -> Unit,
-        onAmplitude: ((Float) -> Unit)? = null,
-        onSpectrum: ((FloatArray) -> Unit)? = null
-    ) {
-        resultCallback = onResult
-        partialResultCallback = onPartialResult
-        stateCallback = onStateChange
-        errorCallback = onError
-        amplitudeCallback = onAmplitude
-        spectrumCallback = onSpectrum
-    }
-
-    fun startPreStart() {
-        cancelPreStart()
-        val record = createAudioRecord() ?: return
-        record.startRecording()
-        synchronized(this) {
-            preStartedRecord = record
-        }
-        mainHandler.removeCallbacks(preStartTimeoutRunnable)
-        mainHandler.postDelayed(preStartTimeoutRunnable, 2000)
-    }
-
-    fun cancelPreStart() {
-        mainHandler.removeCallbacks(preStartTimeoutRunnable)
-        synchronized(this) {
-            val record = preStartedRecord
-            preStartedRecord = null
-            if (record != null) {
-                try { record.stop() } catch (_: Exception) { }
-                record.release()
-            }
-        }
     }
 
     fun release() {
-        cancelPreStart()
-        mainHandler.removeCallbacks(pendingBackendRelease)
-        pendingReleaseSession = -1
-        cancelRecognition()
+        stopRecognition()
         val b = synchronized(preloadLock) {
             val tmp = backend
             backend = null
             tmp
         }
         if (b != null) {
-            Thread {
-                b.release()
-            }.start()
+            Thread { b.release() }.start()
         }
     }
 
-    private var isPreloading = false
-    private val preloadLock = java.lang.Object()
+    private fun setState(state: RecognitionState) {
+        currentState = state
+        stateCallback?.invoke(state)
+    }
 
-    fun preload(): Boolean {
+    private val preloadLock = Object()
+    private var isPreloading = false
+
+    fun startPreStart() {}
+
+    fun cancelPreStart() {
+        mainHandler.removeCallbacks(preStartTimeoutRunnable)
+        synchronized(this) {
+            preStartedRecord?.release()
+            preStartedRecord = null
+        }
+    }
+
+    private fun preload(): Boolean {
         synchronized(preloadLock) {
             if (backend != null) return true
             isPreloading = true
         }
-        
-        val newBackend = createBackend()
-        if (newBackend == null) {
-            synchronized(preloadLock) {
-                isPreloading = false
-                preloadLock.notifyAll()
-            }
-            return false
-        }
-
-        newBackend.setCallbacks(
-            onResult = { text -> handleResult(text) },
-            onPartialResult = { text -> handlePartialResult(text) },
-            onStateChange = { state -> setState(state) },
-            onError = { error -> handleError(error) }
-        )
-
-        if (!newBackend.initialize()) {
-            synchronized(preloadLock) {
-                isPreloading = false
-                preloadLock.notifyAll()
-            }
-            return false
-        }
-
-        synchronized(preloadLock) {
-            backend = newBackend
-            isPreloading = false
-            preloadLock.notifyAll()
-        }
-
-        return true
-    }
-
-    private fun createBackend(): AsrBackend? {
-        return AsrBackendFactory.create(context)
-    }
-
-    @android.annotation.SuppressLint("MissingPermission")
-    private fun createAudioRecord(bufferSecs: Float = 2.0f): AudioRecord? {
-        val bufferSize = (SAMPLE_RATE * bufferSecs).toInt()
-        val sources = intArrayOf(
-            MediaRecorder.AudioSource.VOICE_RECOGNITION,
-            MediaRecorder.AudioSource.MIC,
-            MediaRecorder.AudioSource.DEFAULT
-        )
-        for (source in sources) {
-            try {
-                val record = AudioRecord(
-                    source,
-                    SAMPLE_RATE,
-                    CHANNEL_CONFIG,
-                    AUDIO_FORMAT,
-                    bufferSize * 2
-                )
-                if (record.state == AudioRecord.STATE_INITIALIZED) {
-                    return record
-                } else {
-                    record.release()
+        try {
+            val b = AsrBackendFactory.create(context)
+            if (b != null) {
+                val ok = b.initialize()
+                if (ok) {
+                    synchronized(preloadLock) {
+                        backend = b
+                    }
+                    return true
                 }
-            } catch (e: Exception) {
-                Log.w(TAG, "Failed to create AudioRecord with source $source", e)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "preload failed", e)
+        } finally {
+            synchronized(preloadLock) {
+                isPreloading = false
             }
         }
-        return null
+        return false
+    }
+
+    private fun isSpeech(data: ByteArray): Boolean {
+        var energy = 0L
+        for (i in data.indices step 2) {
+            if (i + 1 >= data.size) break
+            val s = (data[i].toInt() and 0xFF) or ((data[i + 1].toInt() and 0xFF) shl 8)
+            val sample = if (s > 32767) s - 65536 else s
+            energy += (sample * sample).toLong()
+        }
+        val rms = kotlin.math.sqrt((energy / (data.size / 2)).toDouble())
+        return rms > SPEECH_THRESHOLD
     }
 
     private inner class RecordingThread(
@@ -365,6 +260,20 @@ class SpeechRecognitionManager(private val context: Context) {
         @Volatile
         private var audioRecord: AudioRecord? = null
 
+        private var resResultCallback: ((String) -> Unit)? = null
+        private var resPartialCallback: ((String) -> Unit)? = null
+        private var resErrorCallback: ((String) -> Unit)? = null
+
+        fun setCallbacks(
+            onResult: (String) -> Unit,
+            onPartialResult: (String) -> Unit,
+            onError: (String) -> Unit
+        ) {
+            resResultCallback = onResult
+            resPartialCallback = onPartialResult
+            resErrorCallback = onError
+        }
+
         override fun run() {
             val audioRecord = preStarted ?: (createAudioRecord() ?: run {
                 mainHandler.post {
@@ -376,8 +285,7 @@ class SpeechRecognitionManager(private val context: Context) {
             this.audioRecord = audioRecord
 
             if (!currentBackend.start()) {
-                audioRecord.stop()
-                audioRecord.release()
+                try { audioRecord.stop(); audioRecord.release() } catch (_: Exception) {}
                 mainHandler.post {
                     errorCallback?.invoke("启动引擎失败", false)
                     setState(RecognitionState.ERROR)
@@ -424,6 +332,7 @@ class SpeechRecognitionManager(private val context: Context) {
                             amplitudeCallback?.invoke(normalized)
                             spectrumCallback?.invoke(spectrum)
                         }
+
                         val chunk = byteBuffer.copyOf(nread * 2)
                         if (!speechDetected) {
                             preSpeechBuffer.addLast(chunk)
@@ -449,48 +358,29 @@ class SpeechRecognitionManager(private val context: Context) {
             } finally {
                 try { audioRecord.stop() } catch (_: Exception) { }
                 try { audioRecord.release() } catch (_: Exception) { }
-            }
-
-            currentBackend.stop()
-        }
-
-        fun forceStopAudio() {
-            audioRecord?.let { record ->
-                try { record.stop() } catch (_: Exception) { }
-                try { record.release() } catch (_: Exception) { }
-            }
-        }
-
-        private fun isSpeech(chunk: ByteArray): Boolean {
-            var peak = 0
-            for (i in 0 until chunk.size / 2) {
-                val low = chunk[i * 2].toInt() and 0xFF
-                val high = chunk[i * 2 + 1].toInt()
-                val sample = ((high shl 8) or low).toShort().toInt()
-                val abs = kotlin.math.abs(sample)
-                if (abs > peak) peak = abs
-            }
-            return peak > SPEECH_THRESHOLD
-        }
-    }
-
-    private fun handleResult(text: String) {
-        mainHandler.post {
-            resultCallback?.invoke(text)
-        }
-    }
-
-    private fun handlePartialResult(text: String) {
-        mainHandler.post {
-            if (text.isNotEmpty()) {
-                partialResultCallback?.invoke(text)
+                try { currentBackend.stop() } catch (_: Exception) { }
             }
         }
     }
 
-    private fun handleError(error: String) {
-        mainHandler.post {
-            errorCallback?.invoke(error, true)
+    @SuppressLint("MissingPermission")
+    private fun createAudioRecord(): AudioRecord? {
+        val minBufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT)
+        val bufferSize = maxOf(minBufferSize, SAMPLE_RATE * 2)
+        try {
+            val record = AudioRecord(
+                MediaRecorder.AudioSource.VOICE_RECOGNITION,
+                SAMPLE_RATE,
+                CHANNEL_CONFIG,
+                AUDIO_FORMAT,
+                bufferSize
+            )
+            if (record.state == AudioRecord.STATE_INITIALIZED) {
+                return record
+            }
+            record.release()
+        } catch (_: Exception) {
         }
+        return null
     }
 }

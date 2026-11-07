@@ -17,6 +17,7 @@ import com.yuyan.imemodule.keyboard.InputView
 import com.yuyan.imemodule.service.VoiceRecognitionHandler
 import com.yuyan.imemodule.speech.RecognitionState
 import com.yuyan.imemodule.ui.keyboard.VoiceKeyboardLayout
+import com.yuyan.imemodule.utils.DevicesUtils
 
 @SuppressLint("ViewConstructor")
 class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseContainer(context, inputView) {
@@ -65,18 +66,22 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
                     amplitude = voiceAmplitude,
                     spectrum = voiceSpectrum,
                     onDeleteClick = {
+                        DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_DEL)
                         inputView.imeService.deleteSurroundingText(1, 0)
                     },
                     onClearAll = {
+                        DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_DEL)
                         inputView.imeService.deleteSurroundingText(10000, 10000)
                     },
                     onSendClick = {
+                        DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_ENTER)
                         voiceHandler.sealPendingForSend()
                         inputView.imeService.sendEnterKeyEvent()
                     },
                     onStartVoice = {
                         if (!isVoiceActive) {
                             isVoiceActive = true
+                            DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_SPACE)
                             voiceHandler.startRecognition()
                         }
                     },
@@ -103,6 +108,7 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
                     if (it.y > height * 0.45f) {
                         if (!isVoiceActive) {
                             isVoiceActive = true
+                            DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_SPACE)
                             voiceHandler.startRecognition()
                         }
                     }

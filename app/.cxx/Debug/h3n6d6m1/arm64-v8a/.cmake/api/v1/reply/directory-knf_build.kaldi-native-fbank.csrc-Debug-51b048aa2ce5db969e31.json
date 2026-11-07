@@ -1,0 +1,73 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 75,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 101,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "lib",
+			"paths" : 
+			[
+				"lib/libkaldi-native-fbank-core.so"
+			],
+			"targetId" : "kaldi-native-fbank-core::@c1d6fc37a606af214fe9",
+			"targetIndex" : 1,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "Unspecified",
+			"destination" : "include/kaldi-native-fbank/csrc",
+			"paths" : 
+			[
+				"third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-fbank.h",
+				"third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-functions.h",
+				"third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-mfcc.h",
+				"third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-raw-audio-samples.h",
+				"third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-window.h",
+				"third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/istft.h",
+				"third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/kaldi-math.h",
+				"third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/log.h",
+				"third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/mel-computations.h",
+				"third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/online-feature.h",
+				"third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/rfft.h",
+				"third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/stft.h",
+				"third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/whisper-feature.h"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "knf_build/kaldi-native-fbank/csrc",
+		"source" : "third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc"
+	}
+}

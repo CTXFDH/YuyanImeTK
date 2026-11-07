@@ -16,6 +16,17 @@ class AsrInferenceService : Service() {
         private const val TAG = "AsrInferenceService"
         private const val IDLE_RELEASE_DELAY_MS = 60_000L
 
+        init {
+            try {
+                System.loadLibrary("onnxruntime")
+                System.loadLibrary("onnx_env")
+                System.loadLibrary("asr_jni")
+                Log.i(TAG, "Loaded native libraries in AsrInferenceService companion init")
+            } catch (e: Throwable) {
+                Log.e(TAG, "Failed to load native libraries in AsrInferenceService companion init", e)
+            }
+        }
+
         internal fun shouldReloadHandle(handle: Long, loadedDir: String?, requestedDir: String): Boolean =
             handle == 0L || loadedDir != requestedDir
     }
@@ -69,6 +80,7 @@ class AsrInferenceService : Service() {
                 val handle = createAsrHandle(modelDir)
                 if (handle == 0L) {
                     Log.e(TAG, "Failed to create ASR recognizer from $modelDir")
+                    android.os.Process.killProcess(android.os.Process.myPid())
                     return false
                 }
                 synchronized(asrLock) {

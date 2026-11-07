@@ -996,6 +996,10 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
                 }
             }
             chinesePredictionMode != ChineseAssociationMode.DISABLED && InputModeSwitcher.isChinese -> {
+                if (KeyboardManager.instance.currentContainer is com.yuyan.imemodule.keyboard.container.VoiceKeyboardContainer) {
+                    resetCandidateWindow()
+                    return
+                }
                 if (chinesePredictionMode == ChineseAssociationMode.SINGLE_WORD && DictDecoder.justCommittedAssociateWord) {
                     DictDecoder.justCommittedAssociateWord = false
                     resetCandidateWindow()

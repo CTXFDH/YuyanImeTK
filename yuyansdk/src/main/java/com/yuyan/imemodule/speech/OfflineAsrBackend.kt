@@ -54,12 +54,19 @@ class OfflineAsrBackend(private val context: Context) : AsrBackend {
                 val modelManager = AsrModelManager(context)
                 val modelDir = modelManager.getSelectedModelDir()?.absolutePath
                 if (modelManager.isModelReady() && modelDir != null) {
-                    runBlocking { client.startAsr(modelDir, asrCallback) }
-                    runBlocking { client.stopAsr() }
+                    val preStartOk = runBlocking { client.startAsr(modelDir, asrCallback) }
+                    if (!preStartOk) {
+                        android.util.Log.e("OfflineAsrBackend", "Pre-start ASR failed for $modelDir")
+                    } else {
+                        runBlocking { client.stopAsr() }
+                    }
                 }
-            } catch (_: Exception) {}
+            } catch (e: Exception) {
+                android.util.Log.e("OfflineAsrBackend", "Error pre-starting ASR model", e)
+            }
             true
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            android.util.Log.e("OfflineAsrBackend", "Error binding ASR service", e)
             false
         }
     }

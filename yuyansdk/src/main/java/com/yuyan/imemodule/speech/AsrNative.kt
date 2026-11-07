@@ -1,8 +1,14 @@
 package com.yuyan.imemodule.speech
 
 object AsrNative {
-    fun nativeCreate(encoder: String, decoder: String, joiner: String, tokens: String): Long =
-        com.kingzcheung.xime.speech.AsrNative.nativeCreate(encoder, decoder, joiner, tokens)
+    fun nativeCreate(encoder: String, decoder: String, joiner: String, tokens: String): Long {
+        return try {
+            com.kingzcheung.xime.speech.AsrNative.nativeCreate(encoder, decoder, joiner, tokens)
+        } catch (e: Throwable) {
+            android.util.Log.e("AsrNative", "nativeCreate failed in wrapper", e)
+            0L
+        }
+    }
 
     fun nativeReset(handle: Long) =
         com.kingzcheung.xime.speech.AsrNative.nativeReset(handle)

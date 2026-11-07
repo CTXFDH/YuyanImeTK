@@ -51,8 +51,7 @@
         </provider>
         <service
             android:name="com.yuyan.imemodule.service.AsrInferenceService"
-            android:exported="false"
-            android:process=":asr" />
+            android:exported="false" />
     </application>
 
 </manifest>
