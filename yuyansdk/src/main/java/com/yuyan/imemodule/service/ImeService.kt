@@ -323,34 +323,6 @@ class ImeService : InputMethodService() {
                 return
             }
         }
-        if (!alt && !ctrl && !shift && keyEventCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-            val ic = currentInputConnection
-            if (ic != null) {
-                val textBefore = ic.getTextBeforeCursor(1000, 0)?.toString() ?: ""
-                if (textBefore.isNotEmpty()) {
-                    val newPos = textBefore.length - 1
-                    ic.setSelection(newPos, newPos)
-                } else {
-                    ic.setSelection(0, 0)
-                }
-                return
-            }
-        }
-        if (!alt && !ctrl && !shift && keyEventCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-            val ic = currentInputConnection
-            if (ic != null) {
-                val textBefore = ic.getTextBeforeCursor(1000, 0)?.toString() ?: ""
-                val textAfter = ic.getTextAfterCursor(1000, 0)?.toString() ?: ""
-                if (textAfter.isNotEmpty()) {
-                    val newPos = textBefore.length + 1
-                    ic.setSelection(newPos, newPos)
-                } else {
-                    val totalLen = textBefore.length + textAfter.length
-                    ic.setSelection(totalLen, totalLen)
-                }
-                return
-            }
-        }
 
         var metaState = 0
         if (alt) metaState = KeyEvent.META_ALT_ON or KeyEvent.META_ALT_LEFT_ON
