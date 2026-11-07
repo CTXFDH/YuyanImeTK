@@ -45,6 +45,7 @@ class FullDisplayKeyboardBar(context: Context?, inputView: InputView) : LinearLa
         mCenterModeMove = FullDisplayCenterMode.MoveCursor == centerMode
         gravity = Gravity.CENTER
         mIVKeyLeft = ImageView(context).apply {
+            scaleType = ImageView.ScaleType.FIT_CENTER
             setImageResource(getIcon(FullDisplayKeyMode.decode(fullDisplayKeyLeft)))
             isClickable = true
             isEnabled = true
@@ -67,17 +68,18 @@ class FullDisplayKeyboardBar(context: Context?, inputView: InputView) : LinearLa
             }
         }
         mIVKeyRight = ImageView(context).apply {
+            scaleType = ImageView.ScaleType.FIT_CENTER
             val iconId = getIcon(FullDisplayKeyMode.decode(fullDisplayKeyRight))
-            if(iconId != 0)setImageResource(iconId)
+            if (iconId != 0) setImageResource(iconId)
             isClickable = true
             isEnabled = true
             setOnClickListener { _: View? ->
                 onClick(FullDisplayKeyMode.decode(AppPrefs.getInstance().internal.fullDisplayKeyModeRight.getValue()))
             }
         }
-        add(mIVKeyLeft, lParams(width = wrapContent,height = wrapContent, weight = 0f))
-        add(mLLCenter, lParams(width = 0,height = wrapContent, weight = 1f))
-        add(mIVKeyRight, lParams(width = wrapContent,height = wrapContent, weight = 0f))
+        add(mIVKeyLeft, lParams(width = dp(28), height = dp(28), weight = 0f))
+        add(mLLCenter, lParams(width = 0, height = wrapContent, weight = 1f))
+        add(mIVKeyRight, lParams(width = dp(28), height = dp(28), weight = 0f))
         isClickable = true
         isEnabled = true
     }
