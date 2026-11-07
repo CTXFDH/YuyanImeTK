@@ -75,7 +75,9 @@ class AsrInferenceClient(private val context: Context) {
                     true
                 } else {
                     connectLatch = CountDownLatch(1)
-                    val intent = Intent(context, AsrInferenceService::class.java)
+                    val intent = Intent(context, AsrInferenceService::class.java).apply {
+                        setPackage(context.packageName)
+                    }
                     context.bindService(intent, connection, Context.BIND_AUTO_CREATE)
                 }
             }
