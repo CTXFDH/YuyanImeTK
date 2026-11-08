@@ -254,6 +254,7 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
             com.yuyan.imemodule.utils.DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_SPACE)
             spaceVoiceRecognitionHandler.startRecognition()
         } else {
+            android.widget.Toast.makeText(this@ImeService, "语音输入需要麦克风权限，请允许录音权限", android.widget.Toast.LENGTH_LONG).show()
             com.hjq.permissions.XXPermissions.with(this)
                 .permission(permission)
                 .request(object : com.hjq.permissions.OnPermissionCallback {
@@ -267,10 +268,8 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
                     }
 
                     override fun onDenied(permissions: MutableList<String>, doNotAskAgain: Boolean) {
-                        android.widget.Toast.makeText(this@ImeService, "语音识别需要麦克风权限", android.widget.Toast.LENGTH_SHORT).show()
-                        if (doNotAskAgain) {
-                            com.hjq.permissions.XXPermissions.startPermissionActivity(this@ImeService, permissions)
-                        }
+                        android.widget.Toast.makeText(this@ImeService, "未获取麦克风权限，请在系统设置中允许录音权限", android.widget.Toast.LENGTH_SHORT).show()
+                        com.hjq.permissions.XXPermissions.startPermissionActivity(this@ImeService, permissions)
                     }
                 })
         }

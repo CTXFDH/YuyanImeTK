@@ -80,6 +80,19 @@ open class SettingsActivity : AppCompatActivity() {
             navController.navigate(R.id.action_settingsFragment_to_privacyPolicyFragment)
             return
         }
+        checkAndRequestMicrophonePermission()
+    }
+
+    private fun checkAndRequestMicrophonePermission() {
+        val permission = com.hjq.permissions.Permission.RECORD_AUDIO
+        if (!com.hjq.permissions.XXPermissions.isGranted(this, permission)) {
+            com.hjq.permissions.XXPermissions.with(this)
+                .permission(permission)
+                .request(object : com.hjq.permissions.OnPermissionCallback {
+                    override fun onGranted(permissions: MutableList<String>, allGranted: Boolean) {}
+                    override fun onDenied(permissions: MutableList<String>, doNotAskAgain: Boolean) {}
+                })
+        }
     }
 
     fun onclick(view: View) {
@@ -87,6 +100,7 @@ open class SettingsActivity : AppCompatActivity() {
             R.id.privacy_policy_sure -> {
                 navController.navigateUp()
                 AppPrefs.getInstance().internal.privacyPolicySure.setValue(true)
+                checkAndRequestMicrophonePermission()
             }
             R.id.privacy_policy_cancel ->{
                 navController.navigateUp()

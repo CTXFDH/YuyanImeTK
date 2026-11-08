@@ -67,6 +67,24 @@ class VoiceSettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        checkAndRequestMicPermission()
+    }
+
+    private fun checkAndRequestMicPermission() {
+        val activity = activity ?: return
+        val permission = com.hjq.permissions.Permission.RECORD_AUDIO
+        if (!com.hjq.permissions.XXPermissions.isGranted(activity, permission)) {
+            com.hjq.permissions.XXPermissions.with(activity)
+                .permission(permission)
+                .request(object : com.hjq.permissions.OnPermissionCallback {
+                    override fun onGranted(permissions: MutableList<String>, allGranted: Boolean) {}
+                    override fun onDenied(permissions: MutableList<String>, doNotAskAgain: Boolean) {}
+                })
+        }
+    }
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceScreen = preferenceManager.createPreferenceScreen(requireContext()).apply {
 

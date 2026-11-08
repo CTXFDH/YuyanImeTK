@@ -90,9 +90,25 @@ class SetupActivity : FragmentActivity() {
             finish()
             return
         }else if(InputMethodUtil.isSelected()){
+            checkAndRequestMicPermission()
             finish()
         } else if(InputMethodUtil.isEnabled()){
             viewPager.currentItem = SetupPage.entries.size - 1
+            checkAndRequestMicPermission()
+        } else {
+            checkAndRequestMicPermission()
+        }
+    }
+
+    private fun checkAndRequestMicPermission() {
+        val permission = com.hjq.permissions.Permission.RECORD_AUDIO
+        if (!com.hjq.permissions.XXPermissions.isGranted(this, permission)) {
+            com.hjq.permissions.XXPermissions.with(this)
+                .permission(permission)
+                .request(object : com.hjq.permissions.OnPermissionCallback {
+                    override fun onGranted(permissions: MutableList<String>, allGranted: Boolean) {}
+                    override fun onDenied(permissions: MutableList<String>, doNotAskAgain: Boolean) {}
+                })
         }
     }
 

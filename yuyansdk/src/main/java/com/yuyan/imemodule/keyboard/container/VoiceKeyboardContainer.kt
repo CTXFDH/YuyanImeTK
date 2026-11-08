@@ -135,6 +135,7 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
             DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_SPACE)
             voiceHandler.startRecognition()
         } else {
+            Toast.makeText(context, "语音输入需要麦克风权限，请允许录音权限", Toast.LENGTH_LONG).show()
             XXPermissions.with(context)
                 .permission(permission)
                 .request(object : OnPermissionCallback {
@@ -148,10 +149,8 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
                     }
 
                     override fun onDenied(permissions: MutableList<String>, doNotAskAgain: Boolean) {
-                        Toast.makeText(context, "语音识别需要麦克风权限", Toast.LENGTH_SHORT).show()
-                        if (doNotAskAgain) {
-                            XXPermissions.startPermissionActivity(context, permissions)
-                        }
+                        Toast.makeText(context, "未获取麦克风权限，请在系统设置中允许录音权限", Toast.LENGTH_SHORT).show()
+                        XXPermissions.startPermissionActivity(context, permissions)
                     }
                 })
         }
