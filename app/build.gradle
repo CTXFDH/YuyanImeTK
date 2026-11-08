@@ -38,7 +38,7 @@ android {
     }
 
     aaptOptions {
-        noCompress 'onnx', 'txt', 'bin', 'model'
+        noCompress 'onnx', 'model'
     }
     
     packaging {
