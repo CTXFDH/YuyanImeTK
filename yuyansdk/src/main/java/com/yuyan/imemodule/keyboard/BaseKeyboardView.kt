@@ -98,6 +98,16 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     private fun openPopupIfRequired() {
         if(mCurrentKey != null) {
             val softKey = mCurrentKey!!
+            if (isSpaceKey(softKey)) {
+                if (AppPrefs.getInstance().keyboardSetting.spaceLongPressVoiceInput.getValue()) {
+                    removeMessages()
+                    mLongPressKey = true
+                    mAbortKey = true
+                    dismissPreview()
+                    mService?.imeService?.startSpaceVoiceRecognition()
+                    return
+                }
+            }
             val keyboardSymbol = ThemeManager.prefs.keyboardSymbol.getValue()
             if (softKey.getkeyLabel().isNotBlank() && softKey.code != InputModeSwitcher.USER_KEYCODE_COMMA_EMOJI ) {
                 val keyLabel = if (InputModeSwitcher.isLower) softKey.keyLabel.lowercase() else softKey.keyLabel
@@ -147,6 +157,9 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                 showPreview(keyIndex)
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_POINTER_UP, MotionEvent.ACTION_CANCEL -> {
+                if (mService?.imeService?.isSpaceVoiceActive == true) {
+                    mService?.imeService?.stopSpaceVoiceRecognition()
+                }
                 val now = me.eventTime
                 val act = if(action == MotionEvent.ACTION_CANCEL)MotionEvent.ACTION_CANCEL else MotionEvent.ACTION_UP
                 while (!motionEventQueue.isEmpty()) {

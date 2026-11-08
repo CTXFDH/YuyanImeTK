@@ -194,6 +194,8 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
         val spaceSwipeMoveCursor = switch(R.string.space_swipe_move_cursor, "space_swipe_move_cursor", true)
 
+        val spaceLongPressVoiceInput = switch(R.string.space_long_press_voice_input, "space_long_press_voice_input_enable", true)
+
         val spaceSwipeMoveCursorSpeed = int(
             R.string.swipe_move_cursor_speed,
             "swipe_move_cursor_speed",

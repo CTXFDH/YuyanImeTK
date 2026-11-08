@@ -131,6 +131,20 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         initView(context)
     }
 
+    fun showComposingTag(text: String) {
+        if (text.isNotBlank()) {
+            mComposingView.text = text
+            mComposingTagContainer.visibility = VISIBLE
+            updateComposingTagTheme()
+        } else {
+            mComposingTagContainer.visibility = GONE
+        }
+    }
+
+    fun hideComposingTag() {
+        mComposingTagContainer.visibility = GONE
+    }
+
     override fun onCandidateChanged() {
         updateCandidateBar()
         val composingText = DictDecoder.composingStrForDisplay
@@ -996,7 +1010,8 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
                 }
             }
             chinesePredictionMode != ChineseAssociationMode.DISABLED && InputModeSwitcher.isChinese -> {
-                if (KeyboardManager.instance.currentContainer is com.yuyan.imemodule.keyboard.container.VoiceKeyboardContainer) {
+                if (KeyboardManager.instance.currentContainer is com.yuyan.imemodule.keyboard.container.VoiceKeyboardContainer
+                    || service.isSpaceVoiceActive) {
                     resetCandidateWindow()
                     return
                 }

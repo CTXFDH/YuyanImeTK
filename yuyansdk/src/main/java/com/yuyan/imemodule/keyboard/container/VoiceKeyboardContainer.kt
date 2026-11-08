@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.KeyEvent
 import android.view.MotionEvent
+import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -13,6 +14,9 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import com.hjq.permissions.OnPermissionCallback
+import com.hjq.permissions.Permission
+import com.hjq.permissions.XXPermissions
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.keyboard.InputView
@@ -38,7 +42,7 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
                 isVoiceActive = false
                 val isModelReady = com.yuyan.imemodule.speech.AsrModelManager(context).isModelReady()
                 val msg = if (isModelReady) "语音引擎启动异常，请重试" else "未导入离线语音模型：请在【设置-方案与数据-语音识别设置】中导入模型包"
-                android.widget.Toast.makeText(context, msg, android.widget.Toast.LENGTH_LONG).show()
+                Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
             }
         },
         getState = { com.yuyan.imemodule.service.VoiceState(voiceRecognitionState = voiceState) },
@@ -79,10 +83,15 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
                     amplitude = voiceAmplitude,
                     spectrum = voiceSpectrum,
                     onDeleteClick = {
+                        DevicesUtils.tryVibrate(this@VoiceKeyboardContainer)
                         DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_DEL)
                         inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
                     },
+                    onDeleteRepeat = {
+                        inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
+                    },
                     onClearAll = {
+                        DevicesUtils.tryVibrate(this@VoiceKeyboardContainer)
                         DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_DEL)
                         if (!DictDecoder.isCandidatesEmpty) {
                             DictDecoder.reset()
@@ -92,16 +101,14 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
                         }
                     },
                     onSendClick = {
+                        DevicesUtils.tryVibrate(this@VoiceKeyboardContainer)
                         DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_ENTER)
                         voiceHandler.sealPendingForSend()
                         inputView.imeService.sendEnterKeyEvent()
                     },
                     onStartVoice = {
                         if (!isVoiceActive) {
-                            isVoiceActive = true
-                            DevicesUtils.tryVibrate(this@VoiceKeyboardContainer, isRelease = false)
-                            DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_SPACE)
-                            voiceHandler.startRecognition()
+                            checkAndStartVoice()
                         }
                     },
                     onStopVoice = {
@@ -118,6 +125,36 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
             }
         }
         addView(composeView)
+    }
+
+    private fun checkAndStartVoice() {
+        val permission = Permission.RECORD_AUDIO
+        if (XXPermissions.isGranted(context, permission)) {
+            isVoiceActive = true
+            DevicesUtils.tryVibrate(this@VoiceKeyboardContainer, isRelease = false)
+            DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_SPACE)
+            voiceHandler.startRecognition()
+        } else {
+            XXPermissions.with(context)
+                .permission(permission)
+                .request(object : OnPermissionCallback {
+                    override fun onGranted(permissions: MutableList<String>, allGranted: Boolean) {
+                        if (allGranted) {
+                            isVoiceActive = true
+                            DevicesUtils.tryVibrate(this@VoiceKeyboardContainer, isRelease = false)
+                            DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_SPACE)
+                            voiceHandler.startRecognition()
+                        }
+                    }
+
+                    override fun onDenied(permissions: MutableList<String>, doNotAskAgain: Boolean) {
+                        Toast.makeText(context, "语音识别需要麦克风权限", Toast.LENGTH_SHORT).show()
+                        if (doNotAskAgain) {
+                            XXPermissions.startPermissionActivity(context, permissions)
+                        }
+                    }
+                })
+        }
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {

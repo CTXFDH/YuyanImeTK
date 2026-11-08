@@ -40,29 +40,36 @@ object CustomEngine {
         return results.toTypedArray()
     }
 
-    fun predictAssociationWordsChinese(text: String):MutableList<String> {
-        val associations = mutableListOf("，", "。")
+    fun predictAssociationWordsChinese(text: String): MutableList<String> {
+        val trimmed = text.trim()
+        val lastChar = if (trimmed.isNotEmpty()) trimmed.last() else ' '
+        val isPunctuation = lastChar in "。！？；：，、,.!?;:\"'()[]《》（）【】"
+        val associations = if (isPunctuation) mutableListOf() else mutableListOf("，", "。")
         val suffixesDays = setOf("大前天", "前天", "昨天", "今天", "明天", "大后天", "后天")
         val suffixesExclamation = setOf("啊", "呀", "呐", "啦", "噢", "哇", "吧", "呗", "了")
         val suffixesQuestion = setOf("吗", "啊", "呢", "吧", "谁", "何", "什么", "哪", "几", "多少", "怎", "难道", "岂", "不")
-        val days = suffixesDays.firstOrNull{ text.endsWith(it) }
-        if(days != null)associations.addAll(0, TimeUtils.getData(days))
-        else if(suffixesExclamation.any{ text.endsWith(it) }){ associations.add(0, "！") }
-        else if(suffixesQuestion.any{ text.contains(it) }){ associations.add(0, "？") }
+        val days = suffixesDays.firstOrNull { text.endsWith(it) }
+        if (days != null) {
+            associations.addAll(0, TimeUtils.getData(days))
+        } else if (!isPunctuation && suffixesExclamation.any { text.endsWith(it) }) {
+            associations.add(0, "！")
+        } else if (!isPunctuation && suffixesQuestion.any { text.contains(it) }) {
+            associations.add(0, "？")
+        }
         return associations
     }
 
-    fun processPhrase(text: String):MutableList<String> {
+    fun processPhrase(text: String): MutableList<String> {
         val phrases = mutableListOf<String>()
         val chinesePredictionDate = getInstance().input.chinesePredictionDate.getValue()
-        if(chinesePredictionDate) {
+        if (chinesePredictionDate) {
             phrases.addAll(DataBaseKT.instance.phraseDao().query(text).map { it.content })
-            val suffixesDate = setOf("rq", "riqi", "PGPG", "PP")
-            if (suffixesDate.any { it == text }) {
+            val suffixesDate = setOf("rq", "riqi", "pgpg", "pp", "nq", "njqj")
+            if (suffixesDate.any { it.equals(text, ignoreCase = true) }) {
                 phrases.addAll(TimeUtils.getData())
             }
-            val suffixesTime = setOf("sj", "shijian", "PJ", "PGGJGAM")
-            if (suffixesTime.any { it == text }) {
+            val suffixesTime = setOf("sj", "shijian", "pj", "pggjgam", "sjjq", "mj", "mhjjjhn", "mjmj", "djmj", "uijm", "iijm", "vijw")
+            if (suffixesTime.any { it.equals(text, ignoreCase = true) }) {
                 phrases.addAll(TimeUtils.getTime())
             }
         }

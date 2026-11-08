@@ -106,15 +106,36 @@ object RimeEngine {
             showComposition = ""
             return
         }
-        if (text.isNotEmpty()) {
-            showCandidates = buildList {
-                val words = Rime.getAssociateList(text)
-                val firstFive = words.take(5)
-                addAll(firstFive.filterNotNull().map { CandidateListItem("", it) })
-                addAll(CustomEngine.predictAssociationWordsChinese(text).map { CandidateListItem("", it) })
-                val remaining = words.drop(5)
-                addAll(remaining.filterNotNull().map { CandidateListItem("", it) })
+        val trimmed = text.trim()
+        if (trimmed.isNotEmpty()) {
+            val lastChar = trimmed.last()
+            val isSentenceEnd = lastChar in "。！？.!?"
+            if (isSentenceEnd) {
+                showCandidates = emptyList()
+                showComposition = ""
+                return
             }
+
+            val isPunctuation = lastChar in "。！？；：，、,.!?;:\"'()[]《》（）【】"
+            val words = Rime.getAssociateList(text).filterNotNull()
+            val filteredRimeWords = if (isPunctuation) {
+                words.filter { word -> word.none { it in "。！？；：，、,.!?;:\"'()[]《》（）【】" } }
+            } else {
+                words
+            }
+
+            val customAssociations = CustomEngine.predictAssociationWordsChinese(text)
+
+            showCandidates = buildList {
+                val firstFive = filteredRimeWords.take(5)
+                addAll(firstFive.map { CandidateListItem("", it) })
+                addAll(customAssociations.map { CandidateListItem("", it) })
+                val remaining = filteredRimeWords.drop(5)
+                addAll(remaining.map { CandidateListItem("", it) })
+            }.distinctBy { it.text }
+            showComposition = ""
+        } else {
+            showCandidates = emptyList()
             showComposition = ""
         }
     }

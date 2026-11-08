@@ -49,21 +49,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yuyan.imemodule.R
+import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.speech.RecognitionState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 import kotlin.math.sin
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
+@Suppress("UNUSED_PARAMETER")
 fun VoiceKeyboardLayout(
     keyBackgroundColor: Color,
     keyTextColor: Color,
     specialKeyBackgroundColor: Color,
     keyboardBackgroundColor: Color,
+    modifier: Modifier = Modifier,
     accentKeyBackgroundColor: Color = Color.Unspecified,
     keyPressHighlightColor: Color = Color.Unspecified,
-    modifier: Modifier = Modifier,
     isDarkTheme: Boolean = false,
     themeId: String = "ocean_blue",
     bottomActive: Boolean = false,
@@ -74,6 +78,7 @@ fun VoiceKeyboardLayout(
     amplitude: Float = 0f,
     spectrum: FloatArray = FloatArray(16),
     onDeleteClick: () -> Unit = {},
+    onDeleteRepeat: () -> Unit = {},
     onClearAll: () -> Unit = {},
     onSendClick: () -> Unit = {},
     onStartVoice: () -> Unit = {},
@@ -81,8 +86,6 @@ fun VoiceKeyboardLayout(
     onCursorMove: (Int) -> Unit = {}
 ) {
     val boxBgColor = if (isDarkTheme) Color(0xFF252836) else Color(0xFFE2E8F0)
-    val circleButtonBgColor = specialKeyBackgroundColor
-    val buttonIconColor = keyTextColor
 
     val normalAccentBgColor = if (accentKeyBackgroundColor != Color.Unspecified) accentKeyBackgroundColor else Color(0xFF6366F1)
     val activePressedBgColor = if (keyPressHighlightColor != Color.Unspecified && keyPressHighlightColor != Color.Transparent) {
@@ -97,7 +100,12 @@ fun VoiceKeyboardLayout(
     }
 
     var accumulativeDrag by remember { mutableFloatStateOf(0f) }
-    val dragThresholdPx = with(LocalDensity.current) { 16.dp.toPx() }
+    val density = LocalDensity.current
+    val cursorSwipeSpeedPx = remember(density) {
+        val speedSetting = AppPrefs.getInstance().keyboardSetting.spaceSwipeMoveCursorSpeed.getValue().toFloat()
+        val minSpeed = with(density) { 8.dp.toPx() }
+        maxOf(speedSetting, minSpeed)
+    }
 
     val coroutineScope = rememberCoroutineScope()
     var isDeletePressed by remember { mutableStateOf(false) }
@@ -147,12 +155,14 @@ fun VoiceKeyboardLayout(
                             onHorizontalDrag = { change, dragAmount ->
                                 change.consume()
                                 accumulativeDrag += dragAmount
-                                if (accumulativeDrag >= dragThresholdPx) {
-                                    onCursorMove(1)
-                                    accumulativeDrag = 0f
-                                } else if (accumulativeDrag <= -dragThresholdPx) {
-                                    onCursorMove(-1)
-                                    accumulativeDrag = 0f
+                                val absDrag = abs(accumulativeDrag)
+                                if (absDrag >= cursorSwipeSpeedPx) {
+                                    val steps = (absDrag / cursorSwipeSpeedPx).toInt().coerceIn(1, 5)
+                                    val direction = if (accumulativeDrag > 0) 1 else -1
+                                    repeat(steps) {
+                                        onCursorMove(direction)
+                                    }
+                                    accumulativeDrag %= cursorSwipeSpeedPx
                                 }
                             }
                         )
@@ -170,25 +180,24 @@ fun VoiceKeyboardLayout(
                 }
             }
 
-            // 右上：退格删除按键（对齐中文9键：长按连续删除、上滑清空）
+            // 右上：退格删除按键（对齐中文9键：点击响/震一次，长按静音连发删除、上滑清空）
             Box(
                 modifier = Modifier
                     .size(54.dp)
                     .clip(CircleShape)
-                    .background(if (isDeletePressed || leftActive) activePressedBgColor else circleButtonBgColor)
+                    .background(if (isDeletePressed || leftActive) activePressedBgColor else specialKeyBackgroundColor)
                     .pointerInput(Unit) {
                         awaitEachGesture {
                             val down = awaitFirstDown(requireUnconsumed = false)
                             isDeletePressed = true
                             val startY = down.position.y
-                            var cleared = false
 
                             val deleteJob: Job = coroutineScope.launch {
-                                onDeleteClick()
-                                delay(400)
+                                onDeleteClick() // 初始按下：按键音效 + 震动 + 首字符删除
+                                delay(400.milliseconds)
                                 while (true) {
-                                    onDeleteClick()
-                                    delay(50)
+                                    onDeleteRepeat() // 长按高频连发：纯静音静震连续删除，对齐9键体验
+                                    delay(50.milliseconds)
                                 }
                             }
 
@@ -197,8 +206,7 @@ fun VoiceKeyboardLayout(
                                 val change = event.changes.firstOrNull()
                                 if (change != null) {
                                     val currentY = change.position.y
-                                    if (startY - currentY > 40f && !cleared) {
-                                        cleared = true
+                                    if (startY - currentY > 40f) {
                                         deleteJob.cancel()
                                         isDeletePressed = false
                                         onClearAll()
@@ -219,7 +227,7 @@ fun VoiceKeyboardLayout(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_backspace),
                     contentDescription = "删除",
-                    tint = if (isDeletePressed || leftActive) Color.White else buttonIconColor,
+                    tint = if (isDeletePressed || leftActive) Color.White else keyTextColor,
                     modifier = Modifier.size(22.dp)
                 )
             }
@@ -269,14 +277,14 @@ fun VoiceKeyboardLayout(
                 modifier = Modifier
                     .size(54.dp)
                     .clip(CircleShape)
-                    .background(if (rightActive) activePressedBgColor else circleButtonBgColor)
+                    .background(if (rightActive) activePressedBgColor else specialKeyBackgroundColor)
                     .clickable { onSendClick() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_send_arrow),
                     contentDescription = "发送",
-                    tint = if (rightActive) Color.White else buttonIconColor,
+                    tint = if (rightActive) Color.White else keyTextColor,
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -290,10 +298,10 @@ fun AudioSpectrumAnimation(
     isActive: Boolean = true,
     amplitude: Float = 0f,
     spectrum: FloatArray = FloatArray(16),
-    barWidthFactor: Float = 1.9f,
+    barWidthFactor: Float = 2.0f,
     barCount: Int = 11,
     spacingRatio: Float = 0.5f,
-    heightScale: Float = 0.85f,
+    heightScale: Float = 0.75f,
 ) {
     if (!isActive) {
         Canvas(modifier = modifier) {}
@@ -305,7 +313,7 @@ fun AudioSpectrumAnimation(
         initialValue = 0f,
         targetValue = 6.2831855f,
         animationSpec = infiniteRepeatable(
-            animation = tween(800, easing = LinearEasing),
+            animation = tween(700, easing = LinearEasing),
             repeatMode = RepeatMode.Restart
         ),
         label = "phase"
@@ -335,10 +343,22 @@ fun AudioSpectrumAnimation(
         val maxHeight = size.height
 
         repeat(barCount) { index ->
-            val sineWave = 0.35f + 0.35f * sin(phase + index * 0.6f)
-            val specVal = if (spectrum.isNotEmpty()) spectrum[index % spectrum.size] else 0f
-            val audioScale = maxOf(specVal * 1.5f, ampClamped * 4.0f)
-            val finalScale = (sineWave + audioScale).coerceIn(0.25f, 0.95f)
+            // 中间高、两侧低的钟形天然包络
+            val centerDist = abs(index - (barCount - 1) / 2f) / ((barCount - 1) / 2f)
+            val bellEnvelope = 0.45f + 0.55f * (1f - centerDist * 0.5f)
+
+            // 基础正弦律动
+            val wave = 0.15f + 0.25f * sin(phase + index * 0.7f)
+
+            // 麦克风实时频谱与音量提成
+            val specVal = if (spectrum.isNotEmpty()) {
+                spectrum[index % spectrum.size].coerceIn(0f, 1f)
+            } else 0f
+
+            val audioBoost = maxOf(specVal * 0.8f, ampClamped * 1.2f)
+
+            val rawScale = (wave + audioBoost) * bellEnvelope
+            val finalScale = rawScale.coerceIn(0.12f, 0.82f)
 
             val barHeight = maxHeight * finalScale * heightScale
             val totalWidth = barCount * barWidth + (barCount - 1) * spacing

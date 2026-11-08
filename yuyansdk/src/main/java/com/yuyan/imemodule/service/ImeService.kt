@@ -208,6 +208,89 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
         getInstance().internal.clipboardUpdateContent.unregisterOnChangeListener(clipboardUpdateContentListener)
     }
 
+    @Volatile
+    var isSpaceVoiceActive = false
+        private set
+
+    val spaceVoiceRecognitionHandler: VoiceRecognitionHandler by lazy {
+        VoiceRecognitionHandler(
+            context = this,
+            onStateChanged = { state ->
+                if (isSpaceVoiceActive) {
+                    val inputViewInstance = mInputView as? InputView
+                    when (state.voiceRecognitionState) {
+                        com.yuyan.imemodule.speech.RecognitionState.LISTENING -> inputViewInstance?.showComposingTag("正在倾听...")
+                        com.yuyan.imemodule.speech.RecognitionState.PROCESSING -> inputViewInstance?.showComposingTag("正在识别...")
+                        else -> inputViewInstance?.hideComposingTag()
+                    }
+                }
+            },
+            getState = { com.yuyan.imemodule.service.VoiceState() },
+            getInputConnection = { currentInputConnection },
+            onVoiceComplete = {
+                isSpaceVoiceActive = false
+                val inputViewInstance = mInputView as? InputView
+                inputViewInstance?.hideComposingTag()
+                DictDecoder.reset()
+                InputDispatcher.reset()
+                inputViewInstance?.resetToIdleState()
+                inputViewInstance?.updateCandidateBar()
+                (KeyboardManager.instance.currentContainer as? com.yuyan.imemodule.keyboard.container.T9TextContainer)?.updateSymbolListView()
+            },
+            onAmplitudeChanged = {},
+            onSpectrumChanged = {}
+        ).apply { initialize() }
+    }
+
+    fun startSpaceVoiceRecognition() {
+        if (isSpaceVoiceActive) return
+        val permission = com.hjq.permissions.Permission.RECORD_AUDIO
+        DictDecoder.reset()
+        InputDispatcher.reset()
+        (mInputView as? InputView)?.resetToIdleState()
+        if (com.hjq.permissions.XXPermissions.isGranted(this, permission)) {
+            isSpaceVoiceActive = true
+            com.yuyan.imemodule.utils.DevicesUtils.tryVibrate(mInputView as? View, isRelease = false)
+            com.yuyan.imemodule.utils.DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_SPACE)
+            spaceVoiceRecognitionHandler.startRecognition()
+        } else {
+            com.hjq.permissions.XXPermissions.with(this)
+                .permission(permission)
+                .request(object : com.hjq.permissions.OnPermissionCallback {
+                    override fun onGranted(permissions: MutableList<String>, allGranted: Boolean) {
+                        if (allGranted) {
+                            isSpaceVoiceActive = true
+                            com.yuyan.imemodule.utils.DevicesUtils.tryVibrate(mInputView as? View, isRelease = false)
+                            com.yuyan.imemodule.utils.DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_SPACE)
+                            spaceVoiceRecognitionHandler.startRecognition()
+                        }
+                    }
+
+                    override fun onDenied(permissions: MutableList<String>, doNotAskAgain: Boolean) {
+                        android.widget.Toast.makeText(this@ImeService, "语音识别需要麦克风权限", android.widget.Toast.LENGTH_SHORT).show()
+                        if (doNotAskAgain) {
+                            com.hjq.permissions.XXPermissions.startPermissionActivity(this@ImeService, permissions)
+                        }
+                    }
+                })
+        }
+    }
+
+    fun stopSpaceVoiceRecognition() {
+        if (isSpaceVoiceActive) {
+            isSpaceVoiceActive = false
+            com.yuyan.imemodule.utils.DevicesUtils.tryVibrate(mInputView as? View, isRelease = true)
+            spaceVoiceRecognitionHandler.finishRecognition()
+            val inputViewInstance = mInputView as? InputView
+            inputViewInstance?.hideComposingTag()
+            DictDecoder.reset()
+            InputDispatcher.reset()
+            inputViewInstance?.resetToIdleState()
+            inputViewInstance?.updateCandidateBar()
+            (KeyboardManager.instance.currentContainer as? com.yuyan.imemodule.keyboard.container.T9TextContainer)?.updateSymbolListView()
+        }
+    }
+
     /**
      * 横竖屏无缝无闪烁原绘切换 (0ms 延迟，原位无缝更新，媲美百度输入法)
      */
