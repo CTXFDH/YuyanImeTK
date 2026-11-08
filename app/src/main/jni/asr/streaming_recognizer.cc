@@ -10,7 +10,7 @@
 #define LOG_TAG "StreamingRecognizer"
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
-namespace xime_asr {
+namespace yuyan_asr {
 
 namespace {
 
@@ -179,9 +179,6 @@ void StreamingRecognizer::DecodeOneChunk() {
       static_cast<std::vector<float>::size_type>(dim);
   std::vector<float> x(x_size);
   if (use_whisper_feature_) {
-    // whisper features are linear mel power; first compute log10(clip(v,
-    // 1e-10)) across the whole chunk to get the dynamic-range floor, then
-    // normalize each frame: (log10 + 4) / 4, clamped to (max - 8).
     float max_log = -1e30f;
     for (int32_t j = 0; j < chunk_size_; ++j) {
       const float *f = feat_->GetFrame(processed_frames_ + j);
@@ -210,7 +207,6 @@ void StreamingRecognizer::DecodeOneChunk() {
   Ort::Value x_ort = Ort::Value::CreateTensor(
       mem, x.data(), x.size(), x_shape.data(), x_shape.size());
 
-  // sherpa passes a dummy value here; zipformer2 ignores processed_frames.
   std::array<int64_t, 1> pf_shape{1};
   int64_t pf = 0;
   Ort::Value pf_ort =
@@ -221,7 +217,6 @@ void StreamingRecognizer::DecodeOneChunk() {
   states_ = std::move(pair.second);
   Ort::Value encoder_out = std::move(pair.first);
 
-  // Greedy decode.
   if (!has_decoder_out_) {
     decoder_out_ = model_->RunDecoder(model_->BuildDecoderInput({tokens_}));
     has_decoder_out_ = true;
@@ -244,8 +239,6 @@ void StreamingRecognizer::DecodeOneChunk() {
         mem2, const_cast<float *>(enc_data + t * joiner_dim), joiner_dim,
         f_shape.data(), f_shape.size());
 
-    // Re-fetch decoder_out each frame: it is replaced whenever a token is
-    // emitted, so caching the pointer would leave a dangling reference.
     const float *dec_data = decoder_out_.GetTensorData<float>();
     std::array<int64_t, 2> d_shape{1, dec_dim};
     Ort::Value dec_view = Ort::Value::CreateTensor<float>(
@@ -288,9 +281,6 @@ std::string StreamingRecognizer::ConvertTokens() const {
     const std::string &s = id2sym_[static_cast<size_t>(id)];
     if (s.empty() || s == "<blk>" || s == "<unk>") continue;
 
-    // Byte-level BPE fallback tokens ("<0xNN>") must be accumulated and
-    // recombined into UTF-8 before being emitted. Otherwise characters outside
-    // the vocabulary (e.g. 垃圾) appear literally as "<0xE5><0x9E><0x83>".
     const int byte = ParseByteToken(s);
     if (byte >= 0) {
       pending_bytes.push_back(static_cast<uint8_t>(byte));
@@ -299,10 +289,6 @@ std::string StreamingRecognizer::ConvertTokens() const {
     flush_bytes();
 
     std::string out = s;
-    // SentencePiece word-boundary marker '▁' (U+2581, 3 UTF-8 bytes) stands
-    // for a space. Keep it instead of dropping it, otherwise English words
-    // are glued together ("Howareyou"). Spaces between CJK characters are
-    // normalized away on the Kotlin side.
     for (size_t p = out.find("\xE2\x96\x81"); p != std::string::npos;
          p = out.find("\xE2\x96\x81")) {
       out.replace(p, 3, " ");
@@ -313,4 +299,4 @@ std::string StreamingRecognizer::ConvertTokens() const {
   return text;
 }
 
-}  // namespace xime_asr
+}  // namespace yuyan_asr

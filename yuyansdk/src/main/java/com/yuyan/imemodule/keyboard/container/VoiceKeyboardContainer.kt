@@ -9,11 +9,14 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.yuyan.imemodule.data.theme.ThemeManager
+import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.keyboard.InputView
+import com.yuyan.imemodule.service.DictDecoder
 import com.yuyan.imemodule.service.VoiceRecognitionHandler
 import com.yuyan.imemodule.speech.RecognitionState
 import com.yuyan.imemodule.ui.keyboard.VoiceKeyboardLayout
@@ -49,7 +52,15 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
         voiceHandler.initialize()
 
         val composeView = ComposeView(context).apply {
-            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+            layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.MATCH_PARENT,
+                ConstraintLayout.LayoutParams.MATCH_PARENT
+            ).apply {
+                topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+                bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID
+                startToStart = ConstraintLayout.LayoutParams.PARENT_ID
+                endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
+            }
             setViewTreeLifecycleOwner(inputView.imeService)
             setViewTreeSavedStateRegistryOwner(inputView.imeService)
             setViewTreeViewModelStoreOwner(inputView.imeService)
@@ -60,6 +71,8 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
                     keyTextColor = androidx.compose.ui.graphics.Color(theme.keyTextColor),
                     specialKeyBackgroundColor = androidx.compose.ui.graphics.Color(theme.functionKeyBackgroundColor),
                     keyboardBackgroundColor = androidx.compose.ui.graphics.Color(theme.keyboardColor),
+                    accentKeyBackgroundColor = androidx.compose.ui.graphics.Color(theme.accentKeyBackgroundColor),
+                    keyPressHighlightColor = androidx.compose.ui.graphics.Color(theme.keyPressHighlightColor),
                     isDarkTheme = theme.isDark,
                     bottomActive = isVoiceActive || voiceState == RecognitionState.LISTENING || voiceState == RecognitionState.PROCESSING,
                     recognitionState = voiceState,
@@ -67,11 +80,16 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
                     spectrum = voiceSpectrum,
                     onDeleteClick = {
                         DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_DEL)
-                        inputView.imeService.deleteSurroundingText(1, 0)
+                        inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
                     },
                     onClearAll = {
                         DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_DEL)
-                        inputView.imeService.deleteSurroundingText(10000, 10000)
+                        if (!DictDecoder.isCandidatesEmpty) {
+                            DictDecoder.reset()
+                            inputView.updateCandidateBar()
+                        } else {
+                            inputView.imeService.deleteSurroundingText(10000, 10000)
+                        }
                     },
                     onSendClick = {
                         DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_ENTER)
@@ -81,6 +99,7 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
                     onStartVoice = {
                         if (!isVoiceActive) {
                             isVoiceActive = true
+                            DevicesUtils.tryVibrate(this@VoiceKeyboardContainer, isRelease = false)
                             DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_SPACE)
                             voiceHandler.startRecognition()
                         }
@@ -88,12 +107,12 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
                     onStopVoice = {
                         if (isVoiceActive) {
                             isVoiceActive = false
+                            DevicesUtils.tryVibrate(this@VoiceKeyboardContainer, isRelease = true)
                             voiceHandler.finishRecognition()
                         }
                     },
                     onCursorMove = { direction ->
-                        val keyCode = if (direction < 0) KeyEvent.KEYCODE_DPAD_LEFT else KeyEvent.KEYCODE_DPAD_RIGHT
-                        inputView.imeService.sendCombinationKeyEvents(keyCode)
+                        inputView.imeService.moveCursorSafely(direction)
                     }
                 )
             }
@@ -102,30 +121,20 @@ class VoiceKeyboardContainer(context: Context, inputView: InputView) : BaseConta
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-        ev?.let {
-            when (it.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    if (it.y > height * 0.45f) {
-                        if (!isVoiceActive) {
-                            isVoiceActive = true
-                            DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_SPACE)
-                            voiceHandler.startRecognition()
-                        }
-                    }
-                }
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    if (isVoiceActive) {
-                        isVoiceActive = false
-                        voiceHandler.finishRecognition()
-                    }
-                }
-            }
-        }
         return super.dispatchTouchEvent(ev)
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        if (!voiceHandler.isInitialized()) {
+            voiceHandler.initialize()
+        }
     }
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        voiceHandler.release()
+        isVoiceActive = false
+        voiceHandler.abandonSession()
+        voiceHandler.stopRecognition()
     }
 }

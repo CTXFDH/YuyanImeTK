@@ -17,8 +17,8 @@
 #define LOG_TAG "AsrJNI"
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
-using xime_asr::AsrModelPaths;
-using xime_asr::StreamingRecognizer;
+using yuyan_asr::AsrModelPaths;
+using yuyan_asr::StreamingRecognizer;
 
 namespace {
 
@@ -31,7 +31,7 @@ struct RecognizerHolder {
 extern "C" {
 
 JNIEXPORT jlong JNICALL
-Java_com_kingzcheung_xime_speech_AsrNative_nativeCreate(JNIEnv *env, jobject,
+Java_com_yuyan_imemodule_speech_AsrNative_nativeCreate(JNIEnv *env, jclass,
                                                         jstring jEncoder,
                                                         jstring jDecoder,
                                                         jstring jJoiner,
@@ -73,15 +73,15 @@ Java_com_kingzcheung_xime_speech_AsrNative_nativeCreate(JNIEnv *env, jobject,
 }
 
 JNIEXPORT void JNICALL
-Java_com_kingzcheung_xime_speech_AsrNative_nativeReset(JNIEnv * /*env*/,
-                                                       jobject, jlong handle) {
+Java_com_yuyan_imemodule_speech_AsrNative_nativeReset(JNIEnv * /*env*/,
+                                                       jclass, jlong handle) {
   auto *holder = reinterpret_cast<RecognizerHolder *>(handle);
   if (holder && holder->rec) holder->rec->Reset();
 }
 
 JNIEXPORT void JNICALL
-Java_com_kingzcheung_xime_speech_AsrNative_nativeAcceptPcm(JNIEnv *env,
-                                                           jobject,
+Java_com_yuyan_imemodule_speech_AsrNative_nativeAcceptPcm(JNIEnv *env,
+                                                           jclass,
                                                            jlong handle,
                                                            jbyteArray pcm) {
   auto *holder = reinterpret_cast<RecognizerHolder *>(handle);
@@ -90,14 +90,9 @@ Java_com_kingzcheung_xime_speech_AsrNative_nativeAcceptPcm(JNIEnv *env,
   if (n <= 0) return;
   jbyte *bytes = env->GetByteArrayElements(pcm, nullptr);
 
-  // 自动增益（AGC）：弱录音信号放大到接近模型训练分布，
-  // 避免"你/觉"等弱音开头因能量过低被识别为静音。
-  // 特征提取（fbank/whisper）在 StreamingRecognizer 内部完成；
-  // 这里仅做幅度归一化到 float 采样。
   constexpr double kTargetRms = 0.008;    // 目标 RMS（约 -42dBFS，float 域）
   constexpr double kMaxGain = 20.0;       // 增益上限，防止噪音被过度放大
-  constexpr double kSilenceRms = 1000.0;  // 静音门限（int16 域）：低于该值
-                                          // 视为静音，不放大，避免底噪放大
+  constexpr double kSilenceRms = 1000.0;  // 静音门限（int16 域）
 
   std::vector<float> samples(static_cast<size_t>(n / 2));
   double sum_sq = 0.0;
@@ -118,16 +113,14 @@ Java_com_kingzcheung_xime_speech_AsrNative_nativeAcceptPcm(JNIEnv *env,
     double target_int16 = kTargetRms * 32768.0;
     agc = target_int16 / rms;
     if (agc > kMaxGain) agc = kMaxGain;
-    if (agc < 1.0) agc = 1.0;  // 强信号不衰减
+    if (agc < 1.0) agc = 1.0;
   }
-  // 静音块 agc=1.0，仅保留基础增益，不放大底噪
 
   const float gain = static_cast<float>(agc);
   for (size_t i = 0; i < cnt; ++i) {
     float v = samples[i] * gain;
     if (v > 32767.0f) v = 32767.0f;
     else if (v < -32767.0f) v = -32767.0f;
-    // 归一化到 [-1, 1]，whisper/fbank 特征都基于该范围
     samples[i] = v / 32768.0f;
   }
 
@@ -135,8 +128,8 @@ Java_com_kingzcheung_xime_speech_AsrNative_nativeAcceptPcm(JNIEnv *env,
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_kingzcheung_xime_speech_AsrNative_nativeGetPartial(JNIEnv *env,
-                                                            jobject,
+Java_com_yuyan_imemodule_speech_AsrNative_nativeGetPartial(JNIEnv *env,
+                                                            jclass,
                                                             jlong handle) {
   auto *holder = reinterpret_cast<RecognizerHolder *>(handle);
   std::string text;
@@ -145,7 +138,7 @@ Java_com_kingzcheung_xime_speech_AsrNative_nativeGetPartial(JNIEnv *env,
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_kingzcheung_xime_speech_AsrNative_nativeFinalize(JNIEnv *env, jobject,
+Java_com_yuyan_imemodule_speech_AsrNative_nativeFinalize(JNIEnv *env, jclass,
                                                           jlong handle) {
   auto *holder = reinterpret_cast<RecognizerHolder *>(handle);
   std::string text;
@@ -154,8 +147,8 @@ Java_com_kingzcheung_xime_speech_AsrNative_nativeFinalize(JNIEnv *env, jobject,
 }
 
 JNIEXPORT void JNICALL
-Java_com_kingzcheung_xime_speech_AsrNative_nativeRelease(JNIEnv * /*env*/,
-                                                         jobject, jlong handle) {
+Java_com_yuyan_imemodule_speech_AsrNative_nativeRelease(JNIEnv * /*env*/,
+                                                         jclass, jlong handle) {
   auto *holder = reinterpret_cast<RecognizerHolder *>(handle);
   if (holder) delete holder;
 }

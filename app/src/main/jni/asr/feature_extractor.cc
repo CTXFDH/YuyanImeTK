@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace xime_asr {
+namespace yuyan_asr {
 
 FeatureExtractor::FeatureExtractor(Type type) : type_(type) {
   if (type_ == Type::kWhisper) {
@@ -88,4 +88,4 @@ void FeatureExtractor::NormalizeWhisperFrame(float *frame, int32_t dim,
   }
 }
 
-}  // namespace xime_asr
+}  // namespace yuyan_asr

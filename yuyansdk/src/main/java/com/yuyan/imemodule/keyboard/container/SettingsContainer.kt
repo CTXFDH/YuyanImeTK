@@ -224,7 +224,7 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
         funItems.add(
             SkbFunItem(
                 "语音输入",
-                R.drawable.ic_menu_touch,
+                R.drawable.ic_menu_voice,
                 SkbMenuMode.VoiceInput
             )
         )
@@ -269,7 +269,8 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
 
     private fun onKeyboardMenuClick(data: SkbFunItem) {
         if (data.skbMenuMode == SkbMenuMode.VoiceInput) {
-            KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.VOICE)
+            InputModeSwitcher.switchModeForSetting(Pair(InputModeSwitcher.MASK_SKB_LAYOUT_VOICE, CustomConstant.SCHEMA_ZH_T9))
+            inputView.resetToIdleState()
             return
         }
         if (data.skbMenuMode == SkbMenuMode.SwitchIME) {

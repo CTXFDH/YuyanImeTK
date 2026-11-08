@@ -14,7 +14,7 @@
 #include "feature_extractor.h"
 #include "zipformer2_model.h"
 
-namespace xime_asr {
+namespace yuyan_asr {
 
 // Streaming greedy-search recognizer for a single utterance.
 class StreamingRecognizer {
@@ -63,4 +63,4 @@ class StreamingRecognizer {
   bool loaded_ = false;
 };
 
-}  // namespace xime_asr
+}  // namespace yuyan_asr

@@ -1,27 +1,29 @@
 package com.yuyan.imemodule.speech
 
 object AsrNative {
-    fun nativeCreate(encoder: String, decoder: String, joiner: String, tokens: String): Long {
-        return try {
-            com.kingzcheung.xime.speech.AsrNative.nativeCreate(encoder, decoder, joiner, tokens)
+    init {
+        try {
+            System.loadLibrary("onnx_jni")
         } catch (e: Throwable) {
-            android.util.Log.e("AsrNative", "nativeCreate failed in wrapper", e)
-            0L
+            android.util.Log.e("AsrNative", "Failed to load libonnx_jni.so", e)
         }
     }
 
-    fun nativeReset(handle: Long) =
-        com.kingzcheung.xime.speech.AsrNative.nativeReset(handle)
+    @JvmStatic
+    external fun nativeCreate(encoder: String, decoder: String, joiner: String, tokens: String): Long
 
-    fun nativeAcceptPcm(handle: Long, pcm: ByteArray) =
-        com.kingzcheung.xime.speech.AsrNative.nativeAcceptPcm(handle, pcm)
+    @JvmStatic
+    external fun nativeReset(handle: Long)
 
-    fun nativeGetPartial(handle: Long): String =
-        com.kingzcheung.xime.speech.AsrNative.nativeGetPartial(handle)
+    @JvmStatic
+    external fun nativeAcceptPcm(handle: Long, pcm: ByteArray)
 
-    fun nativeFinalize(handle: Long): String =
-        com.kingzcheung.xime.speech.AsrNative.nativeFinalize(handle)
+    @JvmStatic
+    external fun nativeGetPartial(handle: Long): String
 
-    fun nativeRelease(handle: Long) =
-        com.kingzcheung.xime.speech.AsrNative.nativeRelease(handle)
+    @JvmStatic
+    external fun nativeFinalize(handle: Long): String
+
+    @JvmStatic
+    external fun nativeRelease(handle: Long)
 }

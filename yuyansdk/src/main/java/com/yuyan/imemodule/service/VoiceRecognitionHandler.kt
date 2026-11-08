@@ -126,7 +126,10 @@ class VoiceRecognitionHandler(
         textLengthBeforeVoiceInput = textBeforeVoiceInput.length
 
         val providerName = resolveProviderName()
-        onStateChanged(getState().copy(voicePluginName = providerName))
+        onStateChanged(getState().copy(
+            voicePluginName = providerName,
+            voiceRecognitionState = RecognitionState.PROCESSING
+        ))
 
         speechRecognitionManager.startRecognition()
     }

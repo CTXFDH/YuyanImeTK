@@ -14,7 +14,7 @@
 #include <utility>
 #include <vector>
 
-namespace xime_asr {
+namespace yuyan_asr {
 
 struct AsrModelPaths {
   std::string encoder;  // encoder.int8.onnx
@@ -114,4 +114,4 @@ class Zipformer2Model {
   bool use_whisper_feature_ = false;
 };
 
-}  // namespace xime_asr
+}  // namespace yuyan_asr

@@ -144,12 +144,13 @@ class MenuAdapter (context: Context?, val data: MutableList<SkbFunItem>) : Recyc
                 settingsContainer != null && !settingsContainer.isSelectModeView
             }
             // Keyboard Menu
-            SkbMenuMode.PinyinT9 -> !InputModeSwitcher.isTextEditSkb && rimeValue == CustomConstant.SCHEMA_ZH_T9
-            SkbMenuMode.Pinyin26Jian -> !InputModeSwitcher.isTextEditSkb && rimeValue == CustomConstant.SCHEMA_ZH_QWERTY
-            SkbMenuMode.PinyinHandWriting -> !InputModeSwitcher.isTextEditSkb && rimeValue == CustomConstant.SCHEMA_ZH_HANDWRITING
-            SkbMenuMode.PinyinLx17 -> !InputModeSwitcher.isTextEditSkb && rimeValue == CustomConstant.SCHEMA_ZH_DOUBLE_LX17
-            SkbMenuMode.Pinyin26Double -> !InputModeSwitcher.isTextEditSkb && rimeValue.startsWith(CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY) && rimeValue != CustomConstant.SCHEMA_ZH_DOUBLE_LX17
-            SkbMenuMode.PinyinStroke -> !InputModeSwitcher.isTextEditSkb && rimeValue == CustomConstant.SCHEMA_ZH_STROKE
+            SkbMenuMode.PinyinT9 -> !InputModeSwitcher.isTextEditSkb && InputModeSwitcher.skbLayout == InputModeSwitcher.MASK_SKB_LAYOUT_T9_PINYIN && rimeValue == CustomConstant.SCHEMA_ZH_T9 && KeyboardManager.instance.currentContainer !is com.yuyan.imemodule.keyboard.container.VoiceKeyboardContainer
+            SkbMenuMode.Pinyin26Jian -> !InputModeSwitcher.isTextEditSkb && InputModeSwitcher.skbLayout == InputModeSwitcher.MASK_SKB_LAYOUT_QWERTY_PINYIN && rimeValue == CustomConstant.SCHEMA_ZH_QWERTY && KeyboardManager.instance.currentContainer !is com.yuyan.imemodule.keyboard.container.VoiceKeyboardContainer
+            SkbMenuMode.PinyinHandWriting -> !InputModeSwitcher.isTextEditSkb && InputModeSwitcher.skbLayout == InputModeSwitcher.MASK_SKB_LAYOUT_HANDWRITING && KeyboardManager.instance.currentContainer !is com.yuyan.imemodule.keyboard.container.VoiceKeyboardContainer
+            SkbMenuMode.PinyinLx17 -> !InputModeSwitcher.isTextEditSkb && InputModeSwitcher.skbLayout == InputModeSwitcher.MASK_SKB_LAYOUT_LX17 && KeyboardManager.instance.currentContainer !is com.yuyan.imemodule.keyboard.container.VoiceKeyboardContainer
+            SkbMenuMode.Pinyin26Double -> !InputModeSwitcher.isTextEditSkb && InputModeSwitcher.skbLayout == InputModeSwitcher.MASK_SKB_LAYOUT_QWERTY_PINYIN && rimeValue.startsWith(CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY) && rimeValue != CustomConstant.SCHEMA_ZH_DOUBLE_LX17 && KeyboardManager.instance.currentContainer !is com.yuyan.imemodule.keyboard.container.VoiceKeyboardContainer
+            SkbMenuMode.PinyinStroke -> !InputModeSwitcher.isTextEditSkb && InputModeSwitcher.skbLayout == InputModeSwitcher.MASK_SKB_LAYOUT_STROKE && KeyboardManager.instance.currentContainer !is com.yuyan.imemodule.keyboard.container.VoiceKeyboardContainer
+            SkbMenuMode.VoiceInput -> InputModeSwitcher.skbLayout == InputModeSwitcher.MASK_SKB_LAYOUT_VOICE || KeyboardManager.instance.currentContainer is com.yuyan.imemodule.keyboard.container.VoiceKeyboardContainer
             SkbMenuMode.TextEdit -> InputModeSwitcher.isTextEditSkb
             else -> false
         }

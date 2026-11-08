@@ -97,6 +97,8 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
         super.onCreate()
         savedStateRegistryController.performRestore(null)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
         addOnChangedListener(onThemeChangeListener)
         getInstance().keyboardSetting.showVirtualKeyboardOnPhysicalKeyboard.registerOnChangeListener(showVirtualKeyboardOnPhysicalKeyboardListener)
         getInstance().internal.clipboardUpdateContent.registerOnChangeListener(clipboardUpdateContentListener)
@@ -147,6 +149,8 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
         android.util.Log.w("ImeLifecycle", "onStartInputView restarting=$restarting")
         val start = SystemClock.elapsedRealtime()
         try {
+            lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
+            lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
             if (!::mInputView.isInitialized) {
                 onCreateInputView()
             }
@@ -163,6 +167,8 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
     override fun onFinishInputView(finishingInput: Boolean) {
         android.util.Log.w("ImeLifecycle", "onFinishInputView finishingInput=$finishingInput")
         try {
+            lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+            lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
             if (::mInputView.isInitialized) {
                 KeyboardManager.instance.switchKeyboardToMain()
             }
@@ -312,6 +318,19 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
                 EditorInfo.IME_ACTION_UNSPECIFIED, EditorInfo.IME_ACTION_NONE -> sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER)
                 else -> inputConnection.performEditorAction(action)
             }
+        }
+    }
+
+    fun moveCursorSafely(direction: Int) {
+        val ic = currentInputConnection ?: return
+        if (direction < 0) {
+            val textBefore = ic.getTextBeforeCursor(1, 0)
+            if (textBefore.isNullOrEmpty()) return
+            sendCombinationKeyEvents(KeyEvent.KEYCODE_DPAD_LEFT)
+        } else if (direction > 0) {
+            val textAfter = ic.getTextAfterCursor(1, 0)
+            if (textAfter.isNullOrEmpty()) return
+            sendCombinationKeyEvents(KeyEvent.KEYCODE_DPAD_RIGHT)
         }
     }
 

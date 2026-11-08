@@ -3,7 +3,6 @@ package com.yuyan.imemodule.ui.keyboard
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
@@ -25,8 +24,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -42,10 +43,12 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.yuyan.imemodule.R
 import com.yuyan.imemodule.speech.RecognitionState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -58,6 +61,8 @@ fun VoiceKeyboardLayout(
     keyTextColor: Color,
     specialKeyBackgroundColor: Color,
     keyboardBackgroundColor: Color,
+    accentKeyBackgroundColor: Color = Color.Unspecified,
+    keyPressHighlightColor: Color = Color.Unspecified,
     modifier: Modifier = Modifier,
     isDarkTheme: Boolean = false,
     themeId: String = "ocean_blue",
@@ -79,17 +84,35 @@ fun VoiceKeyboardLayout(
     val circleButtonBgColor = specialKeyBackgroundColor
     val buttonIconColor = keyTextColor
 
-    val primaryAccent = Color(0xFF6366F1)
-    val primaryAccentPressed = Color(0xFF4F46E5)
-    val voicePressedColor = Color(0xFFE53935) // 按住说话时的高亮录音红
+    val normalAccentBgColor = if (accentKeyBackgroundColor != Color.Unspecified) accentKeyBackgroundColor else Color(0xFF6366F1)
+    val activePressedBgColor = if (keyPressHighlightColor != Color.Unspecified && keyPressHighlightColor != Color.Transparent) {
+        keyPressHighlightColor
+    } else {
+        Color(
+            red = (normalAccentBgColor.red * 0.6f),
+            green = (normalAccentBgColor.green * 0.6f),
+            blue = (normalAccentBgColor.blue * 0.6f),
+            alpha = normalAccentBgColor.alpha
+        )
+    }
 
     var accumulativeDrag by remember { mutableFloatStateOf(0f) }
     val dragThresholdPx = with(LocalDensity.current) { 16.dp.toPx() }
 
     val coroutineScope = rememberCoroutineScope()
     var isDeletePressed by remember { mutableStateOf(false) }
+    var isVoicePressed by remember { mutableStateOf(false) }
 
-    val isRecordingActive = bottomActive || 
+    LaunchedEffect(isVoicePressed) {
+        if (isVoicePressed) {
+            onStartVoice()
+        } else {
+            onStopVoice()
+        }
+    }
+
+    val isRecordingActive = isVoicePressed || 
+                            bottomActive || 
                             recognitionState == RecognitionState.LISTENING || 
                             recognitionState == RecognitionState.PROCESSING
 
@@ -101,7 +124,7 @@ fun VoiceKeyboardLayout(
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // 第一行（上）：上矩形框（支持左右滑动移动光标 + 非输入状态下显示提示文字，录音/输入状态下展示彩色波形） + 右上角 Backspace 删除键
+        // 第一行（上）：上矩形框（1号框：非输入空白，输入展示彩色波形） + 右上角 Backspace 删除键
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -109,7 +132,7 @@ fun VoiceKeyboardLayout(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // 上矩形框：支持水平滑动滑动控光标
+            // 上矩形框（1号框）：非输入状态下空白显示，输入状态下展示动态彩色波形图
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -125,10 +148,10 @@ fun VoiceKeyboardLayout(
                                 change.consume()
                                 accumulativeDrag += dragAmount
                                 if (accumulativeDrag >= dragThresholdPx) {
-                                    onCursorMove(1) // 手指向右划 -> 光标向右移
+                                    onCursorMove(1)
                                     accumulativeDrag = 0f
                                 } else if (accumulativeDrag <= -dragThresholdPx) {
-                                    onCursorMove(-1) // 手指向左划 -> 光标向左移
+                                    onCursorMove(-1)
                                     accumulativeDrag = 0f
                                 }
                             }
@@ -144,22 +167,15 @@ fun VoiceKeyboardLayout(
                         amplitude = amplitude,
                         spectrum = spectrum
                     )
-                } else {
-                    Text(
-                        text = "左右滑动手指移动光标",
-                        color = buttonIconColor.copy(alpha = 0.4f),
-                        fontSize = 14.sp,
-                        textAlign = TextAlign.Center
-                    )
                 }
             }
 
-            // 右上：退格删除按键（支持短按、长按连续删除、上滑清空）
+            // 右上：退格删除按键（对齐中文9键：长按连续删除、上滑清空）
             Box(
                 modifier = Modifier
                     .size(54.dp)
                     .clip(CircleShape)
-                    .background(if (isDeletePressed || leftActive) primaryAccentPressed else circleButtonBgColor)
+                    .background(if (isDeletePressed || leftActive) activePressedBgColor else circleButtonBgColor)
                     .pointerInput(Unit) {
                         awaitEachGesture {
                             val down = awaitFirstDown(requireUnconsumed = false)
@@ -200,16 +216,16 @@ fun VoiceKeyboardLayout(
                     },
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "⌫",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = if (isDeletePressed || leftActive) Color.White else buttonIconColor
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_backspace),
+                    contentDescription = "删除",
+                    tint = if (isDeletePressed || leftActive) Color.White else buttonIconColor,
+                    modifier = Modifier.size(22.dp)
                 )
             }
         }
 
-        // 第二行（下）：下矩形框（长按说话按键） + 右下角 Send 消息发送键
+        // 第二行（下）：下矩形框（2号框：按住说话按键） + 右下角 Send 消息发送键
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -217,8 +233,8 @@ fun VoiceKeyboardLayout(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // 下矩形框：核心语音长按按键
-            val voiceBtnBg = if (isRecordingActive) voicePressedColor else primaryAccent
+            // 下矩形框（2号框）：核心语音长按按键
+            val voiceBtnBg = if (isRecordingActive) activePressedBgColor else normalAccentBgColor
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -228,13 +244,13 @@ fun VoiceKeyboardLayout(
                     .pointerInput(Unit) {
                         awaitEachGesture {
                             awaitFirstDown(requireUnconsumed = false)
-                            onStartVoice()
+                            isVoicePressed = true
                             do {
                                 val event = awaitPointerEvent()
                                 val up = event.changes.all { !it.pressed }
                                 if (up) break
                             } while (true)
-                            onStopVoice()
+                            isVoicePressed = false
                         }
                     },
                 contentAlignment = Alignment.Center
@@ -248,20 +264,20 @@ fun VoiceKeyboardLayout(
                 )
             }
 
-            // 右下：消息发送按键
+            // 右下：消息发送按键（精美矢量向上箭头图标）
             Box(
                 modifier = Modifier
                     .size(54.dp)
                     .clip(CircleShape)
-                    .background(if (rightActive) primaryAccentPressed else circleButtonBgColor)
+                    .background(if (rightActive) activePressedBgColor else circleButtonBgColor)
                     .clickable { onSendClick() },
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "↑",
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = if (rightActive) Color.White else buttonIconColor
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_send_arrow),
+                    contentDescription = "发送",
+                    tint = if (rightActive) Color.White else buttonIconColor,
+                    modifier = Modifier.size(24.dp)
                 )
             }
         }
@@ -274,64 +290,44 @@ fun AudioSpectrumAnimation(
     isActive: Boolean = true,
     amplitude: Float = 0f,
     spectrum: FloatArray = FloatArray(16),
-    barWidthFactor: Float = 1.8f,
+    barWidthFactor: Float = 1.9f,
     barCount: Int = 11,
     spacingRatio: Float = 0.5f,
-    heightScale: Float = 0.88f,
+    heightScale: Float = 0.85f,
 ) {
     if (!isActive) {
         Canvas(modifier = modifier) {}
         return
     }
 
-    val infiniteTransition = rememberInfiniteTransition(label = "wave")
+    val infiniteTransition = rememberInfiniteTransition(label = "wavePhase")
     val phase by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 6.2831855f,
         animationSpec = infiniteRepeatable(
-            animation = tween(600, easing = LinearEasing),
+            animation = tween(800, easing = LinearEasing),
             repeatMode = RepeatMode.Restart
         ),
         label = "phase"
     )
 
-    val amplifiedAmp = (amplitude * 5f).coerceIn(0f, 1f)
-
-    val barTargets = remember(spectrum, amplifiedAmp, barCount, phase) {
-        FloatArray(barCount) { index ->
-            val sineWave = (0.5f + 0.5f * sin(phase + index * 0.7f))
-            if (spectrum.isNotEmpty() && spectrum.any { it > 0.01f }) {
-                val rawSpec = spectrum[index % spectrum.size]
-                maxOf(rawSpec * 1.5f, amplifiedAmp * 0.8f, sineWave * 0.25f)
-            } else if (amplifiedAmp > 0.01f) {
-                maxOf(amplifiedAmp, sineWave * 0.5f)
-            } else {
-                0.2f + 0.15f * sineWave
-            }
-        }
-    }
-
-    val animatedValues = barTargets.mapIndexed { index, target ->
-        animateFloatAsState(
-            targetValue = target,
-            animationSpec = tween(durationMillis = 50),
-            label = "spectrumBar$index"
+    val colors = remember {
+        listOf(
+            Color(0xFFFF7070),
+            Color(0xFFFFA07A),
+            Color(0xFFFFCF7D),
+            Color(0xFFFFF0A5),
+            Color(0xFF7BE4B7),
+            Color(0xFF7BE4D8),
+            Color(0xFF7BC3FF),
+            Color(0xFF9D7BFF),
+            Color(0xFFFF7BE8),
+            Color(0xFFFF8A8A),
+            Color(0xFFFFB8A8),
         )
     }
 
-    val colors = listOf(
-        Color(0xFFFF6B6B),
-        Color(0xFFFF8E72),
-        Color(0xFFFF9F43),
-        Color(0xFFFFB86C),
-        Color(0xFFFFEAA7),
-        Color(0xFF55EFC4),
-        Color(0xFF74D7AE),
-        Color(0xFF54A0FF),
-        Color(0xFF5F27CD),
-        Color(0xFFFF6B6B),
-        Color(0xFFFF8E72),
-    )
+    val ampClamped = amplitude.coerceIn(0f, 1f)
 
     Canvas(modifier = modifier) {
         val barWidth = size.width / (barCount * barWidthFactor)
@@ -339,16 +335,19 @@ fun AudioSpectrumAnimation(
         val maxHeight = size.height
 
         repeat(barCount) { index ->
-            val scale = animatedValues[index].value
-            val barHeight = maxHeight * scale.coerceIn(0.1f, 0.98f) * heightScale
+            val sineWave = 0.35f + 0.35f * sin(phase + index * 0.6f)
+            val specVal = if (spectrum.isNotEmpty()) spectrum[index % spectrum.size] else 0f
+            val audioScale = maxOf(specVal * 1.5f, ampClamped * 4.0f)
+            val finalScale = (sineWave + audioScale).coerceIn(0.25f, 0.95f)
+
+            val barHeight = maxHeight * finalScale * heightScale
             val totalWidth = barCount * barWidth + (barCount - 1) * spacing
             val startX = (size.width - totalWidth) / 2f
             val x = startX + index * (barWidth + spacing)
             val y = (maxHeight - barHeight) / 2f
-            val barAlpha = 0.95f
 
             drawRoundRect(
-                color = colors[index % colors.size].copy(alpha = barAlpha),
+                color = colors[index % colors.size],
                 topLeft = Offset(x, y),
                 size = Size(barWidth, barHeight),
                 cornerRadius = CornerRadius(barWidth / 2f, barWidth / 2f)

@@ -40,7 +40,7 @@ OrtEnv* OnnxGetSharedEnv() {
             }
             if (!status) {
                 status = api->CreateEnvWithGlobalThreadPools(
-                    ORT_LOGGING_LEVEL_WARNING, "xime_onnx", g_threading_options, &g_shared_env);
+                    ORT_LOGGING_LEVEL_WARNING, "yuyan_onnx", g_threading_options, &g_shared_env);
             }
             if (status) {
                 LOGE("Failed to create shared env: %s", api->GetErrorMessage(status));
@@ -82,10 +82,10 @@ bool OnnxTryEnableNnapi(OrtSessionOptions* options) {
     // nnapi-reference 后端在推理中会触发 SIGSEGV（tombstone: libonnxruntime.so 内
     // fault addr 0x600000002），导致 :inference 进程死亡、联想永久失效。
     // int8 动态量化模型在 CPU 上推理耗时仅毫秒级，NNAPI 收益可忽略。
-    // 调试需要时设置系统属性 setprop debug.xime.nnapi 1 重新启用。
+    // 调试需要时设置系统属性 setprop debug.yuyan.nnapi 1 重新启用。
     char value[2] = {0};
-    if (__system_property_get("debug.xime.nnapi", value) == 0 || value[0] != '1') {
-        LOGD("NNAPI EP disabled by default (debug.xime.nnapi not set)");
+    if (__system_property_get("debug.yuyan.nnapi", value) == 0 || value[0] != '1') {
+        LOGD("NNAPI EP disabled by default (debug.yuyan.nnapi not set)");
         return false;
     }
 

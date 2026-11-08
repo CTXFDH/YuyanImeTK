@@ -65,6 +65,7 @@ class KeyboardManager {
             0x5000 -> KeyboardType.NUMBER
             0x6000 -> KeyboardType.LX17
             0x8000 -> KeyboardType.TEXTEDIT
+            0x9000 -> KeyboardType.VOICE
             else -> KeyboardType.T9
         }
         switchKeyboard(keyboardName)
@@ -102,7 +103,7 @@ class KeyboardManager {
     }
 
     val isInputKeyboard: Boolean
-        get() = currentContainer is InputBaseContainer
+        get() = currentContainer is InputBaseContainer || currentContainer is com.yuyan.imemodule.keyboard.container.VoiceKeyboardContainer
 
     companion object {
         private var mInstance: KeyboardManager? = null

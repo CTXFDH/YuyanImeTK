@@ -123,22 +123,29 @@ object InputFeedbacks {
         }
     }
 
-    fun hapticFeedback(view: View) {
+    fun hapticFeedback(view: View, isRelease: Boolean = false) {
         val duration = when (vibrationAmplitude) {
             0 -> {
                 @Suppress("DEPRECATION")
                 val flags = HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING or HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING
-                view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, flags)
+                val hfc = if (isRelease && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                    HapticFeedbackConstants.KEYBOARD_RELEASE
+                } else if (isRelease) {
+                    HapticFeedbackConstants.KEYBOARD_TAP
+                } else {
+                    HapticFeedbackConstants.LONG_PRESS
+                }
+                view.performHapticFeedback(hfc, flags)
                 0L
             }
             1 -> 0L
-            2 -> 5L
-            3 -> 30L
-            else -> 50L
+            2 -> if (isRelease) 8L else 18L
+            3 -> if (isRelease) 18L else 35L
+            else -> if (isRelease) 30L else 55L
         }
         if (duration != 0L) {
             if (hasAmplitudeControl) {
-                vibrator.vibrate(VibrationEffect.createOneShot(duration, -1))
+                vibrator.vibrate(VibrationEffect.createOneShot(duration, if (isRelease) 100 else -1))
             } else {
                 @Suppress("DEPRECATION")
                 vibrator.vibrate(duration)

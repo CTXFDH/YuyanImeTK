@@ -12,7 +12,7 @@
 
 #include "kaldi-native-fbank/csrc/online-feature.h"
 
-namespace xime_asr {
+namespace yuyan_asr {
 
 class FeatureExtractor {
  public:
@@ -55,4 +55,4 @@ class FeatureExtractor {
   std::unique_ptr<knf::OnlineWhisperFbank> whisper_fbank_;
 };
 
-}  // namespace xime_asr
+}  // namespace yuyan_asr

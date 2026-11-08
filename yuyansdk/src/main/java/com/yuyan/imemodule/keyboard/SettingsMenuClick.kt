@@ -41,7 +41,8 @@ fun onSettingsMenuClick(inputView: InputView, skbMenuMode: SkbMenuMode) {
             }
         }
         SkbMenuMode.VoiceInput -> {
-            KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.VOICE)
+            InputModeSwitcher.switchModeForSetting(Pair(InputModeSwitcher.MASK_SKB_LAYOUT_VOICE, CustomConstant.SCHEMA_ZH_T9))
+            inputView.resetToIdleState()
         }
         SkbMenuMode.KeyboardHeight -> {
             KeyboardManager.instance.switchKeyboard()

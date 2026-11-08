@@ -50,8 +50,9 @@ object DevicesUtils {
      * 震动
      */
 	@JvmStatic
-	fun tryVibrate(view: View?) {
-        view?.let { hapticFeedback(it) }
+	@JvmOverloads
+	fun tryVibrate(view: View?, isRelease: Boolean = false) {
+        view?.let { hapticFeedback(it, isRelease) }
     }
 
 

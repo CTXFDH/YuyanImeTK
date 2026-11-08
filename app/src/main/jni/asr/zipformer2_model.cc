@@ -20,7 +20,7 @@
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
-namespace xime_asr {
+namespace yuyan_asr {
 
 namespace {
 
@@ -478,4 +478,4 @@ Ort::Value Zipformer2Model::BuildDecoderInput(
   return v;
 }
 
-}  // namespace xime_asr
+}  // namespace yuyan_asr
