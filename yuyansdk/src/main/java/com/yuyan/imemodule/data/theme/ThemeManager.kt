@@ -30,7 +30,7 @@ object ThemeManager {
         ThemePreset.CustomPurple,
     )
 
-    val DefaultTheme = ThemePreset.MaterialLight
+    val DefaultTheme = ThemePreset.PixelLight
 
     private val customThemes: MutableList<Theme.Custom> = ThemeFilesManager.listThemes()
 

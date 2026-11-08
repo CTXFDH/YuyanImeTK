@@ -66,7 +66,7 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
     val lightModeTheme = themePreference(
         R.string.light_mode_theme,
         "light_mode_theme",
-        ThemePreset.MaterialLight,
+        ThemePreset.PixelLight,
         enableUiOn = {
             followSystemDayNightTheme.getValue()
         })
@@ -74,7 +74,7 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
     val darkModeTheme = themePreference(
         R.string.dark_mode_theme,
         "dark_mode_theme",
-        ThemePreset.MaterialDark,
+        ThemePreset.PixelDark,
         enableUiOn = {
             followSystemDayNightTheme.getValue()
         })

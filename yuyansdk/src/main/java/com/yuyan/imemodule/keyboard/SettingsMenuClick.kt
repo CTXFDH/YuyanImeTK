@@ -51,9 +51,9 @@ fun onSettingsMenuClick(inputView: InputView, skbMenuMode: SkbMenuMode) {
         SkbMenuMode.DarkTheme -> {
             val isCurrentlyDark = ThemeManager.activeTheme.isDark
             val targetTheme = if (isCurrentlyDark) {
-                ThemeManager.getTheme("Material 亮色") ?: com.yuyan.imemodule.data.theme.ThemePreset.MaterialLight
+                ThemeManager.getTheme("Pixel 亮色") ?: ThemeManager.getTheme("PixelLight") ?: com.yuyan.imemodule.data.theme.ThemePreset.PixelLight
             } else {
-                ThemeManager.getTheme("Material 暗色") ?: com.yuyan.imemodule.data.theme.ThemePreset.MaterialDark
+                ThemeManager.getTheme("Pixel 暗色") ?: ThemeManager.getTheme("PixelDark") ?: com.yuyan.imemodule.data.theme.ThemePreset.PixelDark
             }
             ThemeManager.prefs.followSystemDayNightTheme.setValue(false)
             ThemeManager.setNormalModeTheme(targetTheme)
