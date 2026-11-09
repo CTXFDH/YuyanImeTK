@@ -51,7 +51,7 @@
 | :--- | :--- | :--- |
 | `build.gradle` (Root) | 使用 Gradle Version Catalogs (`alias(libs.plugins...)`) 统一定义插件版本 | 采用传统 Groovy 插件直接依赖，内置 `buildscript` 声明，保障 IDE 各版本的构建兼容性 |
 | `gradle/libs.versions.toml` | **包含 Version Catalogs 依赖配置文件** | **【无此文件】** (直接在 Gradle 中显式声明依赖版本) |
-| `app/build.gradle` | 采用 Version Catalogs；`versionName = versionNameDate()` 动态生成纯日期版本号（如 `20261107.12`）；配置 `offline` 变体与 release 签名脚本；输出 `yuyanIme_${versionCodeDate()}_${variant.buildType}.apk` | 采用 K版统一递增版本号（`versionName "K53"`、`getKVersionCode() = 53`）；解耦硬件包强签名依赖；输出自定义命名 `YuyanImeK-K53_${versionCodeDate()}.apk` 并优化 AAPT 资源压缩 |
+| `app/build.gradle` | 采用 Version Catalogs；`versionName = versionNameDate()` 动态生成纯日期版本号（如 `20261107.12`）；配置 `offline` 变体与 release 签名脚本；输出 `yuyanIme_${versionCodeDate()}_${variant.buildType}.apk` | 采用 K版统一递增版本号（`versionName "K54"`、`getKVersionCode() = 54`）；解耦硬件包强签名依赖；输出自定义命名 `YuyanImeK-K54_${versionCodeDate()}.apk` 并优化 AAPT 资源压缩 |
 | `yuyansdk/build.gradle` | 使用 Version Catalogs (`libs.androidx.appcompat`) 引用依赖；使用 KSP 编译器 | 显式声明 Jetpack、Room、Navigation、Compose、ARouter 及 ONNX 依赖；开启 `buildFeatures.aidl = true` 与 `compose = true`；使用 kapt 编译器保证稳定性 |
 | `app/src/main/AndroidManifest.xml` | 声明基础 IME 权限与应用组件 | 增加了 `RECORD_AUDIO` 录音权限，注册了 `AsrInferenceService` 离线语音识别跨进程 AIDL 后台服务 |
 
