@@ -51,13 +51,14 @@ object ThemeArchiveUtils {
 
         try {
             context.contentResolver.openInputStream(inputUri)?.use { inputStream ->
-                ZipInputStream(inputStream).use { zipIn ->
+                ZipInputStream(java.io.BufferedInputStream(inputStream)).use { zipIn ->
                     var entry = zipIn.nextEntry
                     while (entry != null) {
                         val fileName = entry.name
-                        val lowerName = fileName.lowercase()
+                        val normalizedName = fileName.replace('\\', '/').lowercase()
+                        val simpleName = normalizedName.substringAfterLast('/')
                         when {
-                            lowerName == "theme.json" || lowerName.endsWith("/theme.json") -> {
+                            simpleName == "theme.json" -> {
                                 val baos = java.io.ByteArrayOutputStream()
                                 zipIn.copyTo(baos)
                                 val rawJson = baos.toString(Charsets.UTF_8.name())
@@ -65,14 +66,14 @@ object ThemeArchiveUtils {
                                 val (theme, _) = CustomThemeSerializer.LenientJson.decodeFromString(CustomThemeSerializer.WithMigrationStatus, jsonText)
                                 parsedTheme = theme
                             }
-                            lowerName.startsWith("src.") || lowerName.startsWith("background_src.") -> {
-                                val ext = File(fileName).extension
+                            simpleName.startsWith("src.") || simpleName.startsWith("background_src.") -> {
+                                val ext = File(simpleName).extension
                                 val dest = File(tempDir, if (ext.isNotEmpty()) "src.$ext" else "src.png")
                                 FileOutputStream(dest).use { out -> zipIn.copyTo(out) }
                                 tempSrcFile = dest
                             }
-                            lowerName.startsWith("logo.") -> {
-                                val ext = File(fileName).extension
+                            simpleName.startsWith("logo.") -> {
+                                val ext = File(simpleName).extension
                                 val dest = File(tempDir, if (ext.isNotEmpty()) "logo.$ext" else "logo.png")
                                 FileOutputStream(dest).use { out -> zipIn.copyTo(out) }
                                 tempLogoFile = dest
@@ -141,6 +142,9 @@ object ThemeArchiveUtils {
             return importedTheme
         } catch (e: Exception) {
             android.util.Log.e("ThemeArchiveUtils", "Error importing yus: ${e.message}", e)
+            android.os.Handler(android.os.Looper.getMainLooper()).post {
+                android.widget.Toast.makeText(context, "导入失败: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
+            }
             return null
         } finally {
             tempDir.deleteRecursively()
