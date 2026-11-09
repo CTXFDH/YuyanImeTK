@@ -1,7 +1,7 @@
-
 package com.yuyan.imemodule.data.theme
 
 import com.yuyan.imemodule.utils.NostalgicSerializer
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -12,6 +12,12 @@ import kotlinx.serialization.json.jsonPrimitive
 
 object CustomThemeSerializer : JsonTransformingSerializer<Theme.Custom>(Theme.Custom.serializer()) {
 
+    val LenientJson = Json {
+        ignoreUnknownKeys = true
+        isLenient = true
+        coerceInputValues = true
+    }
+
     val WithMigrationStatus = NostalgicSerializer(this) {
         it.jsonObject[VERSION]?.jsonPrimitive?.content != CURRENT_VERSION
     }
@@ -21,19 +27,28 @@ object CustomThemeSerializer : JsonTransformingSerializer<Theme.Custom>(Theme.Cu
 
     override fun transformDeserialize(element: JsonElement): JsonElement {
         val jsonObj = element.jsonObject.removeVersion()
-        val mutableMap = jsonObj.toMutableMap()
-        for ((key, value) in jsonObj) {
-            if ((value is JsonPrimitive) && value.isString) {
-                val str = value.content.trim()
-                if (str.startsWith("#") || str.startsWith("0x") || str.startsWith("0X")) {
-                    val colorInt = parseColorString(str)
-                    colorInt?.let {
-                        mutableMap[key] = JsonPrimitive(it)
-                    }
+        return transformElement(jsonObj) as JsonObject
+    }
+
+    private fun transformElement(element: JsonElement): JsonElement {
+        return when (element) {
+            is JsonObject -> {
+                val mutableMap = mutableMapOf<String, JsonElement>()
+                for ((key, value) in element) {
+                    mutableMap[key] = transformElement(value)
                 }
+                JsonObject(mutableMap)
             }
+            is JsonPrimitive -> {
+                if (element.isString) {
+                    val str = element.content.trim()
+                    if (str.startsWith("#") || str.startsWith("0x") || str.startsWith("0X")) {
+                        parseColorString(str)?.let { JsonPrimitive(it) } ?: element
+                    } else element
+                } else element
+            }
+            else -> element
         }
-        return JsonObject(mutableMap)
     }
 
     fun stripJsonComments(jsonText: String): String {
@@ -152,6 +167,12 @@ object CustomThemeSerializer : JsonTransformingSerializer<Theme.Custom>(Theme.Cu
 
         sb.append("  # 九宫格侧边高频符号栏背景颜色\n")
         sb.append("  \"sideSymbolKeyBackgroundColor\": \"${theme.sideSymbolKeyBackgroundColor.toHexString()}\",\n\n")
+
+        sb.append("  # 九宫格侧边高频符号栏文字颜色\n")
+        sb.append("  \"sideSymbolKeyTextColor\": \"${theme.sideSymbolKeyTextColor.toHexString()}\",\n\n")
+
+        sb.append("  # 九宫格侧边高频符号栏按下高亮颜色\n")
+        sb.append("  \"sideSymbolKeyPressColor\": \"${theme.sideSymbolKeyPressColor.toHexString()}\",\n\n")
 
         sb.append("  # 工具栏右侧展开/收起箭头按键背景颜色\n")
         sb.append("  \"arrowButtonBackgroundColor\": \"${theme.arrowButtonBackgroundColor.toHexString()}\",\n\n")
