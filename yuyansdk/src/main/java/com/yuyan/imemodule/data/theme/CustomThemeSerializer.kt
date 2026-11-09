@@ -26,8 +26,9 @@ object CustomThemeSerializer : JsonTransformingSerializer<Theme.Custom>(Theme.Cu
         element.jsonObject.addVersion()
 
     override fun transformDeserialize(element: JsonElement): JsonElement {
-        val jsonObj = element.jsonObject.removeVersion()
-        return transformElement(jsonObj) as JsonObject
+        if (element !is JsonObject) return element
+        val jsonObj = element.removeVersion()
+        return transformElement(jsonObj)
     }
 
     private fun transformElement(element: JsonElement): JsonElement {
