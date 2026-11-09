@@ -55,8 +55,9 @@ object ThemeArchiveUtils {
                     var entry = zipIn.nextEntry
                     while (entry != null) {
                         val fileName = entry.name
+                        val lowerName = fileName.lowercase()
                         when {
-                            fileName == "theme.json" || fileName.endsWith("/theme.json") -> {
+                            lowerName == "theme.json" || lowerName.endsWith("/theme.json") -> {
                                 val baos = java.io.ByteArrayOutputStream()
                                 zipIn.copyTo(baos)
                                 val rawJson = baos.toString(Charsets.UTF_8.name())
@@ -64,13 +65,13 @@ object ThemeArchiveUtils {
                                 val (theme, _) = CustomThemeSerializer.LenientJson.decodeFromString(CustomThemeSerializer.WithMigrationStatus, jsonText)
                                 parsedTheme = theme
                             }
-                            fileName.startsWith("src.") || fileName.startsWith("background_src.") -> {
+                            lowerName.startsWith("src.") || lowerName.startsWith("background_src.") -> {
                                 val ext = File(fileName).extension
                                 val dest = File(tempDir, if (ext.isNotEmpty()) "src.$ext" else "src.png")
                                 FileOutputStream(dest).use { out -> zipIn.copyTo(out) }
                                 tempSrcFile = dest
                             }
-                            fileName.startsWith("logo.") -> {
+                            lowerName.startsWith("logo.") -> {
                                 val ext = File(fileName).extension
                                 val dest = File(tempDir, if (ext.isNotEmpty()) "logo.$ext" else "logo.png")
                                 FileOutputStream(dest).use { out -> zipIn.copyTo(out) }
@@ -88,7 +89,7 @@ object ThemeArchiveUtils {
             val finalName = ThemeFilesManager.generateUniqueThemeName(preferredName)
             val targetDir = ThemeFilesManager.getThemeDir(finalName)
 
-            var finalSrcPath = baseTheme.backgroundImage?.srcFilePath
+            var finalSrcPath: String? = null
             tempSrcFile?.let { src ->
                 if (src.exists()) {
                     val ext = src.extension
@@ -97,8 +98,14 @@ object ThemeArchiveUtils {
                     finalSrcPath = dest.absolutePath
                 }
             }
+            if (finalSrcPath == null && baseTheme.backgroundImage?.srcFilePath != null) {
+                val f = File(baseTheme.backgroundImage.srcFilePath)
+                if (f.exists()) {
+                    finalSrcPath = f.absolutePath
+                }
+            }
 
-            var finalLogoPath = baseTheme.customLogoFilePath
+            var finalLogoPath: String? = null
             tempLogoFile?.let { logo ->
                 if (logo.exists()) {
                     val ext = logo.extension
@@ -107,14 +114,22 @@ object ThemeArchiveUtils {
                     finalLogoPath = dest.absolutePath
                 }
             }
-
-            val newBg = baseTheme.backgroundImage?.let { bg ->
-                Theme.Custom.CustomBackground(
-                    srcFilePath = finalSrcPath ?: bg.srcFilePath,
-                    brightness = bg.brightness,
-                    cropRect = bg.cropRect,
-                )
+            if (finalLogoPath == null && baseTheme.customLogoFilePath != null) {
+                val f = File(baseTheme.customLogoFilePath)
+                if (f.exists()) {
+                    finalLogoPath = f.absolutePath
+                }
             }
+
+            val newBg = if (finalSrcPath != null) {
+                baseTheme.backgroundImage?.let { bg ->
+                    Theme.Custom.CustomBackground(
+                        srcFilePath = finalSrcPath,
+                        brightness = bg.brightness,
+                        cropRect = bg.cropRect,
+                    )
+                }
+            } else null
 
             val importedTheme = baseTheme.copy(
                 name = finalName,
