@@ -106,6 +106,14 @@ object RimeEngine {
             showComposition = ""
             return
         }
+
+        // 若输入以空格结束或为空，绝对不强行弹逗号句号或联想词
+        if (text.endsWith(" ") || text.endsWith(" ") || text.endsWith("\t") || text.isBlank()) {
+            showCandidates = emptyList()
+            showComposition = ""
+            return
+        }
+
         val trimmed = text.trim()
         if (trimmed.isNotEmpty()) {
             val lastChar = trimmed.last()

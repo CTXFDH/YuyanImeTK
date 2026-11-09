@@ -43,8 +43,8 @@ object CustomEngine {
     fun predictAssociationWordsChinese(text: String): MutableList<String> {
         val trimmed = text.trim()
         val lastChar = if (trimmed.isNotEmpty()) trimmed.last() else ' '
-        val isPunctuation = lastChar in "。！？；：，、,.!?;:\"'()[]《》（）【】"
-        val associations = if (isPunctuation) mutableListOf() else mutableListOf("，", "。")
+        val isPunctuation = lastChar in "。！？；：，、,.!?;:\"'()[]《》（）【】 "
+        val associations = mutableListOf<String>()
         val suffixesDays = setOf("大前天", "前天", "昨天", "今天", "明天", "大后天", "后天")
         val suffixesExclamation = setOf("啊", "呀", "呐", "啦", "噢", "哇", "吧", "呗", "了")
         val suffixesQuestion = setOf("吗", "啊", "呢", "吧", "谁", "何", "什么", "哪", "几", "多少", "怎", "难道", "岂", "不")
