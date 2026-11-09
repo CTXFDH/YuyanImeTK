@@ -87,24 +87,18 @@ class EditPhrasesView(context: Context) : LinearLayout(context){
     }
 
     fun addPhrasesHandle() {
-        val content = mEtPhrases.text.toString()
+        val content = mEtPhrases.text.toString().trim()
         if(content.isNotBlank()) {
-            val pinYinHeadChar  = mEtPhrasesQuickCode.text.toString()
-            val pinYinHeadT9 = pinYinHeadChar.map { T9PinYinUtils.pinyin2T9Key(it)}.joinToString("")
-            val pinYinHeadLX17 = pinYinHeadChar.map { LX17PinYinUtils.pinyin2Lx17Key(it)}.joinToString("")
-            val phrase =  Phrase(content = content, t9 = pinYinHeadT9, qwerty = pinYinHeadChar, lx17 = pinYinHeadLX17)
-            DataBaseKT.instance.phraseDao().insert(phrase)
+            val quickPhrase = com.yuyan.imemodule.database.entry.QuickPhrase(content = content)
+            DataBaseKT.instance.quickPhraseDao().insert(quickPhrase)
             KeyboardManager.instance.switchKeyboard(InputModeSwitcher.skbImeLayout)
         }
     }
 
-    fun setExtraData(extra:Phrase) {
+    fun setExtraData(extra: com.yuyan.imemodule.database.entry.QuickPhrase) {
         val content = extra.content
-        val qwerty = extra.qwerty
         mEtPhrases.setText(content)
         mEtPhrases.setSelection(content.length)
-        mEtPhrasesQuickCode.setText(qwerty)
-        mEtPhrasesQuickCode.setSelection(qwerty.length)
     }
 
     fun commitText(text:String) {

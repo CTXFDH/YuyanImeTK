@@ -40,6 +40,7 @@ import com.yuyan.imemodule.entity.StringQueue
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.keyboard.container.ClipBoardContainer
+import com.yuyan.imemodule.keyboard.container.InputBaseContainer
 import com.yuyan.imemodule.keyboard.container.SymbolContainer
 import com.yuyan.imemodule.keyboard.container.T9TextContainer
 import com.yuyan.imemodule.manager.InputModeSwitcher
@@ -156,6 +157,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
             mComposingTagContainer.visibility = GONE
         }
         (KeyboardManager.instance.currentContainer as? CandidatesContainer)?.showCandidatesView()
+        (KeyboardManager.instance.currentContainer as? InputBaseContainer)?.onCandidateChanged()
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -224,6 +226,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
 
             val mIvKeyboardMove = ImageView(context).apply {
                 setImageResource(R.drawable.ic_horizontal_line)
+                setColorFilter(if (com.yuyan.imemodule.utils.DialogStyleUtils.isDarkUiMode(context)) 0xB0FFFFFF.toInt() else 0x90000000.toInt())
                 isClickable = true
                 isEnabled = true
                 scaleType = ImageView.ScaleType.FIT_CENTER
@@ -259,32 +262,48 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     }
 
     fun applyTopWindowCornerRadius() {
+        val env = EnvironmentSingleton.instance
         val activeTheme = ThemeManager.activeTheme
-        val radiusDp = activeTheme.windowCornerRadiusDp
+        val radiusDp = appPrefs.internal.windowCornerRadiusDp.getValue()
         val radiusPx = dp(radiusDp).toFloat()
         val baseColor = activeTheme.keyboardColor
         val alphaChannel = activeTheme.keyboardAlpha
         val adjustedColor = (baseColor and 0x00FFFFFF) or (alphaChannel shl 24)
 
+        val isFloat = env.keyboardModeFloat
+
         val bg = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
             setColor(adjustedColor)
-            cornerRadii = floatArrayOf(
-                radiusPx, radiusPx,  // Top-Left
-                radiusPx, radiusPx,  // Top-Right
-                0f, 0f,              // Bottom-Right
-                0f, 0f               // Bottom-Left
-            )
+            if (isFloat) {
+                cornerRadius = radiusPx
+            } else {
+                cornerRadii = floatArrayOf(
+                    radiusPx, radiusPx,  // Top-Left
+                    radiusPx, radiusPx,  // Top-Right
+                    0f, 0f,              // Bottom-Right
+                    0f, 0f               // Bottom-Left
+                )
+            }
         }
         mLlMainKeyboardCard.background = bg
         mLlMainKeyboardCard.clipToOutline = true
         mLlMainKeyboardCard.outlineProvider = object : android.view.ViewOutlineProvider() {
             override fun getOutline(view: View, outline: android.graphics.Outline) {
-                outline.setRoundRect(0, 0, view.width, view.height + (radiusPx.toInt() * 2), radiusPx)
+                if (isFloat) {
+                    outline.setRoundRect(0, 0, view.width, view.height, radiusPx)
+                } else {
+                    outline.setRoundRect(0, 0, view.width, view.height + (radiusPx.toInt() * 2), radiusPx)
+                }
             }
         }
         mLlMainKeyboardCard.invalidate()
-        mLlKeyboardBottomHolder.setBackgroundColor(activeTheme.keyboardColor)
+
+        if (isFloat) {
+            mLlKeyboardBottomHolder.setBackgroundColor(Color.TRANSPARENT)
+        } else {
+            mLlKeyboardBottomHolder.setBackgroundColor(activeTheme.keyboardColor)
+        }
         mSkbRoot.background = null
     }
 
@@ -345,6 +364,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         val isKeyBorder = ThemeManager.prefs.keyBorder.getValue()
         val background = activeTheme.backgroundDrawable(isKeyBorder)
         val fullDisplayEnable = appPrefs.internal.fullDisplayKeyboardEnable.getValue()
+        val isFloat = env.keyboardModeFloat
 
         if (background is BitmapDrawable) {
             val totalH = env.inputAreaHeight + if (fullDisplayEnable && !env.isLandscape) env.heightForFullDisplayBar else 0
@@ -359,7 +379,11 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         } else {
             mSkbRoot.background = null
             mLlMainKeyboardCard.background = background
-            mLlKeyboardBottomHolder.setBackgroundColor(activeTheme.keyboardColor)
+            if (isFloat) {
+                mLlKeyboardBottomHolder.setBackgroundColor(Color.TRANSPARENT)
+            } else {
+                mLlKeyboardBottomHolder.setBackgroundColor(activeTheme.keyboardColor)
+            }
         }
 
         mSkbCandidatesBarView.updateTheme(keyTextColor)
@@ -799,7 +823,10 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
 
     fun updateCandidateBar() = mSkbCandidatesBarView.scheduleShowCandidates()
 
+    private var mClipboardSuggestionDismissRunnable: Runnable? = null
+
     private fun resetCandidateWindow() {
+        mClipboardSuggestionDismissRunnable?.let { handler.removeCallbacks(it) }
         DictDecoder.reset()
         InputDispatcher.reset()
         (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
@@ -834,7 +861,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         }
     }
 
-    fun onSettingsMenuClick(skbMenuMode: SkbMenuMode, extra: Phrase? = null) {
+    fun onSettingsMenuClick(skbMenuMode: SkbMenuMode, extra: com.yuyan.imemodule.database.entry.QuickPhrase? = null) {
         if (skbMenuMode == SkbMenuMode.SwitchIME) {
             InputMethodUtil.showPicker()
             return
@@ -844,7 +871,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
             KeyboardManager.instance.switchKeyboard(InputModeSwitcher.skbImeLayout)
             initView(context)
             if (extra != null) {
-                DataBaseKT.instance.phraseDao().deleteByContent(extra.content)
+                DataBaseKT.instance.quickPhraseDao().deleteByContent(extra.content)
                 mAddPhrasesLayout.setExtraData(extra)
             } else {
                 mAddPhrasesLayout.clearPhrasesContent()
@@ -865,6 +892,21 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     override fun showSymbols(symbols: Array<String>) {
         val list = symbols.map { CandidateListItem("📋", it) }.toTypedArray()
         DictDecoder.cacheCandidates(list, associate = true)
+
+        mClipboardSuggestionDismissRunnable?.let { handler.removeCallbacks(it) }
+
+        val updateTime = appPrefs.internal.clipboardUpdateTime.getValue()
+        val timeoutSec = appPrefs.clipboard.clipboardItemTimeout.getValue()
+        val elapsedMs = System.currentTimeMillis() - updateTime
+        val remainingMs = (timeoutSec * 1000L - elapsedMs).coerceAtLeast(100L)
+
+        mClipboardSuggestionDismissRunnable = Runnable {
+            if (DictDecoder.isAssociate && DictDecoder.candidates.any { it.comment == "📋" }) {
+                DictDecoder.reset()
+                mSkbCandidatesBarView.initMenuView()
+            }
+        }
+        handler.postDelayed(mClipboardSuggestionDismissRunnable!!, remainingMs)
     }
 
     fun requestHideSelf() = service.requestHideSelf(0)

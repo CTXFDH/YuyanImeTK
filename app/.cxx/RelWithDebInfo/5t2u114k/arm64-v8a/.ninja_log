@@ -1,0 +1,27 @@
+# ninja log v5
+104	840	8158423493444792	_deps/kissfft-build/CMakeFiles/kissfft.dir/kfc.c.o	33482cf0f2379606
+72	881	8158423493454792	_deps/kissfft-build/CMakeFiles/kissfft.dir/kiss_fftnd.c.o	1783d16d8ac181b0
+118	942	8158423494519187	_deps/kissfft-build/CMakeFiles/kissfft.dir/kiss_fftndr.c.o	205386a9c788c36a
+136	982	8158423494717584	_deps/kissfft-build/CMakeFiles/kissfft.dir/kiss_fftr.c.o	b8eb84d98ba6f532
+90	1015	8158423495163432	_deps/kissfft-build/CMakeFiles/kissfft.dir/kiss_fft.c.o	79b565f9dc4677fb
+255	2327	8158423508322740	knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/feature-functions.cc.o	5616b8ceac1a8e36
+882	2532	8158423510355811	knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/kaldi-math.cc.o	30fb8a1748cabdfe
+59	2592	8158423510848062	CMakeFiles/onnx_env.dir/onnx_env.cc.o	3da421d0f660af5f
+860	3359	8158423517179532	knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/rfft.cc.o	fb35faa80531778d
+233	3543	8158423520450740	knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/feature-raw-audio-samples.cc.o	a5b9575496c09fa0
+213	3628	8158423521255342	knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/istft.cc.o	2eb3be75ea1169c0
+45	3789	8158423522533440	CMakeFiles/asr_jni.dir/asr/feature_extractor.cc.o	907e3b6345353d7
+983	3816	8158423523037583	knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/whisper-feature.cc.o	13bd17a5528af1c6
+2593	3817	8158423522031652	C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/RelWithDebInfo/5t2u114k/obj/arm64-v8a/libonnx_env.so	a4a791ab94a52326
+174	3855	8158423523475234	knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/feature-window.cc.o	fe95619e678d2b74
+153	3907	8158423524060742	knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/feature-fbank.cc.o	b877d1fab9282f4f
+299	4018	8158423525224239	knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/stft.cc.o	8cb58372521f1871
+1016	4077	8158423523157581	lib/libkissfft-float.a	32b3392993a8fcc0
+190	4479	8158423529825702	knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/feature-mfcc.cc.o	1fcb84adf22f4bb8
+943	4550	8158423530497656	knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/online-feature.cc.o	b4168e8177390f32
+270	4613	8158423531101184	knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/mel-computations.cc.o	84fefacff3376424
+4613	4856	8158423533400158	lib/libkaldi-native-fbank-core.so	28b5d752531f3ac0
+21	5361	8158423538586763	CMakeFiles/asr_jni.dir/asr/asr_jni.cc.o	d507cf5125979370
+32	7363	8158423558112798	CMakeFiles/asr_jni.dir/asr/streaming_recognizer.cc.o	d2da692cae4b6e04
+2	7903	8158423563958195	CMakeFiles/asr_jni.dir/asr/zipformer2_model.cc.o	41ed1ed11d3068ab
+7904	8092	8158423565929134	C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/RelWithDebInfo/5t2u114k/obj/arm64-v8a/libasr_jni.so	c2ba0e731fdb9a25

@@ -63,7 +63,15 @@ object CustomEngine {
         val phrases = mutableListOf<String>()
         val cleanText = text.replace("'", "").trim()
         if (cleanText.isNotEmpty()) {
-            // 查询 9键(34944)、LX17(GXXD/gxxd) 或 26键(dizhi) 精确匹配短语
+            // 1. 查询用户自造词 (UserWord)
+            val userWords = runCatching {
+                DataBaseKT.instance.userWordDao().query(cleanText)
+                    .ifEmpty { DataBaseKT.instance.userWordDao().query(cleanText.lowercase()) }
+                    .map { it.word }
+            }.getOrDefault(emptyList())
+            phrases.addAll(userWords)
+
+            // 2. 查询 9键(34944)、LX17(GXXD/gxxd) 或 26键(dizhi) 精确匹配短语
             val matchedPhrases = DataBaseKT.instance.phraseDao().query(cleanText)
                 .ifEmpty { DataBaseKT.instance.phraseDao().query(cleanText.uppercase()) }
                 .ifEmpty { DataBaseKT.instance.phraseDao().query(cleanText.lowercase()) }

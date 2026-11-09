@@ -165,9 +165,6 @@ object CustomThemeSerializer : JsonTransformingSerializer<Theme.Custom>(Theme.Cu
         sb.append("  # 候选词列表文字颜色\n")
         sb.append("  \"candidateTextColor\": \"${theme.candidateTextColor.toHexString()}\",\n\n")
 
-        sb.append("  # 键盘顶部窗口圆角半径 (单位: dp)\n")
-        sb.append("  \"windowCornerRadiusDp\": ${theme.windowCornerRadiusDp},\n\n")
-
         sb.append("  # 选定壁纸的高斯模糊度 (0-100)\n")
         sb.append("  \"backgroundBlurRadius\": ${theme.backgroundBlurRadius},\n\n")
 

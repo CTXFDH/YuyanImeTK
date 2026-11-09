@@ -802,35 +802,6 @@ class CustomThemeActivity : AppCompatActivity() {
         }
     }
 
-    private val cornerRadiusLabel by lazy {
-        createTextView().apply {
-            text = "窗口圆角半径"
-            textSize = 14f
-            typeface = android.graphics.Typeface.DEFAULT_BOLD
-            setTextColor(getThemeTextColor())
-        }
-    }
-
-    private val cornerRadiusSeekBar by lazy {
-        SignSeekBar(this).apply {
-            getConfigBuilder()
-                .min(0f)
-                .max(60f)
-                .progress(theme.windowCornerRadiusDp.toFloat())
-                .bottomSidesLabels(arrayOf("0dp", "60dp"))
-                .build()
-            setOnProgressChangedListener(object : SignSeekBar.OnProgressChangedListener {
-                override fun onProgressChanged(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float, fromUser: Boolean) {
-                    if (fromUser) {
-                        updateColorTheme { it.copy(windowCornerRadiusDp = progress) }
-                    }
-                }
-                override fun getProgressOnActionUp(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float) {}
-                override fun getProgressOnFinally(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float, fromUser: Boolean) {}
-            })
-        }
-    }
-
     private val blurLabel by lazy {
         createTextView().apply {
             text = "壁纸高斯模糊度"
@@ -1106,13 +1077,6 @@ class CustomThemeActivity : AppCompatActivity() {
             }
             safeAddView(card2, rowVariant)
 
-            safeAddView(card2, cornerRadiusLabel, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
-                setMargins(0, dp(8), 0, dp(4))
-            })
-            safeAddView(card2, cornerRadiusSeekBar, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
-                setMargins(0, 0, 0, dp(12))
-            })
-
             safeAddView(card2, brightnessLabel, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
                 setMargins(0, dp(8), 0, dp(4))
             })
@@ -1361,7 +1325,7 @@ class CustomThemeActivity : AppCompatActivity() {
 
         val initialDrawable = getInitialBackgroundDrawable()
         previewUi.setTheme(theme, initialDrawable)
-        previewUi.applyWindowTopCornerRadius(theme.windowCornerRadiusDp)
+        previewUi.applyWindowTopCornerRadius(com.yuyan.imemodule.prefs.AppPrefs.getInstance().internal.windowCornerRadiusDp.getValue())
 
         hideAllKeyColorRows()
         handleToolbarSelectionInEditMode()

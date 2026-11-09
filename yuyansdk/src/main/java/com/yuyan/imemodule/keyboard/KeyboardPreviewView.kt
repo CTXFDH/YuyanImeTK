@@ -154,7 +154,7 @@ class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
         layoutParams?.height = instance.skbHeight + instance.heightForCandidatesArea + extraBottom
     }
 
-    fun applyWindowTopCornerRadius(radiusDp: Int) {
+    fun applyWindowTopCornerRadius(radiusDp: Int = AppPrefs.getInstance().internal.windowCornerRadiusDp.getValue()) {
         val theme = currentTheme ?: ThemeManager.activeTheme
         val radiusPx = dp(radiusDp).toFloat()
 
@@ -255,7 +255,7 @@ class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
         popupWindowView = null
 
         val theme = currentTheme ?: ThemeManager.activeTheme
-        applyWindowTopCornerRadius(theme.windowCornerRadiusDp)
+        applyWindowTopCornerRadius(AppPrefs.getInstance().internal.windowCornerRadiusDp.getValue())
 
         // 1. 构建顶部 1:1 还原候选词/工具栏 (含 Logo 与候选词)
         candidatesBarView = CandidatesBar(context, null).apply {

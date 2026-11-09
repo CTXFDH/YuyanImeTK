@@ -49,6 +49,9 @@
         <action
             android:id="@+id/action_settingsFragment_to_phrasesSettingsFragment"
             app:destination="@id/phrasesSettingsFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_dictSettingsFragment"
+            app:destination="@id/dictSettingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/sidebarSymbolFragment"
@@ -102,6 +105,21 @@
         android:id="@+id/otherSettingsFragment"
         android:name="com.yuyan.imemodule.ui.fragment.OtherSettingsFragment"
         android:label="@string/setting_ime_other" />
+    <fragment
+        android:id="@+id/dictSettingsFragment"
+        android:name="com.yuyan.imemodule.ui.fragment.DictSettingsFragment"
+        android:label="词库管理">
+        <action
+            android:id="@+id/action_dictSettingsFragment_to_userDictFragment"
+            app:destination="@id/userDictFragment" />
+        <action
+            android:id="@+id/action_dictSettingsFragment_to_phrasesSettingsFragment"
+            app:destination="@id/phrasesSettingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/userDictFragment"
+        android:name="com.yuyan.imemodule.ui.fragment.UserDictFragment"
+        android:label="用户词库" />
     <fragment
         android:id="@+id/phrasesSettingsFragment"
         android:name="com.yuyan.imemodule.ui.fragment.PhrasesSettingsFragment"

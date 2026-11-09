@@ -13,6 +13,7 @@ import com.yuyan.imemodule.utils.AppUtil
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.keyboard.container.ClipBoardContainer
+import com.yuyan.imemodule.keyboard.container.InputBaseContainer
 import com.yuyan.imemodule.keyboard.container.SettingsContainer
 import com.yuyan.imemodule.keyboard.container.SymbolContainer
 import com.yuyan.imemodule.service.InputDispatcher
@@ -87,8 +88,8 @@ fun onSettingsMenuClick(inputView: InputView, skbMenuMode: SkbMenuMode) {
             KeyboardManager.instance.switchKeyboard()
         }
         SkbMenuMode.SymbolShow -> {
-            val keyboardSymbol = ThemeManager.prefs.keyboardSymbol.getValue()
-            ThemeManager.prefs.keyboardSymbol.setValue(!keyboardSymbol)
+            val keyboardSymbol = AppPrefs.getInstance().keyboardSetting.keyboardSymbol.getValue()
+            AppPrefs.getInstance().keyboardSetting.keyboardSymbol.setValue(!keyboardSymbol)
             KeyboardManager.instance.clearKeyboard()
             KeyboardManager.instance.switchKeyboard()
         }
@@ -157,12 +158,10 @@ fun onSettingsMenuClick(inputView: InputView, skbMenuMode: SkbMenuMode) {
             }
         }
         SkbMenuMode.CandidatesMore -> {
-            val currentContainer = KeyboardManager.instance.currentContainer as? CandidatesContainer
-            if (currentContainer != null) {
-                KeyboardManager.instance.switchKeyboardToMain()
-            } else {
-                KeyboardManager.instance.switchKeyboard(KeyboardManager.KeyboardType.CANDIDATES)
-                (KeyboardManager.instance.currentContainer as? CandidatesContainer)?.showCandidatesView()
+            val inputBaseContainer = KeyboardManager.instance.currentContainer as? InputBaseContainer
+            if (inputBaseContainer != null) {
+                inputBaseContainer.toggleCandidatesMore()
+                inputView.updateCandidateBar()
             }
         }
         SkbMenuMode.LockClipBoard -> {

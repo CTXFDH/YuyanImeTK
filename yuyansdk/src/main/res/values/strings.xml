@@ -10,6 +10,7 @@
     <string name="setting_ime_prefixs">侧边栏</string>
     <string name="theme_select">主题选择</string>
     <string name="setting_ime_keyboard_show">键盘效果</string>
+    <string name="window_corner_radius">窗口圆角半径</string>
     <string name="setting_ime_keyboard_height">键盘调节</string>
     <string name="ime_settings_handwriting">手写设置</string>
     <string name="key_press_sound_volume_title">按键音量调节</string>

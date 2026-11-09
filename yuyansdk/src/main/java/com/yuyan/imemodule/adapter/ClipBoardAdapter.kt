@@ -12,15 +12,12 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.emoji2.widget.EmojiTextView
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.database.entry.Clipboard
-import com.yuyan.imemodule.prefs.AppPrefs
-import com.yuyan.imemodule.prefs.behavior.ClipboardLayoutMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.utils.DevicesUtils.dip2px
 
@@ -32,7 +29,6 @@ class ClipBoardAdapter(context: Context, datas: MutableList<Clipboard>) :
     private var mDatas : MutableList<Clipboard> = datas
     private val mContext: Context
     private var textColor: Int
-    private var clipboardLayoutCompact: ClipboardLayoutMode
     private val expandedSet = HashSet<Int>()
 
     var isMultiSelectMode = false
@@ -51,7 +47,6 @@ class ClipBoardAdapter(context: Context, datas: MutableList<Clipboard>) :
         val theme = activeTheme
         textColor = theme.keyTextColor
         mContext = context
-        clipboardLayoutCompact = AppPrefs.getInstance().clipboard.clipboardLayoutCompact.getValue()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SymbolHolder {

@@ -1,0 +1,187 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-RelWithDebInfo-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6.0"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						3
+					]
+				},
+				{
+					"build" : "knf_build",
+					"childIndexes" : 
+					[
+						2,
+						3
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-knf_build-RelWithDebInfo-0f48877b63ca82c4d7f9.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "third_party/knf/kaldi-native-fbank-1.22.3"
+				},
+				{
+					"build" : "_deps/kissfft-build",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-_deps.kissfft-build-RelWithDebInfo-c61ab2d504a385024b5e.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 2,
+					"source" : "third_party/knf/kissfft",
+					"targetIndexes" : 
+					[
+						2
+					]
+				},
+				{
+					"build" : "knf_build/kaldi-native-fbank",
+					"childIndexes" : 
+					[
+						4
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-knf_build.kaldi-native-fbank-RelWithDebInfo-f8a112ea326e9cf65e89.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank"
+				},
+				{
+					"build" : "knf_build/kaldi-native-fbank/csrc",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-knf_build.kaldi-native-fbank.csrc-RelWithDebInfo-51b048aa2ce5db969e31.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.5"
+					},
+					"parentIndex" : 3,
+					"projectIndex" : 1,
+					"source" : "third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc",
+					"targetIndexes" : 
+					[
+						1
+					]
+				}
+			],
+			"name" : "RelWithDebInfo",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "yuyan_asr",
+					"targetIndexes" : 
+					[
+						0,
+						3
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						2
+					],
+					"directoryIndexes" : 
+					[
+						1,
+						3,
+						4
+					],
+					"name" : "kaldi-native-fbank",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						1
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						2
+					],
+					"name" : "kissfft",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "asr_jni::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-asr_jni-RelWithDebInfo-2966f65a27c7a649e028.json",
+					"name" : "asr_jni",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "kaldi-native-fbank-core::@c1d6fc37a606af214fe9",
+					"jsonFile" : "target-kaldi-native-fbank-core-RelWithDebInfo-bf203f6f1d979e0c1c2d.json",
+					"name" : "kaldi-native-fbank-core",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "kissfft::@8df36bbe327537f6f36a",
+					"jsonFile" : "target-kissfft-RelWithDebInfo-49cdf0b0c43e8760f2f6.json",
+					"name" : "kissfft",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "onnx_env::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-onnx_env-RelWithDebInfo-3cda3d66024c7dd7be98.json",
+					"name" : "onnx_env",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.cxx/RelWithDebInfo/5t2u114k/arm64-v8a",
+		"source" : "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}

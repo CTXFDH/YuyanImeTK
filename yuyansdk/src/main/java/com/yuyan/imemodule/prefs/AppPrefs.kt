@@ -11,12 +11,12 @@ import com.yuyan.imemodule.application.Launcher
 import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.manager.InputModeSwitcher
 import com.yuyan.imemodule.prefs.behavior.ChineseAssociationMode
-import com.yuyan.imemodule.prefs.behavior.ClipboardLayoutMode
 import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
 import com.yuyan.imemodule.prefs.behavior.FullDisplayCenterMode
 import com.yuyan.imemodule.prefs.behavior.FullDisplayKeyMode
 import com.yuyan.imemodule.prefs.behavior.HalfWidthSymbolsMode
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
+import com.yuyan.imemodule.prefs.behavior.KeyboardSymbolSlideUpMod
 import com.yuyan.imemodule.utils.DevicesUtils
 
 
@@ -68,6 +68,8 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val floatTranslationYPort = float("float_translation_y_port", 0f)
         val floatTranslationXLand = float("float_translation_x_land", 0f)
         val floatTranslationYLand = float("float_translation_y_land", 0f)
+
+        val windowCornerRadiusDp = int("window_corner_radius_dp", 16)
     }
 
     inner class Input : ManagedPreferenceCategory(R.string.setting_ime_input, sharedPreferences) {
@@ -194,6 +196,31 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             defaultLabel = R.string.number_400_ms
         )
 
+        val keyboardSymbol = switch(
+            R.string.keyboard_symbol_show,
+            "keyboard_symbol_show_enable",
+            true
+        )
+
+        val symbolSlideUpMod = list(
+            R.string.keyboard_symbol_slide_up_mod,
+            "keyboard_symbol_slide_up_mod",
+            KeyboardSymbolSlideUpMod.MEDIUM,
+            KeyboardSymbolSlideUpMod,
+            listOf(
+                KeyboardSymbolSlideUpMod.SHORT,
+                KeyboardSymbolSlideUpMod.MEDIUM,
+                KeyboardSymbolSlideUpMod.LONG
+            ),
+            listOf(
+                R.string.keyboard_symbol_slide_up_short,
+                R.string.keyboard_symbol_slide_up_medium,
+                R.string.keyboard_symbol_slide_up_long
+            )
+        ) {
+            keyboardSymbol.getValue()
+        }
+
         val spaceSwipeMoveCursor = switch(R.string.space_swipe_move_cursor, "space_swipe_move_cursor", true)
 
         val spaceLongPressVoiceInput = switch(R.string.space_long_press_voice_input, "space_long_press_voice_input_enable", true)
@@ -296,25 +323,6 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             200,
             "秒"
         ) { clipboardListening.getValue() && clipboardSuggestion.getValue() }
-
-        val clipboardLayoutCompact = list(
-            R.string.clipboard_layout_compact_mode,
-            "clipboard_layout_mode",
-            ClipboardLayoutMode.ListView,
-            ClipboardLayoutMode,
-            listOf(
-                ClipboardLayoutMode.ListView,
-                ClipboardLayoutMode.GridView,
-                ClipboardLayoutMode.FlexboxView
-            ),
-            listOf(
-                R.string.clipboard_layout_mode_list,
-                R.string.clipboard_layout_mode_grid,
-                R.string.clipboard_layout_mode_flexbox
-            )
-        ) {
-            clipboardListening.getValue()
-        }
     }
 
     private val providers = mutableListOf<ManagedPreferenceProvider>()

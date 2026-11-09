@@ -108,7 +108,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
                     return
                 }
             }
-            val keyboardSymbol = ThemeManager.prefs.keyboardSymbol.getValue()
+            val keyboardSymbol = AppPrefs.getInstance().keyboardSetting.keyboardSymbol.getValue()
             if (softKey.getkeyLabel().isNotBlank() && softKey.code != InputModeSwitcher.USER_KEYCODE_COMMA_EMOJI ) {
                 val keyLabel = if (InputModeSwitcher.isLower) softKey.keyLabel.lowercase() else softKey.keyLabel
                 val designPreset = setOf("，", "。", ",", ".")
@@ -257,7 +257,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
         val relDiffX = abs(currentX - lastEventX)
         val relDiffY = abs(currentY - lastEventY)
         val isVertical = relDiffX * 3.0 < relDiffY  // 放宽垂直滑动判定角度
-        val symbolSlideUp = EnvironmentSingleton.instance.heightForCandidatesArea / when(ThemeManager.prefs.symbolSlideUpMod.getValue()){
+        val symbolSlideUp = EnvironmentSingleton.instance.heightForCandidatesArea / when(AppPrefs.getInstance().keyboardSetting.symbolSlideUpMod.getValue()){
             KeyboardSymbolSlideUpMod.SHORT -> 3;KeyboardSymbolSlideUpMod.MEDIUM -> 2;else -> 1
         }
         val spaceSwipeMoveCursorSpeed = kotlin.math.max(AppPrefs.getInstance().keyboardSetting.spaceSwipeMoveCursorSpeed.getValue(), dp(8f).toInt())
@@ -291,7 +291,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
             }
         } else if (keyLableSmall?.isNotBlank() == true) {
             val threshold = symbolSlideUp.toFloat()
-            if (isVertical && distanceY > 0 && relDiffY > threshold && ThemeManager.prefs.keyboardSymbol.getValue()) {   // 向上滑动
+            if (isVertical && distanceY > 0 && relDiffY > threshold && AppPrefs.getInstance().keyboardSetting.keyboardSymbol.getValue()) {   // 向上滑动
                 lastEventX = currentX
                 lastEventY = currentY
                 lastEventActionIndex = currentEvent.actionIndex

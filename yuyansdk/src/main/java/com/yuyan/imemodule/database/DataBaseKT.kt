@@ -8,25 +8,30 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.yuyan.imemodule.application.Launcher
 import com.yuyan.imemodule.database.dao.ClipboardDao
 import com.yuyan.imemodule.database.dao.PhraseDao
+import com.yuyan.imemodule.database.dao.QuickPhraseDao
 import com.yuyan.imemodule.database.dao.SideSymbolDao
 import com.yuyan.imemodule.database.dao.SkbFunDao
 import com.yuyan.imemodule.database.dao.UsedSymbolDao
+import com.yuyan.imemodule.database.dao.UserWordDao
 import com.yuyan.imemodule.database.entry.Clipboard
 import com.yuyan.imemodule.database.entry.Phrase
+import com.yuyan.imemodule.database.entry.QuickPhrase
 import com.yuyan.imemodule.database.entry.SideSymbol
 import com.yuyan.imemodule.database.entry.SkbFun
 import com.yuyan.imemodule.database.entry.UsedSymbol
+import com.yuyan.imemodule.database.entry.UserWord
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 
-//@Database(entities = [SideSymbol::class, Clipboard::class, UsedSymbol::class], version = 1, exportSchema = false)
-@Database(entities = [SideSymbol::class, Clipboard::class, UsedSymbol::class, Phrase::class, SkbFun::class], version = 4, exportSchema = false)
+@Database(entities = [SideSymbol::class, Clipboard::class, UsedSymbol::class, Phrase::class, SkbFun::class, UserWord::class, QuickPhrase::class], version = 7, exportSchema = false)
 abstract class DataBaseKT : RoomDatabase() {
     abstract fun sideSymbolDao(): SideSymbolDao
     abstract fun clipboardDao(): ClipboardDao
     abstract fun usedSymbolDao(): UsedSymbolDao
     abstract fun phraseDao(): PhraseDao
     abstract fun skbFunDao(): SkbFunDao
+    abstract fun userWordDao(): UserWordDao
+    abstract fun quickPhraseDao(): QuickPhraseDao
     companion object {
         @Volatile private var cachedSideSymbolsPinyin: List<SideSymbol>? = null
         @Volatile private var cachedSideSymbolsNumber: List<SideSymbol>? = null
@@ -63,11 +68,35 @@ abstract class DataBaseKT : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("DROP TABLE IF EXISTS user_word")
+                db.execSQL("CREATE TABLE IF NOT EXISTS user_word (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, word TEXT NOT NULL, pinyin TEXT NOT NULL, pinyinHead TEXT NOT NULL DEFAULT '', t9 TEXT NOT NULL DEFAULT '', frequency INTEGER NOT NULL DEFAULT 100, time INTEGER NOT NULL DEFAULT 0)")
+            }
+        }
+
+        private val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("DROP TABLE IF EXISTS user_word")
+                db.execSQL("CREATE TABLE IF NOT EXISTS user_word (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, word TEXT NOT NULL, pinyin TEXT NOT NULL, pinyinHead TEXT NOT NULL DEFAULT '', t9 TEXT NOT NULL DEFAULT '', frequency INTEGER NOT NULL DEFAULT 100, time INTEGER NOT NULL DEFAULT 0)")
+            }
+        }
+
+        private val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("CREATE TABLE IF NOT EXISTS quick_phrase (content TEXT PRIMARY KEY NOT NULL, time INTEGER NOT NULL)")
+            }
+        }
+
         val instance = Room.databaseBuilder(Launcher.instance.context, DataBaseKT::class.java, "ime_db")
             .allowMainThreadQueries()
+            .fallbackToDestructiveMigration()
             .addMigrations(MIGRATION_1_2)
             .addMigrations(MIGRATION_2_3)
             .addMigrations(MIGRATION_3_4)
+            .addMigrations(MIGRATION_4_5)
+            .addMigrations(MIGRATION_5_6)
+            .addMigrations(MIGRATION_6_7)
             .addCallback(object :Callback(){
                 override fun onCreate(db: SupportSQLiteDatabase) {
                     super.onCreate(db)
@@ -95,7 +124,7 @@ abstract class DataBaseKT : RoomDatabase() {
             instance.sideSymbolDao().insertAll(symbolNumber)
         }
 
-        private fun initPhrasesDb() {  // 初始化常用语数据
+        private fun initPhrasesDb() {  // 初始化常用语数据 (QuickPhrase)
             val presetContents = listOf(
                 "我的电话是__，常联系。",
                 "抱歉，我现在不方便接电话，稍后联系。",
@@ -104,7 +133,11 @@ abstract class DataBaseKT : RoomDatabase() {
                 "麻烦放驿站，谢谢。"
             )
             for (preset in presetContents) {
-                instance.phraseDao().deleteByContent(preset)
+                instance.phraseDao().deleteByContent(preset) // 清理旧表残余
+            }
+            if (instance.quickPhraseDao().getAll().isEmpty()) {
+                val presets = presetContents.map { QuickPhrase(it) }
+                instance.quickPhraseDao().insertAll(presets)
             }
             if(instance.skbFunDao().getAllMenu().isEmpty()) {
                 val skbFuns = listOf(

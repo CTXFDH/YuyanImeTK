@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
-import android.text.TextUtils
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.adapter.ClipBoardAdapter
@@ -21,20 +19,17 @@ import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.database.entry.Clipboard
+import com.yuyan.imemodule.keyboard.InputView
+import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.libs.recyclerview.SwipeMenu
 import com.yuyan.imemodule.libs.recyclerview.SwipeMenuBridge
 import com.yuyan.imemodule.libs.recyclerview.SwipeMenuItem
 import com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView
 import com.yuyan.imemodule.prefs.AppPrefs
-import com.yuyan.imemodule.prefs.behavior.ClipboardLayoutMode
 import com.yuyan.imemodule.prefs.behavior.SkbMenuMode
-import com.yuyan.imemodule.keyboard.InputView
-import com.yuyan.imemodule.keyboard.KeyboardManager
-import com.yuyan.imemodule.manager.layout.CustomGridLayoutManager
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import splitties.dimensions.dp
 import splitties.views.textResource
-import kotlin.math.ceil
 
 /**
  * 粘贴板列表键盘容器 (选中【常用语】时右侧空白处显示加号图标，支持手动添加常用语)
@@ -171,7 +166,7 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
                             if (itemMode == SkbMenuMode.ClipBoard) {
                                 DataBaseKT.instance.clipboardDao().deleteByContent(content)
                             } else {
-                                DataBaseKT.instance.phraseDao().deleteByContent(content)
+                                DataBaseKT.instance.quickPhraseDao().deleteByContent(content)
                             }
                         }
                     }
@@ -255,20 +250,9 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
             if(itemMode == SkbMenuMode.ClipBoard) {
                 DataBaseKT.instance.clipboardDao().getAll().toMutableList()
             } else {
-                DataBaseKT.instance.phraseDao().getAll().map { line -> Clipboard(line.content) }.toMutableList()
+                DataBaseKT.instance.quickPhraseDao().getAll().map { line -> Clipboard(line.content) }.toMutableList()
             }
-        val manager =  when (AppPrefs.getInstance().clipboard.clipboardLayoutCompact.getValue()){
-            ClipboardLayoutMode.ListView ->  LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            ClipboardLayoutMode.GridView -> CustomGridLayoutManager(context, 2)
-            ClipboardLayoutMode.FlexboxView -> {
-                calculateColumn(copyContents)
-                CustomGridLayoutManager(context, 6).apply {
-                    spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                        override fun getSpanSize(i: Int) = mHashMapSymbols[i] ?: 1
-                    }
-                }
-            }
-        }
+        val manager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         mRVSymbolsView.setLayoutManager(manager)
         val viewParent = mTVLable?.parent
         if (viewParent != null) {
@@ -326,9 +310,9 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
             } else {
                 val content = copyContents[position].content
                 if(menuBridge.position == 0) {
-                    inputView.onSettingsMenuClick(SkbMenuMode.AddPhrases, DataBaseKT.instance.phraseDao().queryByContent(content))
+                    inputView.onSettingsMenuClick(SkbMenuMode.AddPhrases, DataBaseKT.instance.quickPhraseDao().queryByContent(content))
                 } else if(menuBridge.position == 1){
-                    DataBaseKT.instance.phraseDao().deleteByContent(content)
+                    DataBaseKT.instance.quickPhraseDao().deleteByContent(content)
                     showClipBoardView(SkbMenuMode.Phrases)
                 }
             }
@@ -344,31 +328,6 @@ class ClipBoardContainer(context: Context, inputView: InputView) : BaseContainer
         innerRoot.addView(mTVLable, LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT))
     }
 
-    private val mHashMapSymbols = HashMap<Int, Int>() //候选词索引列数对应表
-    private fun calculateColumn(data : MutableList<Clipboard>) {
-        mHashMapSymbols.clear()
-        val itemWidth = instance.skbWidth/6 - dp(10)
-        var mCurrentColumn = 0
-        val contents = data.map { it.content }
-        contents.forEachIndexed { position, candidate ->
-            var count = getSymbolsCount(candidate, itemWidth)
-            var nextCount = 0
-            if (contents.size > position + 1) {
-                val nextCandidate = contents[position + 1]
-                nextCount = getSymbolsCount(nextCandidate, itemWidth)
-            }
-            mCurrentColumn = if (mCurrentColumn + count + nextCount > 6) {
-                count = 6 - mCurrentColumn
-                0
-            } else  (mCurrentColumn + count) % 6
-            mHashMapSymbols[position] = count
-        }
-    }
-
-    private fun getSymbolsCount(data: String, itemWidth:Int): Int {
-        return if (!TextUtils.isEmpty(data)) ceil(mPaint.measureText(data).div(itemWidth)).toInt() else 0
-    }
-    
     fun getMenuMode(): SkbMenuMode {
        return itemMode
     }

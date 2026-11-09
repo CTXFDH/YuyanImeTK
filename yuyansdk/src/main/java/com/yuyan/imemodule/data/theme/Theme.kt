@@ -50,7 +50,6 @@ sealed class Theme : Parcelable {
 
     abstract val keyboardResources: Int  // 键盘背景资源，首选
     abstract val keyboardColor: Int  // 键盘区域背景色，次选
-    open val windowCornerRadiusDp: Int get() = 12 // 键盘左上与右上角的圆角半径 (dp)
     open val backgroundImage: Any? get() = null
     open val customLogoFilePath: String? get() = null
     open val customLogoCropRect: Rect? get() = null
@@ -195,7 +194,6 @@ sealed class Theme : Parcelable {
         override val spaceKeyTextColor: Int = keyTextColor,
         override val accentKeyPressColor: Int = keyPressHighlightColor,
         override val popupHighlightColor: Int = keyPressHighlightColor,
-        override val windowCornerRadiusDp: Int = 12,
         override val backgroundBlurRadius: Int = 0,
         override val keyboardAlpha: Int = 255,
         override val keyCustomOverrides: Map<String, KeyCustomOverride> = emptyMap(),

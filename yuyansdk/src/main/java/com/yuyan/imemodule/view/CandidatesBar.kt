@@ -553,7 +553,7 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
             mCloseAssociateBtn.drawable?.setTint(activeTheme.arrowButtonTextColor)
             mCloseAssociateBtn.background = null
             mRightArrowBtn.visibility = if (isAssoc) GONE else VISIBLE
-            val isExpanded = KeyboardManager.instance.currentContainer is CandidatesContainer
+            val isExpanded = (KeyboardManager.instance.currentContainer as? InputBaseContainer)?.isCandidatesExpanded() == true
             mRightArrowBtn.setImageResource(if (isExpanded) R.drawable.ic_arrow_up_pretty else R.drawable.ic_arrow_down_pretty)
             mRightArrowBtn.drawable?.setTint(activeTheme.arrowButtonTextColor)
             mRightArrowBtn.background = null

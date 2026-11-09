@@ -36,7 +36,7 @@ class KeyboardLoaderUtil private constructor() {
     }
 
     private fun loadBaseSkb(skbValue: Int): SoftKeyboard {
-        skbStyleMode = ThemeManager.prefs.skbStyleMode.getValue()
+        skbStyleMode = SkbStyleMode.Yuyan
         mSkbValue = skbValue
         // shift键状态
         // 直输状态
@@ -88,12 +88,6 @@ class KeyboardLoaderUtil private constructor() {
                 }
                 qwertyKeys.last().apply {
                     widthF = 0.147f
-                }
-                if(skbStyleMode == SkbStyleMode.Google) {
-                    val softKeyToggle = createKeyToggle(KeyEvent.KEYCODE_SHIFT_LEFT)
-                    softKeyToggle.widthF = 0.147f
-                    softKeyToggle.setToggleStates(shiftToggleStates)
-                    qwertyKeys[0] = softKeyToggle
                 }
                 keyBeans.addAll(qwertyKeys)
                 rows.add(keyBeans)
@@ -370,11 +364,7 @@ class KeyboardLoaderUtil private constructor() {
                 rows.add(keyBeans)
             }
         }
-        val numberLineSkb = when(skbStyleMode){
-            SkbStyleMode.Yuyan -> numberLine
-            SkbStyleMode.Samsung -> numberLine
-            SkbStyleMode.Google -> numberLine
-        }
+        val numberLineSkb = numberLine
         softKeyboard = getSoftKeyboard(rows, numberLineSkb)
         mSoftKeyboardMap[skbValue] = softKeyboard
         return softKeyboard
@@ -394,16 +384,8 @@ class KeyboardLoaderUtil private constructor() {
                 createT9Keys(arrayOf(InputModeSwitcher.USER_KEYCODE_SYMBOL, InputModeSwitcher.USER_KEYCODE_NUMBER, KeyEvent.KEYCODE_SPACE))
             }
             InputModeSwitcher.MASK_SKB_LAYOUT_T9_PINYIN, InputModeSwitcher.MASK_SKB_LAYOUT_STROKE ->{
-                if(skbStyleMode == SkbStyleMode.Google){
-                    createT9Keys(arrayOf(InputModeSwitcher.USER_KEYCODE_NUMBER, InputModeSwitcher.USER_KEYCODE_COMMA_EMOJI, InputModeSwitcher.USER_KEYCODE_LANG,
-                        KeyEvent.KEYCODE_SPACE, InputModeSwitcher.USER_KEYCODE_LEFT_PERIOD))
-                } else if(skbStyleMode == SkbStyleMode.Samsung){
-                    createT9Keys(arrayOf(InputModeSwitcher.USER_KEYCODE_SYMBOL, InputModeSwitcher.USER_KEYCODE_LANG,
-                        KeyEvent.KEYCODE_SPACE, InputModeSwitcher.USER_KEYCODE_NUMBER))
-                } else {
-                    createT9Keys(arrayOf(InputModeSwitcher.USER_KEYCODE_SYMBOL, InputModeSwitcher.USER_KEYCODE_NUMBER,
-                            KeyEvent.KEYCODE_SPACE, KeyEvent.KEYCODE_AT))
-                }
+                createT9Keys(arrayOf(InputModeSwitcher.USER_KEYCODE_SYMBOL, InputModeSwitcher.USER_KEYCODE_NUMBER,
+                        KeyEvent.KEYCODE_SPACE, KeyEvent.KEYCODE_AT))
             }
             InputModeSwitcher.MASK_SKB_LAYOUT_QWERTY_ABC -> {
                 createQwertyKeys(arrayOf(InputModeSwitcher.USER_KEYCODE_SYMBOL, InputModeSwitcher.USER_KEYCODE_NUMBER, KeyEvent.KEYCODE_SPACE))
@@ -415,99 +397,37 @@ class KeyboardLoaderUtil private constructor() {
                 createLX17Keys(arrayOf(InputModeSwitcher.USER_KEYCODE_SYMBOL, InputModeSwitcher.USER_KEYCODE_NUMBER, KeyEvent.KEYCODE_SPACE))
             }
             else -> { //0x1000 InputModeSwitcherManager.MASK_SKB_LAYOUT_QWERTY_PINYIN
-                if(skbStyleMode == SkbStyleMode.Google){
-                    createQwertyPYKeys(arrayOf(InputModeSwitcher.USER_KEYCODE_NUMBER, InputModeSwitcher.USER_KEYCODE_COMMA_EMOJI, InputModeSwitcher.USER_KEYCODE_LANG,
-                        KeyEvent.KEYCODE_SPACE, InputModeSwitcher.USER_KEYCODE_LEFT_PERIOD))
-                } else if (skbStyleMode == SkbStyleMode.Samsung) {
-                    createQwertyPYKeys(arrayOf(InputModeSwitcher.USER_KEYCODE_SYMBOL, InputModeSwitcher.USER_KEYCODE_LANG,
-                        InputModeSwitcher.USER_KEYCODE_LEFT_COMMA, KeyEvent.KEYCODE_SPACE, InputModeSwitcher.USER_KEYCODE_LEFT_PERIOD, InputModeSwitcher.USER_KEYCODE_NUMBER))
-                } else {
-                    createQwertyPYKeys(arrayOf(InputModeSwitcher.USER_KEYCODE_SYMBOL, InputModeSwitcher.USER_KEYCODE_NUMBER,
-                            InputModeSwitcher.USER_KEYCODE_LEFT_COMMA, KeyEvent.KEYCODE_SPACE))
-                }
+                createQwertyPYKeys(arrayOf(InputModeSwitcher.USER_KEYCODE_SYMBOL, InputModeSwitcher.USER_KEYCODE_NUMBER,
+                        InputModeSwitcher.USER_KEYCODE_LEFT_COMMA, KeyEvent.KEYCODE_SPACE))
             }
         }
-        if (skbStyleMode == SkbStyleMode.Google) {
-            if (t9Keys.size >= 3) t9Keys[t9Keys.size - 1].stateId = 2
-            when (t9Keys.size) {
-                3 -> {
-                    t9Keys[0].apply { mLeftF = 0.005f; widthF = 0.140f }
-                    t9Keys[1].apply { mLeftF = 0.145f; widthF = 0.1416667f }
-                    t9Keys[2].apply { mLeftF = 0.2866667f; widthF = 0.425f }
-                    softKeyToggle.apply { mLeftF = 0.7116667f; widthF = 0.2833333f }
-                }
-                6 -> {
-                    t9Keys[0].widthF = 0.185f;t9Keys[1].widthF = 0.1f
-                    t9Keys[2].widthF = 0.1f;t9Keys[3].widthF = 0.23f
-                    t9Keys[4].widthF = 0.1f;t9Keys[5].widthF = 0.1f
-                    softKeyToggle.widthF = 0.185f
-                }
-                5 -> {
-                    t9Keys[0].widthF = 0.185f;t9Keys[1].widthF = 0.1f
-                    t9Keys[2].widthF = 0.1f;t9Keys[3].widthF = 0.33f
-                    t9Keys[4].widthF = 0.1f;softKeyToggle.widthF = 0.185f
-                }
-                else -> {
-                    softKeyToggle.widthF = 0.18f
-                    t9Keys[0].widthF = 0.18f;t9Keys[1].widthF = 0.21f
-                    t9Keys[2].widthF = 0.21f;t9Keys[3].widthF = 0.21f
-                }
+        if (t9Keys.size == 3 && skbValue == InputModeSwitcher.MASK_SKB_LAYOUT_HANDWRITING) {
+            // 手写输入键盘：缩窄空格键 (0.388f)，加宽回车键 (0.285f)，右边界与上方删除键 100% 对齐
+            t9Keys[0].apply { mLeftF = 0.0f; widthF = 0.18f }
+            t9Keys[1].apply { mLeftF = 0.18f; widthF = 0.147f }
+            t9Keys[2].apply { mLeftF = 0.327f; widthF = 0.388f }
+            softKeyToggle.apply {
+                mLeftF = 0.715f
+                widthF = 0.285f
             }
-        } else if (skbStyleMode == SkbStyleMode.Samsung) {
-            if(skbValue == 0x4000 && t9Keys.size > 1) t9Keys[1].stateId = 1
-            when (t9Keys.size) {
-                3 -> {
-                    t9Keys[0].apply { mLeftF = 0.005f; widthF = 0.140f }
-                    t9Keys[1].apply { mLeftF = 0.145f; widthF = 0.1416667f }
-                    t9Keys[2].apply { mLeftF = 0.2866667f; widthF = 0.425f }
-                    softKeyToggle.apply { mLeftF = 0.7116667f; widthF = 0.2833333f }
-                }
-                6 -> {
-                    t9Keys[0].widthF = 0.1457f;t9Keys[1].widthF = 0.1457f
-                    t9Keys[2].widthF = 0.099f;t9Keys[3].widthF = 0.2f
-                    t9Keys[4].widthF = 0.099f;t9Keys[5].widthF = 0.1457f
-                    softKeyToggle.widthF = 0.1457f
-                }
-                5 -> {
-                    t9Keys[0].widthF = 0.16f;t9Keys[1].widthF = 0.099f
-                    t9Keys[2].widthF = 0.099f;t9Keys[3].widthF = 0.38f
-                    t9Keys[4].widthF = 0.099f;softKeyToggle.widthF = 0.16f
-                }
-                else -> {
-                    softKeyToggle.widthF = 0.18f
-                    t9Keys[0].widthF = 0.18f;t9Keys[1].widthF = 0.21f
-                    t9Keys[2].widthF = 0.21f;t9Keys[3].widthF = 0.21f
-                }
-            }
+        } else if (t9Keys.size == 3) {
+            t9Keys[0].apply { mLeftF = 0.005f; widthF = 0.140f }
+            t9Keys[1].apply { mLeftF = 0.145f; widthF = 0.1416667f }
+            t9Keys[2].apply { mLeftF = 0.2866667f; widthF = 0.425f }
+            softKeyToggle.apply { mLeftF = 0.7116667f; widthF = 0.2833333f }
+        } else if (skbValue == InputModeSwitcher.MASK_SKB_LAYOUT_QWERTY_PINYIN) {
+            // 小鹤双拼/拼音全键：横向做大发送键，合并占据 0.246f 横向宽度！
+            softKeyToggle.widthF = 0.246f
+            t9Keys[0].widthF = 0.147f; t9Keys[1].widthF = 0.099f
+            t9Keys[2].widthF = 0.099f; t9Keys[3].widthF = 0.396f
+        } else if (t9Keys.size == 4) {
+            // 中文 9 键 / 笔画键盘：底栏为 [符号], [123], [空格/En], [@/0]，最右侧为纵向两行高大发送键！
+            softKeyToggle.widthF = 0.18f
+            t9Keys[0].widthF = 0.18f; t9Keys[1].widthF = 0.147f
+            t9Keys[2].widthF = 0.336f; t9Keys[3].widthF = 0.147f
         } else {
-            if (t9Keys.size == 3 && skbValue == InputModeSwitcher.MASK_SKB_LAYOUT_HANDWRITING) {
-                // 手写输入键盘：缩窄空格键 (0.388f)，加宽回车键 (0.285f)，右边界与上方删除键 100% 对齐
-                t9Keys[0].apply { mLeftF = 0.0f; widthF = 0.18f }
-                t9Keys[1].apply { mLeftF = 0.18f; widthF = 0.147f }
-                t9Keys[2].apply { mLeftF = 0.327f; widthF = 0.388f }
-                softKeyToggle.apply {
-                    mLeftF = 0.715f
-                    widthF = 0.285f
-                }
-            } else if (t9Keys.size == 3) {
-                t9Keys[0].apply { mLeftF = 0.005f; widthF = 0.140f }
-                t9Keys[1].apply { mLeftF = 0.145f; widthF = 0.1416667f }
-                t9Keys[2].apply { mLeftF = 0.2866667f; widthF = 0.425f }
-                softKeyToggle.apply { mLeftF = 0.7116667f; widthF = 0.2833333f }
-            } else if (skbValue == InputModeSwitcher.MASK_SKB_LAYOUT_QWERTY_PINYIN) {
-                // 小鹤双拼/拼音全键：横向做大发送键，合并占据 0.246f 横向宽度！
-                softKeyToggle.widthF = 0.246f
-                t9Keys[0].widthF = 0.147f; t9Keys[1].widthF = 0.099f
-                t9Keys[2].widthF = 0.099f; t9Keys[3].widthF = 0.396f
-            } else if (t9Keys.size == 4) {
-                // 中文 9 键 / 笔画键盘：底栏为 [符号], [123], [空格/En], [@/0]，最右侧为纵向两行高大发送键！
-                softKeyToggle.widthF = 0.18f
-                t9Keys[0].widthF = 0.18f; t9Keys[1].widthF = 0.147f
-                t9Keys[2].widthF = 0.336f; t9Keys[3].widthF = 0.147f
-            } else {
-                t9Keys[0].widthF = 0.18f;t9Keys[1].widthF = 0.147f
-                t9Keys[2].widthF = 0.336f;t9Keys[3].widthF = 0.147f
-            }
+            t9Keys[0].widthF = 0.18f;t9Keys[1].widthF = 0.147f
+            t9Keys[2].widthF = 0.336f;t9Keys[3].widthF = 0.147f
         }
         keyBeans.addAll(t9Keys)
         keyBeans.add(softKeyToggle)

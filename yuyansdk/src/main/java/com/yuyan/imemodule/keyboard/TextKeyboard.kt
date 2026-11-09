@@ -18,6 +18,7 @@ import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.os.Build
 import android.text.TextUtils
 import android.view.KeyEvent
 import androidx.core.content.ContextCompat
@@ -30,12 +31,10 @@ import com.yuyan.imemodule.entity.keyboard.SoftKeyToggle
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
 import com.yuyan.imemodule.manager.InputModeSwitcher
 import com.yuyan.imemodule.prefs.AppPrefs
-import com.yuyan.imemodule.service.DictDecoder
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import kotlin.math.max
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.withSave
-import com.yuyan.imemodule.prefs.behavior.SkbStyleMode
 import com.yuyan.imemodule.service.InputDispatcher
 
 /**
@@ -54,11 +53,10 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
     private var isKeyShadow = false // 启用按键阴影
     protected lateinit var mActiveTheme: Theme
     private var keyRadius = 0
-    private var keyboardFontBold = false
+    private var keyboardFontWeight = 2
     private var keyboardSymbol = false
     private var keyboardMnemonic = false
     protected var mDirtyRect = Rect()
-    private var skbStyleMode: SkbStyleMode = prefs.skbStyleMode.getValue()
 
     /**
      * 构造方法
@@ -66,11 +64,25 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
     init {
         mPaint.isAntiAlias = true
         mFmi = mPaint.fontMetricsInt
-        keyboardFontBold = prefs.keyboardFontBold.getValue()
-        keyboardSymbol = prefs.keyboardSymbol.getValue()
+        keyboardFontWeight = prefs.keyboardFontWeight.getValue()
+        keyboardSymbol = AppPrefs.getInstance().keyboardSetting.keyboardSymbol.getValue()
         keyboardMnemonic = AppPrefs.getInstance().keyboardSetting.keyboardMnemonic.getValue()
         isKeyBorder = prefs.keyBorder.getValue()
         isKeyShadow = prefs.keyShadow.getValue()
+        AppPrefs.getInstance().keyboardSetting.keyboardSymbol.registerOnChangeListener { _, value ->
+            keyboardSymbol = value
+            mBuffer = null
+            mKeyboardChanged = true
+            invalidateView()
+            invalidate()
+        }
+        prefs.keyboardFontWeight.registerOnChangeListener { _, value ->
+            keyboardFontWeight = value
+            mBuffer = null
+            mKeyboardChanged = true
+            invalidateView()
+            invalidate()
+        }
         prefs.keyBorder.registerOnChangeListener { _, value ->
             isKeyBorder = value
             mBuffer = null
@@ -214,8 +226,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
             mNormalKeyTextSize = env.keyTextSize
             mNormalKeyTextSizeSmall = env.keyTextSmallSize
             val keyXMargin = mSoftKeyboard!!.keyXMargin
-            val keyYMargin = if(skbStyleMode == SkbStyleMode.Google && InputModeSwitcher.isQwert) mSoftKeyboard!!.keyYMargin * 1.5
-                else mSoftKeyboard!!.keyYMargin
+            val keyYMargin = mSoftKeyboard!!.keyYMargin
             for (softKeys in mSoftKeyboard!!.mKeyRows) {
                 for (softKey in softKeys) {
                     canvas?.let {
@@ -374,7 +385,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
             }
             topCap.draw(canvas)
         } else {
-            if (isKeyBorder || (background ushr 24) > 0 || !isAlphaInputKey(softKey)) {
+            if (isKeyBorder) {
                 if (isKeyShadow) {
                     // 1. 开启按键阴影: 绘制底层 3D 阴影底座 + 顶层按键帽
                     val shadowColor = darkenColor(background)
@@ -404,6 +415,16 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
                     }
                     flatCap.draw(canvas)
                 }
+            } else if (isEnterKey(softKey) || isReturnKey(softKey)) {
+                // 关闭按键边框时：与原版保持一致，仅保留回车键(ENTER)的特色突出背景
+                val enterBg = mActiveTheme.accentKeyBackgroundColor
+                val flatCap = GradientDrawable().apply {
+                    shape = GradientDrawable.RECTANGLE
+                    cornerRadius = keyRadius.toFloat()
+                    setColor(enterBg)
+                    setBounds(left, top, right, bottom)
+                }
+                flatCap.draw(canvas)
             }
         }
 
@@ -426,11 +447,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         val smallSymbolColor = override?.symbolInt() ?: mActiveTheme.keySmallSymbolColor
 
 
-        var keyLabel = if(skbStyleMode == SkbStyleMode.Google){
-            if(InputModeSwitcher.isLower) softKey.keyLabel.lowercase() else softKey.keyLabel
-        } else {
-            if(InputModeSwitcher.isLower && InputModeSwitcher.isEnglish) softKey.keyLabel.lowercase() else softKey.keyLabel
-        }
+        var keyLabel = if(InputModeSwitcher.isLower && InputModeSwitcher.isEnglish) softKey.keyLabel.lowercase() else softKey.keyLabel
         val keyLabelSmall = softKey.getmKeyLabelSmall()
         val keyMnemonic = softKey.keyMnemonic
         var keyIcon = if(softKey.code == KeyEvent.KEYCODE_SPACE) {
@@ -441,8 +458,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
                 KeyEvent.META_CAPS_LOCK_ON -> ContextCompat.getDrawable(context, R.drawable.shift_lock_2_icon)
                 else -> ContextCompat.getDrawable(context, R.drawable.shift_off_0_icon)
             }
-        } else if(skbStyleMode == SkbStyleMode.Google && softKey.code == InputModeSwitcher.USER_KEYCODE_CURSOR_DIRECTION && !DictDecoder.isCandidatesEmpty) null
-            else softKey.keyIcon
+        } else softKey.keyIcon
         val weightHeigth = softKey.height() / 4f
         if(softKey.code == KeyEvent.KEYCODE_SHIFT_LEFT && InputModeSwitcher.isChinese && !InputDispatcher.isFinish){
             keyLabel = "分词"
@@ -450,14 +466,9 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         }
         if (keyboardSymbol && !TextUtils.isEmpty(keyLabelSmall)) {
             mPaint.color = smallSymbolColor
-            mPaint.typeface = Typeface.DEFAULT
-            if(skbStyleMode == SkbStyleMode.Samsung)mPaint.alpha = 128
+            applyFontWeightToPaint(mPaint, keyboardFontWeight)
             mPaint.textSize = mNormalKeyTextSizeSmall.toFloat()
-            val x = when(prefs.skbStyleMode.getValue()){
-                SkbStyleMode.Yuyan -> softKey.mLeft + (softKey.width() - mPaint.measureText(keyLabelSmall)) / 2.0f
-                SkbStyleMode.Samsung -> softKey.mRight - mPaint.measureText(keyLabelSmall) - keyXMargin * 2
-                SkbStyleMode.Google -> softKey.mRight - mPaint.measureText(keyLabelSmall) - keyXMargin * 2
-            }
+            val x = softKey.mLeft + (softKey.width() - mPaint.measureText(keyLabelSmall)) / 2.0f
             val y = softKey.mTop + weightHeigth * 1.1f
             canvas.drawText(keyLabelSmall, x, y, mPaint)
         }
@@ -481,7 +492,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
             keyIcon.draw(canvas)
         } else if (!TextUtils.isEmpty(keyLabel)) { //Label位于中间
             mPaint.color = textColor
-            if(keyboardFontBold) mPaint.typeface = Typeface.DEFAULT_BOLD
+            applyFontWeightToPaint(mPaint, keyboardFontWeight)
             mPaint.textSize =  mNormalKeyTextSize.toFloat()
             val x = softKey.mLeft + (softKey.width() - mPaint.measureText(keyLabel)) / 2.0f
             val fontHeight = mFmi.bottom - mFmi.top
@@ -491,11 +502,49 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         }
         if (keyboardMnemonic && !TextUtils.isEmpty(keyMnemonic)) {  //助记符位于中下方
             mPaint.color = textColor
-            mPaint.typeface = Typeface.DEFAULT
+            applyFontWeightToPaint(mPaint, keyboardFontWeight)
             mPaint.textSize = mNormalKeyTextSizeSmall.toFloat() * 0.7f
             val x = softKey.mLeft + (softKey.width() - mPaint.measureText(keyMnemonic)) / 2.0f
             val y = softKey.mTop + weightHeigth * 3 + weightHeigth / 2.0f
             canvas.drawText(keyMnemonic, x, y, mPaint)
+        }
+    }
+
+    private fun applyFontWeightToPaint(paint: Paint, weightLevel: Int) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            val targetWeight = when (weightLevel) {
+                1 -> 300
+                2 -> 400
+                3 -> 600
+                4 -> 750
+                5 -> 900
+                else -> 400
+            }
+            paint.typeface = Typeface.create(Typeface.DEFAULT, targetWeight, false)
+            paint.isFakeBoldText = weightLevel >= 4
+        } else {
+            when (weightLevel) {
+                1 -> {
+                    paint.typeface = Typeface.create("sans-serif-light", Typeface.NORMAL)
+                    paint.isFakeBoldText = false
+                }
+                2 -> {
+                    paint.typeface = Typeface.DEFAULT
+                    paint.isFakeBoldText = false
+                }
+                3 -> {
+                    paint.typeface = Typeface.DEFAULT_BOLD
+                    paint.isFakeBoldText = false
+                }
+                4, 5 -> {
+                    paint.typeface = Typeface.DEFAULT_BOLD
+                    paint.isFakeBoldText = true
+                }
+                else -> {
+                    paint.typeface = Typeface.DEFAULT
+                    paint.isFakeBoldText = false
+                }
+            }
         }
     }
 

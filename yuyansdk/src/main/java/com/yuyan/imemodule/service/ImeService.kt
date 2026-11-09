@@ -73,13 +73,19 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
     private lateinit var mInputView:IKeyboardView
     private val onThemeChangeListener = OnThemeChangeListener { _: Theme? -> if (::mInputView.isInitialized) mInputView.updateTheme()}
     private val clipboardUpdateContentListener = ManagedPreference.OnChangeListener<String> { _, value ->
-        if(getInstance().clipboard.clipboardSuggestion.getValue()){
-            if(value.isNotBlank()) {
-                if(KeyboardManager.instance.currentContainer is ClipBoardContainer
-                    && (KeyboardManager.instance.currentContainer as ClipBoardContainer).getMenuMode() == SkbMenuMode.ClipBoard ){
-                    (KeyboardManager.instance.currentContainer as ClipBoardContainer).showClipBoardView(SkbMenuMode.ClipBoard)
-                } else {
-                    if (::mInputView.isInitialized) mInputView.showSymbols(arrayOf(value))
+        if (getInstance().clipboard.clipboardSuggestion.getValue()) {
+            if (value.isNotBlank()) {
+                val updateTime = getInstance().internal.clipboardUpdateTime.getValue()
+                val timeoutSec = getInstance().clipboard.clipboardItemTimeout.getValue()
+                val elapsedMs = System.currentTimeMillis() - updateTime
+                if (elapsedMs <= timeoutSec * 1000L) {
+                    if (KeyboardManager.instance.currentContainer is ClipBoardContainer
+                        && (KeyboardManager.instance.currentContainer as ClipBoardContainer).getMenuMode() == SkbMenuMode.ClipBoard
+                    ) {
+                        (KeyboardManager.instance.currentContainer as ClipBoardContainer).showClipBoardView(SkbMenuMode.ClipBoard)
+                    } else {
+                        if (::mInputView.isInitialized) mInputView.showSymbols(arrayOf(value))
+                    }
                 }
             }
         }

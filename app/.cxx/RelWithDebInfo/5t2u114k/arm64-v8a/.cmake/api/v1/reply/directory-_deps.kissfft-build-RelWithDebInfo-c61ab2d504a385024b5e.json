@@ -1,0 +1,106 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"third_party/knf/kissfft/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 293,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 298,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 309,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 316,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "lib",
+			"paths" : 
+			[
+				"lib/libkissfft-float.a"
+			],
+			"targetId" : "kissfft::@8df36bbe327537f6f36a",
+			"targetIndex" : 2,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "Unspecified",
+			"destination" : "/kissfft",
+			"paths" : 
+			[
+				"third_party/knf/kissfft/kiss_fft.h",
+				"third_party/knf/kissfft/kissfft.hh",
+				"third_party/knf/kissfft/kiss_fftnd.h",
+				"third_party/knf/kissfft/kiss_fftndr.h",
+				"third_party/knf/kissfft/kiss_fftr.h"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 3,
+			"component" : "Unspecified",
+			"destination" : "/cmake/kissfft",
+			"exportName" : "kissfft",
+			"exportTargets" : 
+			[
+				{
+					"id" : "kissfft::@8df36bbe327537f6f36a",
+					"index" : 2
+				}
+			],
+			"paths" : 
+			[
+				"_deps/kissfft-build/CMakeFiles/Export/_cmake/kissfft/kissfft-float-static-targets.cmake"
+			],
+			"type" : "export"
+		},
+		{
+			"backtrace" : 4,
+			"component" : "Unspecified",
+			"destination" : "/cmake/kissfft",
+			"paths" : 
+			[
+				"C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.cxx/RelWithDebInfo/5t2u114k/arm64-v8a/_deps/kissfft-build/kissfft-config.cmake",
+				"C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.cxx/RelWithDebInfo/5t2u114k/arm64-v8a/_deps/kissfft-build/kissfft-config-version.cmake"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "_deps/kissfft-build",
+		"source" : "third_party/knf/kissfft"
+	}
+}

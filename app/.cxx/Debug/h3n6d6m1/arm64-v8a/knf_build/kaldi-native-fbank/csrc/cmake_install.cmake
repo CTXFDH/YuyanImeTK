@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc
+# Install script for directory: C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,7 +39,7 @@ endif()
 
 # Set default install directory permissions.
 if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "C:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-objdump.exe")
+  set(CMAKE_OBJDUMP "C:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-objdump.exe")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
@@ -49,11 +49,11 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libkaldi-native-fbank-core.so"
          RPATH "")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/lib/libkaldi-native-fbank-core.so")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE SHARED_LIBRARY FILES "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/lib/libkaldi-native-fbank-core.so")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libkaldi-native-fbank-core.so" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libkaldi-native-fbank-core.so")
     if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "C:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-strip.exe" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libkaldi-native-fbank-core.so")
+      execute_process(COMMAND "C:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-strip.exe" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libkaldi-native-fbank-core.so")
     endif()
   endif()
 endif()
@@ -63,19 +63,19 @@ endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/kaldi-native-fbank/csrc" TYPE FILE FILES
-    "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-fbank.h"
-    "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-functions.h"
-    "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-mfcc.h"
-    "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-raw-audio-samples.h"
-    "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-window.h"
-    "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/istft.h"
-    "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/kaldi-math.h"
-    "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/log.h"
-    "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/mel-computations.h"
-    "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/online-feature.h"
-    "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/rfft.h"
-    "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/stft.h"
-    "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/whisper-feature.h"
+    "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-fbank.h"
+    "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-functions.h"
+    "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-mfcc.h"
+    "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-raw-audio-samples.h"
+    "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-window.h"
+    "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/istft.h"
+    "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/kaldi-math.h"
+    "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/log.h"
+    "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/mel-computations.h"
+    "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/online-feature.h"
+    "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/rfft.h"
+    "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/stft.h"
+    "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/whisper-feature.h"
     )
 endif()
 

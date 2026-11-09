@@ -26,11 +26,13 @@ import com.yuyan.imemodule.database.DataBaseKT
 import com.yuyan.imemodule.database.entry.SideSymbol
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcher
+import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.service.DictDecoder
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.utils.AppUtil
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.DevicesUtils.dip2px
+import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import com.yuyan.imemodule.keyboard.InputView
 import com.yuyan.imemodule.keyboard.KeyboardManager
@@ -43,14 +45,13 @@ import splitties.views.dsl.constraintlayout.lParams
 import splitties.views.dsl.constraintlayout.leftOfParent
 import splitties.views.dsl.constraintlayout.rightOfParent
 import splitties.views.dsl.core.add
-import splitties.views.dsl.core.margin
 import splitties.views.dsl.core.matchParent
 import splitties.views.dsl.core.wrapContent
 
 /**
  * 候选词键盘容器
  *
- * 选择候选词界面分两种效果：九宫格（[InputModeSwitcher.isChineseT9])情况下显示左侧拼音选择栏；全键、手写等情况下不显示拼音选择栏。
+ * 选择候选词界面分两种效果：九宫格（[InputModeSwitcher.isChineseT9])情况下显示左侧拼音选择栏；全键,手写等情况下不显示拼音选择栏。
  * @see InputModeSwitcher.isChineseT9
  */
 @SuppressLint("ViewConstructor")
@@ -89,8 +90,15 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         mRVSymbolsView.setItemAnimator(null)
         mRVLeftPrefix.setLayoutManager(LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false))
         val skbHeightMargins = (instance.skbHeight * 0.01).toInt()
-        add(mRVLeftPrefix, lParams(width = (instance.skbWidth * 0.18).toInt(), height = matchParent).apply {
-            setMargins(0, skbHeightMargins, 0, skbHeightMargins)
+
+        val softKeyboard = KeyboardLoaderUtil.instance.getSoftKeyboard(InputModeSwitcher.skbLayout)
+        val softKeySymbolHolder = softKeyboard.getKeyByCode(InputModeSwitcher.USER_KEYCODE_LEFT_SYMBOL)
+        val prefixWidth = softKeySymbolHolder?.width() ?: (instance.skbWidth * 0.18).toInt()
+        val prefixLeft = softKeySymbolHolder?.mLeft ?: 0
+        val prefixTop = softKeyboard.keyYMargin + skbHeightMargins
+
+        add(mRVLeftPrefix, lParams(width = prefixWidth, height = matchParent).apply {
+            setMargins(prefixLeft, prefixTop, 0, skbHeightMargins)
             leftOfParent(0)
         })
         mRVLeftPrefix.visibility = GONE
@@ -100,7 +108,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         })
         addView(getIvDelete())
         val manager = CustomFlexboxLayoutManager(context)
-        manager.flexDirection = FlexDirection.ROW //主轴为水平方向，起点在左端。
+        manager.flexDirection = FlexDirection.ROW //主轴为水平方向,起点在左端。
         manager.flexWrap = FlexWrap.WRAP //按正常方向换行
         manager.justifyContent = JustifyContent.SPACE_AROUND // 设置主轴对齐方式为居左
         mRVSymbolsView.setLayoutManager(manager)
@@ -188,16 +196,20 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
                 mCandidatesAdapter.notifyDataSetChanged()
             }
 //            if(DecodingInfo.candidateSize > DecodingInfo.activeCandidate) mRVSymbolsView.scrollToPosition(DecodingInfo.activeCandidate)
-            if (InputModeSwitcher.isChineseT9) {
+            val showPrefix = InputModeSwitcher.isChineseT9 ||
+                (InputModeSwitcher.skbLayout == InputModeSwitcher.MASK_SKB_LAYOUT_LX17 && AppPrefs.getInstance().keyboardSetting.lx17WithLeftPrefix.getValue())
+            if (showPrefix) {
                 mRVLeftPrefix.visibility = VISIBLE
                 updatePrefixsView()
+            } else {
+                mRVLeftPrefix.visibility = GONE
             }
         }
     }
 
-    //更新左侧拼音显示
+    //更新左侧拼音选择显示
     private fun updatePrefixsView() {
-        var prefixs =DictDecoder.prefixs
+        var prefixs = DictDecoder.prefixs
         val isPrefixs = prefixs.isNotEmpty()
         if (!isPrefixs) { // 有候选拼音显示候选拼音
             prefixs = mSideSymbolsPinyin.map { it.symbolKey }.toTypedArray()

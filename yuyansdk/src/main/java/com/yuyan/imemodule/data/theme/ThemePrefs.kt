@@ -4,8 +4,6 @@ import android.content.SharedPreferences
 import androidx.annotation.StringRes
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.prefs.ManagedPreferenceCategory
-import com.yuyan.imemodule.prefs.behavior.KeyboardSymbolSlideUpMod
-import com.yuyan.imemodule.prefs.behavior.SkbStyleMode
 import com.yuyan.imemodule.view.preference.ManagedPreference
 
 class ThemePrefs(sharedPreferences: SharedPreferences) :
@@ -39,23 +37,6 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
         it.register()
     }
 
-    val skbStyleMode = list(
-        R.string.keyboard_style_mod,
-        "keyboard_style_mod",
-        SkbStyleMode.Yuyan,
-        SkbStyleMode,
-        listOf(
-            SkbStyleMode.Yuyan,
-            SkbStyleMode.Google,
-            SkbStyleMode.Samsung
-        ),
-        listOf(
-            R.string.keyboard_style_mod_yuyan,
-            R.string.keyboard_style_mod_google,
-            R.string.keyboard_style_mod_samsung,
-        )
-    )
-
     val followSystemDayNightTheme = switch(
         R.string.follow_system_day_night_theme,
         "follow_system_dark_mode",
@@ -88,9 +69,23 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
     // 键盘设置title
     val titleKeyboardSetting = category(R.string.setting_ime_keyboard_show)
 
+    val windowCornerRadiusDp = int(
+        R.string.window_corner_radius,
+        "window_corner_radius_dp",
+        16,
+        0,
+        30,
+        "dp"
+    )
 
-    val keyboardFontBold =
-        switch(R.string.keyboard_font_bold, "keyboard_font_bold_enable", true)
+    val keyboardFontWeight = int(
+        R.string.keyboard_font_bold,
+        "keyboard_font_weight_level",
+        2,
+        1,
+        5,
+        "档"
+    )
 
     val keyboardFontSize = int(
         R.string.keyboard_font_size,
@@ -100,28 +95,6 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
         170,
         "%"
     )
-
-    val keyboardSymbol =
-        switch(R.string.keyboard_symbol_show, "keyboard_symbol_show_enable", true)
-
-    val symbolSlideUpMod = list(
-        R.string.keyboard_symbol_slide_up_mod,
-        "keyboard_symbol_slide_up_mod",
-        KeyboardSymbolSlideUpMod.MEDIUM,
-        KeyboardSymbolSlideUpMod,
-        listOf(
-            KeyboardSymbolSlideUpMod.SHORT,
-            KeyboardSymbolSlideUpMod.MEDIUM,
-            KeyboardSymbolSlideUpMod.LONG
-        ),
-        listOf(
-            R.string.keyboard_symbol_slide_up_short,
-            R.string.keyboard_symbol_slide_up_medium,
-            R.string.keyboard_symbol_slide_up_long,
-        )
-    ) {
-        keyboardSymbol.getValue()
-    }
 
     val keyBorder = switch(R.string.key_border, "key_border", true)
 
@@ -163,7 +136,5 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
         0,
         60,
         "dp"
-    ) {
-        keyBorder.getValue()
-    }
+    )
 }
