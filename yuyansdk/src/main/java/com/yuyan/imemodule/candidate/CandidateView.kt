@@ -242,7 +242,6 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
 
     private fun commitDecInfoText(resultText: String?) {
         resultText ?: return
-        com.yuyan.imemodule.manager.UserWordManager.recordUserWord(resultText)
         service.commitText(StringUtils.converted2FlowerTypeface(resultText))
         if (InputModeSwitcher.isEnglish){
             service.finishComposingText()

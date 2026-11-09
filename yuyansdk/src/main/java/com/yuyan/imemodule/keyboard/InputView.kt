@@ -44,6 +44,7 @@ import com.yuyan.imemodule.keyboard.container.InputBaseContainer
 import com.yuyan.imemodule.keyboard.container.SymbolContainer
 import com.yuyan.imemodule.keyboard.container.T9TextContainer
 import com.yuyan.imemodule.manager.InputModeSwitcher
+import com.yuyan.imemodule.manager.UserWordManager
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.prefs.behavior.ChineseAssociationMode
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
@@ -156,8 +157,16 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         } else {
             mComposingTagContainer.visibility = GONE
         }
+        val container = KeyboardManager.instance.currentContainer as? InputBaseContainer
+        if (container != null && container.isCandidatesExpanded()) {
+            if (DictDecoder.isCandidatesEmpty || composingText.isBlank()) {
+                container.toggleCandidatesMore()
+                updateCandidateBar()
+            } else {
+                container.onCandidateChanged()
+            }
+        }
         (KeyboardManager.instance.currentContainer as? CandidatesContainer)?.showCandidatesView()
-        (KeyboardManager.instance.currentContainer as? InputBaseContainer)?.onCandidateChanged()
     }
 
     @SuppressLint("ClickableViewAccessibility")

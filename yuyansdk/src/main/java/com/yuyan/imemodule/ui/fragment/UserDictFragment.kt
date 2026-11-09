@@ -45,6 +45,17 @@ class UserDictFragment : PreferenceFragmentCompat() {
                 ) {
                     showAddUserWordDialog()
                 }
+
+                val userWordsCheck = DataBaseKT.instance.userWordDao().getAll()
+                if (userWordsCheck.isNotEmpty()) {
+                    addPreference(
+                        "批量多选删除自造词",
+                        "勾选多个自造词进行批量删除",
+                        R.drawable.ic_menu_setting
+                    ) {
+                        showBatchDeleteDialog()
+                    }
+                }
             }
 
             // 2. 已保存的用户自造词列表
@@ -206,6 +217,42 @@ class UserDictFragment : PreferenceFragmentCompat() {
             .create()
 
         DialogStyleUtils.styleDialog(dialog, requireContext())
+        dialog.show()
+    }
+
+    private fun showBatchDeleteDialog() {
+        val context = requireContext()
+        val userWords = DataBaseKT.instance.userWordDao().getAll()
+        if (userWords.isEmpty()) {
+            Toast.makeText(context, "暂无自造词可删除", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val items = userWords.map { "${it.word}  (${it.pinyin})" }.toTypedArray()
+        val checkedItems = BooleanArray(userWords.size) { false }
+
+        val dialog = AlertDialog.Builder(context)
+            .setTitle("批量多选删除自造词")
+            .setMultiChoiceItems(items, checkedItems) { _, which, isChecked ->
+                checkedItems[which] = isChecked
+            }
+            .setPositiveButton("删除选中") { _, _ ->
+                val dao = DataBaseKT.instance.userWordDao()
+                var count = 0
+                for (i in checkedItems.indices) {
+                    if (checkedItems[i]) {
+                        dao.deleteById(userWords[i].id)
+                        count++
+                    }
+                }
+                UserWordManager.syncCustomPhraseFile()
+                Toast.makeText(context, "已成功删除 $count 个自造词", Toast.LENGTH_SHORT).show()
+                onCreatePreferences(null, null)
+            }
+            .setNegativeButton("取消", null)
+            .create()
+
+        DialogStyleUtils.styleDialog(dialog, context)
         dialog.show()
     }
 }

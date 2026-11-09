@@ -12,7 +12,7 @@ import com.yuyan.imemodule.utils.thread.ThreadPoolUtils
 import java.io.File
 
 /**
- * 用户自造词管理器：自动记录打字过程中生成的词汇、统计词频并同步到数据库与词库文件
+ * 用户自造词管理器：管理自造词词库、自动拼音转换与 Rime custom_phrase.txt 文件同步
  */
 object UserWordManager {
 
@@ -54,50 +54,7 @@ object UserWordManager {
     }
 
     /**
-     * 自动记录打字过程中用户选择提交的自造词
-     */
-    fun recordUserWord(text: String?) {
-        if (text.isNullOrBlank()) return
-        val cleanWord = text.trim()
-
-        // 过滤：记录 2 字及以上的中文词汇（避免单字或纯标点符号冲刷词库）
-        val isChineseWord = cleanWord.length >= 2 && cleanWord.all { ch ->
-            ch in '\u4e00'..'\u9fa5' || ch.isLetterOrDigit()
-        } && cleanWord.any { ch -> ch in '\u4e00'..'\u9fa5' }
-
-        if (!isChineseWord) return
-
-        ThreadPoolUtils.executeSingleton {
-            try {
-                val dao = DataBaseKT.instance.userWordDao()
-                val existing = dao.queryByWord(cleanWord)
-                if (existing != null) {
-                    // 已存在：累加词频权重并更新时间
-                    existing.frequency += 5
-                    dao.insert(existing)
-                } else {
-                    // 新增自造词
-                    val pinyin = autoGeneratePinyin(cleanWord)
-                    val pinyinHead = runCatching { PinyinHelper.getPinYinHeadChar(cleanWord).lowercase() }.getOrDefault("")
-                    val t9Code = wordToT9Key(pinyin)
-                    val newWord = UserWord(
-                        word = cleanWord,
-                        pinyin = pinyin,
-                        pinyinHead = pinyinHead,
-                        t9 = t9Code,
-                        frequency = 100
-                    )
-                    dao.insert(newWord)
-                }
-                syncCustomPhraseFile()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
-
-    /**
-     * 将数据库自造词导出/同步到 Rime custom_phrase.txt 文件
+     * 将数据库自造词导出/同步到 Rime custom_phrase.txt 文件，并清除 Rime userdb 缓存
      */
     fun syncCustomPhraseFile() {
         try {
@@ -109,6 +66,11 @@ object UserWordManager {
                 writer.write("# Rime Custom Phrase / 用户自造词库\n")
                 for (uw in userWords) {
                     writer.write("${uw.word}\t${uw.pinyin}\t${uw.frequency}\n")
+                }
+            }
+            dir.listFiles()?.forEach { file ->
+                if (file.name.contains("userdb") || file.name.endsWith(".userdb.txt")) {
+                    runCatching { file.deleteRecursively() }
                 }
             }
         } catch (e: Exception) {

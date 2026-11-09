@@ -46,7 +46,7 @@ open class InputBaseContainer(context: Context?, inputView: InputView) : BaseCon
 
     open fun onCandidateChanged() {
         if (mIsExpanded) {
-            if (DictDecoder.isCandidatesEmpty || DictDecoder.isAssociate) {
+            if (DictDecoder.isCandidatesEmpty || DictDecoder.isAssociate || DictDecoder.composingStrForDisplay.isBlank()) {
                 mIsExpanded = false
                 updateCandidatesOverlayState()
                 inputView.updateCandidateBar()
@@ -114,18 +114,23 @@ open class InputBaseContainer(context: Context?, inputView: InputView) : BaseCon
                     }
                     isClickable = true
                     isEnabled = true
-                    setOnTouchListener { _, motionEvent ->
+                    setOnTouchListener { v, motionEvent ->
                         when (motionEvent.action) {
                             MotionEvent.ACTION_DOWN -> {
                                 DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_DEL)
                                 DevicesUtils.tryVibrate(this@InputBaseContainer)
                             }
                             MotionEvent.ACTION_UP -> {
+                                v.performClick()
                                 inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
-                                if (DictDecoder.isCandidatesEmpty) {
-                                    toggleCandidatesMore()
-                                    inputView.updateCandidateBar()
-                                }
+                                postDelayed({
+                                    if (DictDecoder.isCandidatesEmpty || DictDecoder.composingStrForDisplay.isBlank()) {
+                                        if (mIsExpanded) {
+                                            toggleCandidatesMore()
+                                            inputView.updateCandidateBar()
+                                        }
+                                    }
+                                }, 50)
                             }
                         }
                         true
