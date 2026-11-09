@@ -96,7 +96,7 @@ object DictDecoder {
         activeCandidateBar = 0
         var candidate: String
         val wasAssociate = isAssociate
-        if(!InputDispatcher.isFinish || wasAssociate) { // Rime和联想
+        if (!InputDispatcher.isFinish || wasAssociate) { // Rime和联想
             val currentList = candidatesLiveData.value ?: emptyList()
             val chosenItem = currentList.getOrNull(candId)
             val isEnglishWord = chosenItem != null && chosenItem.comment == "🔤"
@@ -104,17 +104,31 @@ object DictDecoder {
             if (isEnglishWord && chosenItem != null) {
                 candidate = chosenItem.text
                 InputDispatcher.reset()
+                candidatesLiveData.value = emptyList()
             } else {
-                if (candId >= 0) InputDispatcher.getWordSelectedWord(candId)
+                // 计算在 candId 之前有多少个强行插入的英文候选词，消除 Rime 索引偏移错位 Bug
+                val englishOffset = if (candId > 0 && currentList.isNotEmpty()) {
+                    currentList.take(candId).count { it.comment == "🔤" }
+                } else 0
+                val realRimeIndex = (candId - englishOffset).coerceAtLeast(0)
+
+                if (candId >= 0) InputDispatcher.getWordSelectedWord(realRimeIndex)
+
                 val newCandidates = RimeEngine.showCandidates
                 candidate = if (newCandidates.isNotEmpty()) RimeEngine.preCommitText
-                else if (candId in 0..<candidateSize) RimeEngine.preCommitText.ifEmpty { candidatesLiveData.value!![candId].text }
+                else if (candId in currentList.indices) RimeEngine.preCommitText.ifEmpty { currentList[candId].text }
                 else ""
-                candidatesLiveData.value = newCandidates
+
+                if (newCandidates.isNotEmpty()) {
+                    updateDecodingCandidate()
+                } else {
+                    candidatesLiveData.value = emptyList()
+                }
                 justCommittedAssociateWord = wasAssociate
             }
-        } else {  // 手写
-            candidate = if (candId in 0..<candidateSize) candidatesLiveData.value!![candId].text  else ""
+        } else { // 手写
+            val currentList = candidatesLiveData.value ?: emptyList()
+            candidate = if (candId in currentList.indices) currentList[candId].text else ""
             justCommittedAssociateWord = false
             reset()
         }
