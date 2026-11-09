@@ -2,7 +2,6 @@ package com.yuyan.imemodule.data.theme
 
 import android.content.Context
 import android.net.Uri
-import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileOutputStream
 import java.util.zip.ZipEntry
@@ -57,9 +56,12 @@ object ThemeArchiveUtils {
                     while (entry != null) {
                         val fileName = entry.name
                         when {
-                            fileName == "theme.json" -> {
-                                val jsonText = CustomThemeSerializer.stripJsonComments(zipIn.readBytes().toString(Charsets.UTF_8))
-                                val (theme, _) = Json.decodeFromString(CustomThemeSerializer.WithMigrationStatus, jsonText)
+                            fileName == "theme.json" || fileName.endsWith("/theme.json") -> {
+                                val baos = java.io.ByteArrayOutputStream()
+                                zipIn.copyTo(baos)
+                                val rawJson = baos.toString(Charsets.UTF_8.name())
+                                val jsonText = CustomThemeSerializer.stripJsonComments(rawJson)
+                                val (theme, _) = CustomThemeSerializer.LenientJson.decodeFromString(CustomThemeSerializer.WithMigrationStatus, jsonText)
                                 parsedTheme = theme
                             }
                             fileName.startsWith("src.") || fileName.startsWith("background_src.") -> {
