@@ -35,7 +35,6 @@ class Launcher {
      */
     private fun onInitDataChildThread() {
         ThreadPoolUtils.executeSingleton {
-            com.yuyan.imemodule.data.theme.main()
             DataBaseKT.instance.sideSymbolDao().getAllSideSymbolPinyin()  // 提前在子线程创建并初始化数据库
             // 复制词库文件
             val dataDictVersion = AppPrefs.getInstance().internal.dataDictVersion.getValue()

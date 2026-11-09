@@ -28,7 +28,11 @@ object CustomThemeSerializer : JsonTransformingSerializer<Theme.Custom>(Theme.Cu
     override fun transformDeserialize(element: JsonElement): JsonElement {
         if (element !is JsonObject) return element
         val jsonObj = element.removeVersion()
-        return transformElement(jsonObj)
+        val mutableMap = jsonObj.toMutableMap()
+        mutableMap.entries.removeAll { (_, value) ->
+            value is kotlinx.serialization.json.JsonNull || (value is JsonPrimitive && value.isString && value.content == "null")
+        }
+        return transformElement(JsonObject(mutableMap))
     }
 
     private fun transformElement(element: JsonElement): JsonElement {
