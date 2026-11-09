@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft
+# Install script for directory: C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,11 +39,11 @@ endif()
 
 # Set default install directory permissions.
 if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "C:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-objdump.exe")
+  set(CMAKE_OBJDUMP "C:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-objdump.exe")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/lib/libkissfft-float.a")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/lib/libkissfft-float.a")
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
@@ -56,11 +56,11 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   file(INSTALL DESTINATION "/kissfft" TYPE FILE FILES
-    "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/kiss_fft.h"
-    "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/kissfft.hh"
-    "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/kiss_fftnd.h"
-    "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/kiss_fftndr.h"
-    "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/kiss_fftr.h"
+    "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/kiss_fft.h"
+    "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/kissfft.hh"
+    "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/kiss_fftnd.h"
+    "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/kiss_fftndr.h"
+    "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/kiss_fftr.h"
     )
 endif()
 
@@ -68,7 +68,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
   if(EXISTS "$ENV{DESTDIR}/cmake/kissfft/kissfft-float-static-targets.cmake")
     file(DIFFERENT EXPORT_FILE_CHANGED FILES
          "$ENV{DESTDIR}/cmake/kissfft/kissfft-float-static-targets.cmake"
-         "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/_deps/kissfft-build/CMakeFiles/Export/_cmake/kissfft/kissfft-float-static-targets.cmake")
+         "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/_deps/kissfft-build/CMakeFiles/Export/_cmake/kissfft/kissfft-float-static-targets.cmake")
     if(EXPORT_FILE_CHANGED)
       file(GLOB OLD_CONFIG_FILES "$ENV{DESTDIR}/cmake/kissfft/kissfft-float-static-targets-*.cmake")
       if(OLD_CONFIG_FILES)
@@ -85,7 +85,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-  file(INSTALL DESTINATION "/cmake/kissfft" TYPE FILE FILES "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/_deps/kissfft-build/CMakeFiles/Export/_cmake/kissfft/kissfft-float-static-targets.cmake")
+  file(INSTALL DESTINATION "/cmake/kissfft" TYPE FILE FILES "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/_deps/kissfft-build/CMakeFiles/Export/_cmake/kissfft/kissfft-float-static-targets.cmake")
   if("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
     list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
      "/cmake/kissfft/kissfft-float-static-targets-debug.cmake")
@@ -95,7 +95,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
     if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
       message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
     endif()
-    file(INSTALL DESTINATION "/cmake/kissfft" TYPE FILE FILES "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/_deps/kissfft-build/CMakeFiles/Export/_cmake/kissfft/kissfft-float-static-targets-debug.cmake")
+    file(INSTALL DESTINATION "/cmake/kissfft" TYPE FILE FILES "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/_deps/kissfft-build/CMakeFiles/Export/_cmake/kissfft/kissfft-float-static-targets-debug.cmake")
   endif()
 endif()
 
@@ -109,8 +109,8 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   file(INSTALL DESTINATION "/cmake/kissfft" TYPE FILE FILES
-    "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/_deps/kissfft-build/kissfft-config.cmake"
-    "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/_deps/kissfft-build/kissfft-config-version.cmake"
+    "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/_deps/kissfft-build/kissfft-config.cmake"
+    "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/_deps/kissfft-build/kissfft-config-version.cmake"
     )
 endif()
 

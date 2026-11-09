@@ -21,4 +21,7 @@ interface SkbFunDao : BaseDao<SkbFun> {
 
     @Query("delete from skbfun where isKeep = 1")
     fun deleteAllBarMenu()
+
+    @Query("delete from skbfun where name = :name AND isKeep = 1")
+    fun deleteBarMenu(name: String)
 }

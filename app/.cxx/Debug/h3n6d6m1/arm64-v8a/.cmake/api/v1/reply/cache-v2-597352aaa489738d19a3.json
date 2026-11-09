@@ -23,7 +23,7 @@
 				}
 			],
 			"type" : "UNINITIALIZED",
-			"value" : "C:\\Users\\wen\\AppData\\Local\\Android\\Sdk\\ndk\\25.1.8937393"
+			"value" : "C:\\Users\\kuang\\AppData\\Local\\Android\\Sdk\\ndk\\25.1.8937393"
 		},
 		{
 			"name" : "ANDROID_PLATFORM",
@@ -63,7 +63,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-addr2line.exe"
+			"value" : "C:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-addr2line.exe"
 		},
 		{
 			"name" : "CMAKE_ANDROID_ARCH_ABI",
@@ -87,7 +87,7 @@
 				}
 			],
 			"type" : "UNINITIALIZED",
-			"value" : "C:\\Users\\wen\\AppData\\Local\\Android\\Sdk\\ndk\\25.1.8937393"
+			"value" : "C:\\Users\\kuang\\AppData\\Local\\Android\\Sdk\\ndk\\25.1.8937393"
 		},
 		{
 			"name" : "CMAKE_AR",
@@ -103,7 +103,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-ar.exe"
+			"value" : "C:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-ar.exe"
 		},
 		{
 			"name" : "CMAKE_ASM_FLAGS",
@@ -163,7 +163,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "c:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a"
+			"value" : "c:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -211,7 +211,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/bin/cmake.exe"
+			"value" : "C:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/bin/cmake.exe"
 		},
 		{
 			"name" : "CMAKE_CPACK_COMMAND",
@@ -223,7 +223,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/bin/cpack.exe"
+			"value" : "C:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/bin/cpack.exe"
 		},
 		{
 			"name" : "CMAKE_CTEST_COMMAND",
@@ -235,7 +235,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/bin/ctest.exe"
+			"value" : "C:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/bin/ctest.exe"
 		},
 		{
 			"name" : "CMAKE_CXX_COMPILER_AR",
@@ -695,7 +695,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni"
+			"value" : "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -731,7 +731,7 @@
 				}
 			],
 			"type" : "UNINITIALIZED",
-			"value" : "C:\\Users\\wen\\AndroidStudioProjects\\YuyanImeK-master\\app\\build\\intermediates\\cxx\\Debug\\h3n6d6m1\\obj\\arm64-v8a"
+			"value" : "C:\\Users\\kuang\\AndroidStudioProjects\\YuyanImeK-master\\app\\build\\intermediates\\cxx\\Debug\\h3n6d6m1\\obj\\arm64-v8a"
 		},
 		{
 			"name" : "CMAKE_LINKER",
@@ -747,7 +747,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/ld.lld.exe"
+			"value" : "C:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/ld.lld.exe"
 		},
 		{
 			"name" : "CMAKE_MAKE_PROGRAM",
@@ -759,7 +759,7 @@
 				}
 			],
 			"type" : "UNINITIALIZED",
-			"value" : "C:\\Users\\wen\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe"
+			"value" : "C:\\Users\\kuang\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe"
 		},
 		{
 			"name" : "CMAKE_MODULE_LINKER_FLAGS",
@@ -855,7 +855,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-nm.exe"
+			"value" : "C:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-nm.exe"
 		},
 		{
 			"name" : "CMAKE_NUMBER_OF_MAKEFILES",
@@ -883,7 +883,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-objcopy.exe"
+			"value" : "C:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-objcopy.exe"
 		},
 		{
 			"name" : "CMAKE_OBJDUMP",
@@ -899,7 +899,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-objdump.exe"
+			"value" : "C:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-objdump.exe"
 		},
 		{
 			"name" : "CMAKE_PLATFORM_INFO_INITIALIZED",
@@ -1023,7 +1023,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-ranlib.exe"
+			"value" : "C:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-ranlib.exe"
 		},
 		{
 			"name" : "CMAKE_READELF",
@@ -1039,7 +1039,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-readelf.exe"
+			"value" : "C:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-readelf.exe"
 		},
 		{
 			"name" : "CMAKE_ROOT",
@@ -1051,7 +1051,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22"
+			"value" : "C:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22"
 		},
 		{
 			"name" : "CMAKE_RUNTIME_OUTPUT_DIRECTORY",
@@ -1063,7 +1063,7 @@
 				}
 			],
 			"type" : "UNINITIALIZED",
-			"value" : "C:\\Users\\wen\\AndroidStudioProjects\\YuyanImeK-master\\app\\build\\intermediates\\cxx\\Debug\\h3n6d6m1\\obj\\arm64-v8a"
+			"value" : "C:\\Users\\kuang\\AndroidStudioProjects\\YuyanImeK-master\\app\\build\\intermediates\\cxx\\Debug\\h3n6d6m1\\obj\\arm64-v8a"
 		},
 		{
 			"name" : "CMAKE_SHARED_LINKER_FLAGS",
@@ -1271,7 +1271,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "C:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-strip.exe"
+			"value" : "C:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-strip.exe"
 		},
 		{
 			"name" : "CMAKE_SYSTEM_NAME",
@@ -1303,11 +1303,11 @@
 			[
 				{
 					"name" : "HELPSTRING",
-					"value" : "No help, variable specified on the command line."
+					"value" : "The CMake toolchain file"
 				}
 			],
-			"type" : "UNINITIALIZED",
-			"value" : "C:\\Users\\wen\\AppData\\Local\\Android\\Sdk\\ndk\\25.1.8937393\\build\\cmake\\android.toolchain.cmake"
+			"type" : "FILEPATH",
+			"value" : "C:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/android.toolchain.cmake"
 		},
 		{
 			"name" : "CMAKE_VERBOSE_MAKEFILE",
@@ -1335,7 +1335,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/_deps"
+			"value" : "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/_deps"
 		},
 		{
 			"name" : "FETCHCONTENT_FULLY_DISCONNECTED",
@@ -1371,7 +1371,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft"
+			"value" : "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft"
 		},
 		{
 			"name" : "FETCHCONTENT_UPDATES_DISCONNECTED",
@@ -1579,7 +1579,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/knf_build"
+			"value" : "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/knf_build"
 		},
 		{
 			"name" : "kaldi-native-fbank_IS_TOP_LEVEL",
@@ -1603,7 +1603,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3"
+			"value" : "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3"
 		},
 		{
 			"name" : "kissfft_BINARY_DIR",
@@ -1615,7 +1615,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/_deps/kissfft-build"
+			"value" : "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/_deps/kissfft-build"
 		},
 		{
 			"name" : "kissfft_IS_TOP_LEVEL",
@@ -1639,7 +1639,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft"
+			"value" : "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft"
 		},
 		{
 			"name" : "yuyan_asr_BINARY_DIR",
@@ -1651,7 +1651,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a"
+			"value" : "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a"
 		},
 		{
 			"name" : "yuyan_asr_IS_TOP_LEVEL",
@@ -1675,7 +1675,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni"
+			"value" : "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni"
 		}
 	],
 	"kind" : "cache",

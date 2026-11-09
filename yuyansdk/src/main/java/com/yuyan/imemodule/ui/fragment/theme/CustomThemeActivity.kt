@@ -26,7 +26,7 @@ import androidx.viewpager2.widget.ViewPager2
 import android.annotation.SuppressLint
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.view.CandidatesBar
-import android.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -244,19 +244,51 @@ class CustomThemeActivity : AppCompatActivity() {
         }
     }
 
+    private fun showCapsuleDropdown(anchorView: View, options: Array<String>, onSelected: (String) -> Unit) {
+        val popup = androidx.appcompat.widget.ListPopupWindow(this).apply {
+            this.anchorView = anchorView
+            isModal = true
+            width = dp(180)
+            verticalOffset = dp(6)
+
+            val isDarkTheme = theme.isDark
+            setBackgroundDrawable(GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = dp(16f)
+                setColor(if (isDarkTheme) Color.parseColor("#2A2C30") else Color.WHITE)
+                setStroke(dp(1), if (isDarkTheme) 0x30FFFFFF.toInt() else Color.parseColor("#E5E7EB"))
+            })
+
+            setAdapter(object : android.widget.ArrayAdapter<String>(this@CustomThemeActivity, android.R.layout.simple_list_item_1, options) {
+                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                    val view = super.getView(position, convertView, parent)
+                    (view as? TextView)?.apply {
+                        setTextColor(if (isDarkTheme) Color.WHITE else Color.parseColor("#1F2937"))
+                        textSize = 14f
+                        gravity = Gravity.CENTER_VERTICAL or Gravity.START
+                        setPadding(dp(18), dp(12), dp(18), dp(12))
+                    }
+                    return view
+                }
+            })
+
+            setOnItemClickListener { _, _, position, _ ->
+                if (position in options.indices) {
+                    onSelected(options[position])
+                }
+                dismiss()
+            }
+        }
+        popup.show()
+    }
+
     private val btnKeyboardCapsule: TextView by lazy {
         val defaultName = getCurrentKeyboardName()
         createCapsuleButton(defaultName) { anchorView ->
-            val popup = androidx.appcompat.widget.PopupMenu(this, anchorView)
-            popup.menu.add("中文9键")
-            popup.menu.add("拼音全键")
-            popup.menu.add("手写输入")
-            popup.menu.add("小鹤双拼")
-            popup.menu.add("乱序17")
-            popup.menu.add("笔画键盘")
-            popup.setOnMenuItemClickListener { menuItem ->
-                btnKeyboardCapsule.text = menuItem.title
-                val skbMode = when (menuItem.title) {
+            val options = arrayOf("中文9键", "拼音全键", "手写输入", "小鹤双拼", "乱序17", "笔画键盘")
+            showCapsuleDropdown(anchorView, options) { selectedTitle ->
+                btnKeyboardCapsule.text = selectedTitle
+                val skbMode = when (selectedTitle) {
                     "中文9键" -> InputModeSwitcher.MASK_SKB_LAYOUT_T9_PINYIN
                     "拼音全键" -> InputModeSwitcher.MASK_SKB_LAYOUT_QWERTY_PINYIN
                     "手写输入" -> InputModeSwitcher.MASK_SKB_LAYOUT_HANDWRITING
@@ -266,29 +298,22 @@ class CustomThemeActivity : AppCompatActivity() {
                     else -> InputModeSwitcher.MASK_SKB_LAYOUT_LX17
                 }
                 previewUi.setSkbLayout(skbMode)
-                true
             }
-            popup.show()
         }
     }
 
     private val btnStateCapsule: TextView by lazy {
         createCapsuleButton("中文") { anchorView ->
-            val popup = androidx.appcompat.widget.PopupMenu(this, anchorView)
-            popup.menu.add("中文")
-            popup.menu.add("英文")
-            popup.menu.add("数字")
-            popup.setOnMenuItemClickListener { menuItem ->
-                btnStateCapsule.text = menuItem.title
-                val previewState = when (menuItem.title) {
+            val options = arrayOf("中文", "英文", "数字")
+            showCapsuleDropdown(anchorView, options) { selectedTitle ->
+                btnStateCapsule.text = selectedTitle
+                val previewState = when (selectedTitle) {
                     "英文" -> KeyboardPreviewView.PreviewMode.MAIN_EN
                     "数字" -> KeyboardPreviewView.PreviewMode.NUMBER
                     else -> KeyboardPreviewView.PreviewMode.MAIN_ZH
                 }
                 previewUi.setPreviewState(previewState)
-                true
             }
-            popup.show()
         }
     }
 
@@ -1509,7 +1534,7 @@ class CustomThemeActivity : AppCompatActivity() {
             setSelection(theme.name.length)
             setPadding(dp(16), dp(12), dp(16), dp(12))
         }
-        AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this)
             .setTitle("修改主题名称")
             .setView(input)
             .setPositiveButton(android.R.string.ok) { _, _ ->
@@ -1520,8 +1545,9 @@ class CustomThemeActivity : AppCompatActivity() {
                     android.widget.Toast.makeText(this, "主题名称已修改", android.widget.Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
+            .create()
+        com.yuyan.imemodule.utils.DialogStyleUtils.styleDialog(dialog, this)
+        dialog.show()
     }
 
     private fun cancel() {
@@ -1636,14 +1662,15 @@ class CustomThemeActivity : AppCompatActivity() {
     }
 
     private fun promptDelete() {
-        AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this)
             .setTitle(R.string.delete_theme)
             .setMessage(getString(R.string.delete_theme_msg, theme.name))
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 delete()
             }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
+            .create()
+        com.yuyan.imemodule.utils.DialogStyleUtils.styleDialog(dialog, this)
+        dialog.show()
     }
 
     private fun updateColorTheme(updateBlock: (Theme.Custom) -> Theme.Custom) {

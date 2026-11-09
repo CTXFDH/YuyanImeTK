@@ -1,8 +1,11 @@
 package com.yuyan.imemodule.service
 
 import androidx.lifecycle.MutableLiveData
+import com.yuyan.imemodule.manager.InputModeSwitcher
+import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.inputmethod.RimeEngine
 import com.yuyan.inputmethod.core.CandidateListItem
+import com.yuyan.inputmethod.core.Rime
 
 /**
  * 词库解码操作对象
@@ -94,13 +97,22 @@ object DictDecoder {
         var candidate: String
         val wasAssociate = isAssociate
         if(!InputDispatcher.isFinish || wasAssociate) { // Rime和联想
-            if (candId >= 0) InputDispatcher.getWordSelectedWord(candId)
-            val newCandidates = RimeEngine.showCandidates
-            candidate = if (newCandidates.isNotEmpty()) RimeEngine.preCommitText
-            else if (candId in 0..<candidateSize) RimeEngine.preCommitText.ifEmpty { candidatesLiveData.value!![candId].text }
-            else ""
-            candidatesLiveData.value = newCandidates
-            justCommittedAssociateWord = wasAssociate
+            val currentList = candidatesLiveData.value ?: emptyList()
+            val chosenItem = currentList.getOrNull(candId)
+            val isEnglishWord = chosenItem != null && chosenItem.comment == "🔤"
+
+            if (isEnglishWord && chosenItem != null) {
+                candidate = chosenItem.text
+                InputDispatcher.reset()
+            } else {
+                if (candId >= 0) InputDispatcher.getWordSelectedWord(candId)
+                val newCandidates = RimeEngine.showCandidates
+                candidate = if (newCandidates.isNotEmpty()) RimeEngine.preCommitText
+                else if (candId in 0..<candidateSize) RimeEngine.preCommitText.ifEmpty { candidatesLiveData.value!![candId].text }
+                else ""
+                candidatesLiveData.value = newCandidates
+                justCommittedAssociateWord = wasAssociate
+            }
         } else {  // 手写
             candidate = if (candId in 0..<candidateSize) candidatesLiveData.value!![candId].text  else ""
             justCommittedAssociateWord = false
@@ -115,7 +127,29 @@ object DictDecoder {
     fun updateDecodingCandidate() {
         activeCandidate = 0
         activeCandidateBar = 0
-        candidatesLiveData.value = RimeEngine.showCandidates
+        val rimeCandidates = RimeEngine.showCandidates.toMutableList()
+
+        if (!isAssociate && AppPrefs.getInstance().input.cnEnInput.getValue()) {
+            val skbLayout = InputModeSwitcher.skbLayout
+            if (skbLayout == InputModeSwitcher.MASK_SKB_LAYOUT_T9_PINYIN ||
+                skbLayout == InputModeSwitcher.MASK_SKB_LAYOUT_LX17
+            ) {
+                val rawComposition = Rime.compositionText.replace("'", "")
+                val composition = rawComposition.ifEmpty { RimeEngine.showComposition.replace("'", "") }
+                val englishCandidates = T9EnglishPredictor.predict(composition, skbLayout)
+                if (englishCandidates.isNotEmpty()) {
+                    val insertIndex = if (rimeCandidates.isNotEmpty()) 1 else 0
+                    var offset = 0
+                    for (engCand in englishCandidates) {
+                        if (rimeCandidates.none { it.text.equals(engCand.text, ignoreCase = true) }) {
+                            rimeCandidates.add(insertIndex + offset, engCand)
+                            offset++
+                        }
+                    }
+                }
+            }
+        }
+        candidatesLiveData.value = rimeCandidates
     }
 
     /**

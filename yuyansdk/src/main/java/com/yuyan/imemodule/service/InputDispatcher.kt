@@ -71,6 +71,8 @@ object InputDispatcher {
         RimeEngine.setImeOption("traditionalization", chineseFanTi)
         val emojiInput = AppPrefs.getInstance().input.emojiInput.getValue()
         RimeEngine.setImeOption("emoji", emojiInput)
+        val cnEnInput = AppPrefs.getInstance().input.cnEnInput.getValue()
+        RimeEngine.setImeOption("echo", cnEnInput)
     }
 
     fun setCharCase(charCase: Int) {

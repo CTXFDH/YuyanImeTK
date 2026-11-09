@@ -14,7 +14,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener
-import com.yuyan.imemodule.adapter.CandidatesBarAdapter
+import com.yuyan.imemodule.adapter.FloatCandidatesBarAdapter
 import com.yuyan.imemodule.callback.CandidateViewListener
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.keyboard.KeyboardManager
@@ -25,23 +25,24 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import splitties.dimensions.dp
 
 /**
- * 候选词集装箱
+ * 物理键盘候选词集装箱
  */
 class FloatCandidateBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(context, attrs) {
     private var mFloatCandidateBarWidth: Int = 0
 
     private lateinit var mCvListener: CandidateViewListener // 候选词视图监听器
     private lateinit var mCandidatesDataContainer: LinearLayout //候选词视图
-    private lateinit var mComposingTagContainer: LinearLayout // 悬浮拼音胶囊容器 View
     private lateinit var mComposingView: TextView // 组成字符串的View，用于显示输入的拼音。
     private lateinit var mRVCandidates: RecyclerView    //候选词列表
-    private lateinit var mCandidatesAdapter: CandidatesBarAdapter
+    private lateinit var mCandidatesAdapter: FloatCandidatesBarAdapter
     private lateinit var candidatesData: LinearLayout //候选词视图
-    private var activeCandNo:Int = 0
+    private var activeCandidatePosition = RecyclerView.NO_POSITION
+    private var firstVisiblePosition = 0
+    private var displayedCandidates = DictDecoder.candidates
 
     fun initialize(cvListener: CandidateViewListener) {
         mCvListener = cvListener
-        mFloatCandidateBarWidth = instance.mScreenWidth - dp(40)
+        mFloatCandidateBarWidth = (if(instance.isLandscape)instance.mScreenHeight else instance.mScreenWidth) - dp(40)
         initCandidateView()
     }
 
@@ -50,62 +51,55 @@ class FloatCandidateBar(context: Context?, attrs: AttributeSet?) : RelativeLayou
         if(!::mCandidatesDataContainer.isInitialized) {
             mCandidatesDataContainer = LinearLayout(context).apply {
                 orientation = LinearLayout.VERTICAL
-                gravity = Gravity.CENTER_VERTICAL
-            }
-            mComposingTagContainer = LinearLayout(context).apply {
-                orientation = LinearLayout.HORIZONTAL
-                gravity = Gravity.CENTER_VERTICAL
-                visibility = GONE
-                setPadding(dp(8), dp(2), dp(8), dp(2))
             }
             mComposingView = TextView(context).apply {
                 includeFontPadding = false
-                isSingleLine = true
+                setPadding(dp(10), 0, dp(10), 0)
             }
-            mComposingTagContainer.addView(mComposingView)
-
             candidatesData = LinearLayout(context).apply {
                 gravity = Gravity.CENTER_VERTICAL
             }
             mRVCandidates = RecyclerView(context).apply {
-                itemAnimator = null
+                setItemAnimator(null)
                 layoutParams = LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT, 1f)
                 layoutManager =
-                    CustomLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, reverseLayout = false)
+                    CustomLinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             }
-            mCandidatesAdapter = CandidatesBarAdapter(context)
+            mCandidatesAdapter = FloatCandidatesBarAdapter(context)
             mCandidatesAdapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
                 mCvListener.onClickChoice(position)
             }
             mRVCandidates.setAdapter(mCandidatesAdapter)
             mRVCandidates.addOnScrollListener(object : OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    refreshVisibleCandidates()
+                }
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                     if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                         val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                         DictDecoder.activeCandidateBar =
                             layoutManager.findLastVisibleItemPosition()
                         val itemCount = recyclerView.adapter?.itemCount
-                        if ((KeyboardManager.instance.currentContainer !is CandidatesContainer) && (itemCount != null) && (DictDecoder.activeCandidateBar >= itemCount - 1)) {
+                        if (KeyboardManager.instance.currentContainer !is CandidatesContainer && itemCount != null && itemCount > 0 && DictDecoder.activeCandidateBar >= itemCount - 1) {
                             DictDecoder.nextPageCandidates
                         }
                     }
                 }
             })
-
-            val tagLp = LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
-                marginStart = dp(10)
-                topMargin = dp(2)
-                bottomMargin = dp(1)
+            mRVCandidates.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+                refreshVisibleCandidates()
             }
-            mCandidatesDataContainer.addView(mComposingTagContainer, tagLp)
-            mCandidatesDataContainer.addView(candidatesData, LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 1f))
-            this.addView(mCandidatesDataContainer, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
+            mCandidatesDataContainer.addView(mComposingView)
+            mCandidatesDataContainer.addView(candidatesData)
+            this.addView(mCandidatesDataContainer, LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
         } else {
-            if (mRVCandidates.parent != null) (mRVCandidates.parent as ViewGroup).removeView(mRVCandidates)
+            (mRVCandidates.parent as ViewGroup).removeView(mRVCandidates)
         }
-        candidatesData.layoutParams = LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 1f)
-        candidatesData.removeAllViews()
-        candidatesData.addView(mRVCandidates, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT, 1f))
+        val candidatesHeight = instance.heightForCandidates
+        mComposingView.layoutParams = LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, instance.heightForcomposing)
+        candidatesData.layoutParams = LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, candidatesHeight)
+        candidatesData.addView(mRVCandidates, LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, candidatesHeight, 1f))
+        mComposingView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, instance.composingTextSize)
         mCandidatesAdapter.notifyChanged()
     }
 
@@ -113,57 +107,109 @@ class FloatCandidateBar(context: Context?, attrs: AttributeSet?) : RelativeLayou
      * 显示候选词
      */
     fun showCandidates() {
-        val composingText = DictDecoder.composingStrForDisplay
-        if (::mComposingTagContainer.isInitialized) {
-            if (composingText.isNotBlank()) {
-                mComposingView.text = composingText
-                mComposingTagContainer.visibility = VISIBLE
-            } else {
-                mComposingTagContainer.visibility = GONE
+        val candidates = DictDecoder.candidates
+        val composing = DictDecoder.composingStrForDisplay
+        val isAppend = DictDecoder.activeCandidateBar > 0 &&
+            displayedCandidates.isNotEmpty() && candidates.size > displayedCandidates.size &&
+            composing == mComposingView.text.toString() &&
+            candidates.subList(0, displayedCandidates.size) == displayedCandidates
+        displayedCandidates = candidates
+        mComposingView.text = composing
+        if (!isAppend) {
+            activeCandidatePosition = RecyclerView.NO_POSITION
+            firstVisiblePosition = if (candidates.isEmpty()) 0 else {
+                DictDecoder.activeCandidateBar.coerceIn(0, candidates.lastIndex)
             }
+            pageStarts.clear()
+            (mRVCandidates.layoutManager as? LinearLayoutManager)
+                ?.scrollToPositionWithOffset(firstVisiblePosition, 0)
         }
-        if (DictDecoder.isCandidatesEmpty) {
-            this.visibility = GONE
-        } else {
-            if (DictDecoder.candidateSize > DictDecoder.activeCandidateBar) mRVCandidates.layoutManager?.scrollToPosition(DictDecoder.activeCandidateBar)
-            this.visibility = VISIBLE
-        }
-        activeCandNo = 0
-        mCandidatesAdapter.activeCandidates(activeCandNo)
+        this.visibility = if (candidates.isEmpty()) GONE else VISIBLE
+        mCandidatesAdapter.updateCandidateState(firstVisiblePosition, activeCandidatePosition)
         mCandidatesAdapter.notifyChanged()
     }
+
+    private fun refreshVisibleCandidates() {
+        val lm = mRVCandidates.layoutManager as? LinearLayoutManager ?: return
+        val first = lm.findFirstVisibleItemPosition()
+        if (first != RecyclerView.NO_POSITION) firstVisiblePosition = first
+        mCandidatesAdapter.updateCandidateState(firstVisiblePosition, activeCandidatePosition)
+        mCandidatesAdapter.updateVisibleIndices(mRVCandidates)
+    }
+
+    private fun selectCandidate(position: Int) {
+        activeCandidatePosition = position
+        mCandidatesAdapter.updateCandidateState(firstVisiblePosition, activeCandidatePosition)
+        mCandidatesAdapter.updateVisibleIndices(mRVCandidates)
+    }
+
+    private val displayedActivePosition: Int
+        get() = if (isActiveCand()) activeCandidatePosition else firstVisiblePosition
 
     /**
      * 更新激活的候选词
      */
     fun updateActiveCandidateNo(keyCode: Int) {
-        if (!DictDecoder.isCandidatesEmpty) {
-            when(keyCode){
-                KeyEvent.KEYCODE_DPAD_LEFT -> {
-                    if(--activeCandNo <= 0) activeCandNo = 0
-                }
-                KeyEvent.KEYCODE_DPAD_RIGHT -> {
-                    if(++activeCandNo > DictDecoder.candidateSize) activeCandNo = DictDecoder.candidateSize
-                }
-            }
-            mCandidatesAdapter.activeCandidates(activeCandNo)
-            mCandidatesAdapter.notifyChanged()
-            mRVCandidates.layoutManager?.scrollToPosition(if(activeCandNo - 1 > 0) activeCandNo - 1 else 0 )
+        if (DictDecoder.isCandidatesEmpty) return
+        val step = when (keyCode) {
+            KeyEvent.KEYCODE_DPAD_LEFT -> -1
+            KeyEvent.KEYCODE_DPAD_RIGHT -> 1
+            else -> return
         }
+        val target = (displayedActivePosition + step).coerceIn(0, DictDecoder.candidateSize - 1)
+        selectCandidate(target)
+        mRVCandidates.layoutManager?.scrollToPosition(target)
+    }
+
+    fun getVisibleCandPosition(visibleNo: Int): Int {
+        if (visibleNo < 1 || DictDecoder.isCandidatesEmpty) return -1
+        val position = firstVisiblePosition + visibleNo - 1
+        return if (position in 0 until DictDecoder.candidateSize) position else -1
     }
 
     /**
      * 获取激活的候选词
      */
-    fun getActiveCandNo():Int {
-        return if(activeCandNo > 0) activeCandNo - 1 else 0
+    fun getActiveCandNo(): Int {
+        if (DictDecoder.isCandidatesEmpty) return 0
+        return displayedActivePosition.coerceIn(0, DictDecoder.candidateSize - 1)
+    }
+
+    private val pageStarts = ArrayDeque<Int>()   // 每页起点的历史记录
+    /**
+     * 翻页功能
+     */
+    fun pageChange(keyCode: Int) {
+        if (DictDecoder.isCandidatesEmpty) return
+        val lm = mRVCandidates.layoutManager as? LinearLayoutManager ?: return
+        val target = when (keyCode) {
+            KeyEvent.KEYCODE_DPAD_DOWN -> {
+                val first = lm.findFirstVisibleItemPosition()
+                if (first == RecyclerView.NO_POSITION) return
+                val last = lm.findLastCompletelyVisibleItemPosition().let {
+                    if (it == RecyclerView.NO_POSITION) first else it
+                }
+                val next = last + 1
+                if (next >= mCandidatesAdapter.itemCount) return
+                pageStarts.addLast(first)
+                next
+            }
+            KeyEvent.KEYCODE_DPAD_UP -> {
+                if (pageStarts.isEmpty()) return
+                pageStarts.removeLast()
+            }
+            else -> return
+        }
+        firstVisiblePosition = target
+        selectCandidate(target)
+        lm.scrollToPositionWithOffset(target, 0)
     }
 
     /**
      * 是否操作选词
      */
-    fun isActiveCand():Boolean {
-        return activeCandNo > 0
+    fun isActiveCand(): Boolean {
+        return activeCandidatePosition in 0 until DictDecoder.candidateSize
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -173,33 +219,14 @@ class FloatCandidateBar(context: Context?, attrs: AttributeSet?) : RelativeLayou
     }
 
     // 刷新主题
-    @Suppress("UNUSED_PARAMETER")
     fun updateTheme(textColor: Int) {
         initCandidateView()
-        val activeTheme = ThemeManager.activeTheme
-        if (::mComposingTagContainer.isInitialized) {
-            val tagBg = GradientDrawable().apply {
-                shape = GradientDrawable.RECTANGLE
-                cornerRadius = dp(14f)
-                if (activeTheme.isDark) {
-                    setColor(0xE62A2C30.toInt())
-                    setStroke(dp(1), 0x40FFFFFF.toInt())
-                } else {
-                    setColor(0xF5EFF1F5.toInt())
-                    setStroke(dp(1), 0x20000000.toInt())
-                }
-            }
-            mComposingTagContainer.background = tagBg
-        }
-        if (::mComposingView.isInitialized) {
-            mComposingView.setTextColor(activeTheme.toolbarTextColor)
-            mComposingView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14f)
-        }
-        val drawable = GradientDrawable().apply {
-            shape = GradientDrawable.RECTANGLE
-            setColor(ThemeManager.activeTheme.keyboardColor)
-            cornerRadius = 20f
-        }
+        mComposingView.setTextColor(textColor)
+        val drawable = GradientDrawable()
+        drawable.setShape(GradientDrawable.RECTANGLE)
+        drawable.setColor(ThemeManager.activeTheme.keyboardColor)
+        val cornerRadiusInPx = 20f
+        drawable.setCornerRadius(cornerRadiusInPx)
         background = drawable
         mCandidatesAdapter.notifyChanged()
     }

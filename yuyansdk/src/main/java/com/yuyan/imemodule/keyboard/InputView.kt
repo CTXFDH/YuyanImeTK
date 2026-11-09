@@ -488,8 +488,12 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         return false
     }
 
+    val isKeyCaptureInput: Boolean
+        get() = service.currentInputEditorInfo?.privateImeOptions == "com.yuyan.KEY_CAPTURE"
+
     override fun processKeyUp(event: KeyEvent): Boolean {
         if(event.isSystem) return processSystemKeys(event)
+        if (isKeyCaptureInput) return processKeyCaptureInput(event)
         else if(isFunctionKey(event.keyCode)){
             processFunctionKey(event)
             return true
@@ -502,6 +506,86 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
             else -> processEnglishKey(event)
         }
 //        return if(appPrefs.input.abcSearchEnglishCell.getValue() || InputModeSwitcherManager.isChinese)processInput(event) else processEnglishKey(event)
+    }
+
+    private fun processKeyCaptureInput(event: KeyEvent): Boolean {
+        val keyCode = event.keyCode
+        val keyChar = event.unicodeChar
+
+        if (keyCode == KeyEvent.KEYCODE_DEL) {
+            service.deleteSurroundingText(1, 0)
+            return true
+        }
+        if (keyCode == KeyEvent.KEYCODE_ENTER) {
+            sendKeyEvent(keyCode)
+            return true
+        }
+
+        val skbLayout = InputModeSwitcher.skbLayout
+        val capturedKey = when (skbLayout) {
+            InputModeSwitcher.MASK_SKB_LAYOUT_T9_PINYIN -> {
+                when (keyCode) {
+                    KeyEvent.KEYCODE_1 -> "1"
+                    KeyEvent.KEYCODE_2, KeyEvent.KEYCODE_A, KeyEvent.KEYCODE_B, KeyEvent.KEYCODE_C -> "2"
+                    KeyEvent.KEYCODE_3, KeyEvent.KEYCODE_D, KeyEvent.KEYCODE_E, KeyEvent.KEYCODE_F -> "3"
+                    KeyEvent.KEYCODE_4, KeyEvent.KEYCODE_G, KeyEvent.KEYCODE_H, KeyEvent.KEYCODE_I -> "4"
+                    KeyEvent.KEYCODE_5, KeyEvent.KEYCODE_J, KeyEvent.KEYCODE_K, KeyEvent.KEYCODE_L -> "5"
+                    KeyEvent.KEYCODE_6, KeyEvent.KEYCODE_M, KeyEvent.KEYCODE_N, KeyEvent.KEYCODE_O -> "6"
+                    KeyEvent.KEYCODE_7, KeyEvent.KEYCODE_P, KeyEvent.KEYCODE_Q, KeyEvent.KEYCODE_R, KeyEvent.KEYCODE_S -> "7"
+                    KeyEvent.KEYCODE_8, KeyEvent.KEYCODE_T, KeyEvent.KEYCODE_U, KeyEvent.KEYCODE_V -> "8"
+                    KeyEvent.KEYCODE_9, KeyEvent.KEYCODE_W, KeyEvent.KEYCODE_X, KeyEvent.KEYCODE_Y, KeyEvent.KEYCODE_Z -> "9"
+                    KeyEvent.KEYCODE_0 -> "0"
+                    else -> {
+                        val ch = keyChar.toChar()
+                        if (ch in 'a'..'z' || ch in 'A'..'Z') {
+                            com.yuyan.inputmethod.util.T9PinYinUtils.pinyin2T9Key(ch.lowercaseChar()).toString()
+                        } else if (ch.isDigit()) {
+                            ch.toString()
+                        } else ""
+                    }
+                }
+            }
+            InputModeSwitcher.MASK_SKB_LAYOUT_LX17 -> {
+                when (keyCode) {
+                    KeyEvent.KEYCODE_H -> "H"
+                    KeyEvent.KEYCODE_S -> "S"
+                    KeyEvent.KEYCODE_Z -> "Z"
+                    KeyEvent.KEYCODE_B -> "B"
+                    KeyEvent.KEYCODE_X -> "X"
+                    KeyEvent.KEYCODE_M -> "M"
+                    KeyEvent.KEYCODE_L -> "L"
+                    KeyEvent.KEYCODE_D -> "D"
+                    KeyEvent.KEYCODE_Y -> "Y"
+                    KeyEvent.KEYCODE_W -> "W"
+                    KeyEvent.KEYCODE_J -> "J"
+                    KeyEvent.KEYCODE_N -> "N"
+                    KeyEvent.KEYCODE_C -> "C"
+                    KeyEvent.KEYCODE_Q -> "Q"
+                    KeyEvent.KEYCODE_G -> "G"
+                    KeyEvent.KEYCODE_F -> "F"
+                    KeyEvent.KEYCODE_T -> "T"
+                    else -> {
+                        val ch = keyChar.toChar()
+                        if (ch in 'a'..'z' || ch in 'A'..'Z') {
+                            com.yuyan.inputmethod.util.LX17PinYinUtils.pinyin2Lx17Key(ch.lowercaseChar()).uppercase()
+                        } else ""
+                    }
+                }
+            }
+            else -> {
+                val ch = keyChar.toChar()
+                if (ch != Character.MIN_VALUE && ch.code > 32) {
+                    ch.lowercaseChar().toString()
+                } else if (keyCode in KeyEvent.KEYCODE_A..KeyEvent.KEYCODE_Z) {
+                    ('a' + (keyCode - KeyEvent.KEYCODE_A)).toString()
+                } else ""
+            }
+        }
+
+        if (capturedKey.isNotEmpty()) {
+            service.commitText(capturedKey)
+        }
+        return true
     }
 
     private fun processEnglishKey(event: KeyEvent): Boolean {

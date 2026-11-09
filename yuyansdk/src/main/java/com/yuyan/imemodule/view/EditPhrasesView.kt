@@ -29,8 +29,8 @@ import splitties.views.dsl.core.wrapContent
 class EditPhrasesView(context: Context) : LinearLayout(context){
 
     private var mEtPhrases: ImeEditText
-    private var mEtPhrasesQuickCode:ImeEditText
-    private var mEtPhrasesTips:TextView
+    private var mEtPhrasesQuickCode: com.yuyan.imemodule.view.widget.KeyCaptureEditText
+    private var mEtPhrasesTips: TextView
     init {
         orientation = VERTICAL
         mEtPhrasesTips = TextView(context).apply {
@@ -38,7 +38,7 @@ class EditPhrasesView(context: Context) : LinearLayout(context){
             setPadding(dp(5))
             textSize = 12f
         }
-        mEtPhrasesQuickCode = ImeEditText(context).apply {
+        mEtPhrasesQuickCode = com.yuyan.imemodule.view.widget.KeyCaptureEditText(context).apply {
             setText(R.string.add_phrases_input_tips)
             setPadding(dp(5))
             background = null

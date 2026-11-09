@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import android.view.inputmethod.CursorAnchorInfo
+import java.lang.Float.isNaN
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import androidx.lifecycle.Observer
@@ -368,6 +369,7 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
         if (matrix != null) {
             matrix.mapPoints(cursorAnchorPosition)
         }
+        if (cursorAnchorPosition[0].isNaN() || cursorAnchorPosition[1].isNaN()) return
         if (::mInputView.isInitialized) mInputView.updatePosition(cursorAnchorPosition)
     }
 

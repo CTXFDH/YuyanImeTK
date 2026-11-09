@@ -95,16 +95,16 @@ abstract class DataBaseKT : RoomDatabase() {
             instance.sideSymbolDao().insertAll(symbolNumber)
         }
 
-        private fun initPhrasesDb() {  //初始化常用语数据数据
-            if(instance.phraseDao().getAll().isEmpty()) {
-                val phrases = listOf(
-                    Phrase(content = "我的电话是__，常联系。", t9 = "9334", qwerty = "wddh", lx17 = "wddh"),
-                    Phrase(content = "抱歉，我现在不方便接电话，稍后联系。", t9 = "2799", qwerty = "bqwx", lx17 = "bqwx"),
-                    Phrase(content = "我正在开会，有急事请发短信。", t9 = "9995", qwerty = "wzzk", lx17 = "wwwj"),
-                    Phrase(content = "我很快就到，请稍微等一会儿。", t9 = "9455", qwerty = "whkj", lx17 = "whjj"),
-                    Phrase(content = "麻烦放驿站，谢谢。", t9 = "6339", qwerty = "mffy", lx17 = "mffy"),
-                )
-                instance.phraseDao().insertAll(phrases)
+        private fun initPhrasesDb() {  // 初始化常用语数据
+            val presetContents = listOf(
+                "我的电话是__，常联系。",
+                "抱歉，我现在不方便接电话，稍后联系。",
+                "我正在开会，有急事请发短信。",
+                "我很快就到，请稍微等一会儿。",
+                "麻烦放驿站，谢谢。"
+            )
+            for (preset in presetContents) {
+                instance.phraseDao().deleteByContent(preset)
             }
             if(instance.skbFunDao().getAllMenu().isEmpty()) {
                 val skbFuns = listOf(

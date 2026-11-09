@@ -39,7 +39,7 @@ include CMakeFiles/rules.ninja
 #############################################
 # Logical path to working directory; prefix for absolute paths.
 
-cmake_ninja_workdir = C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/
+cmake_ninja_workdir = C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/
 # =============================================================================
 # Object build statements for SHARED_LIBRARY target onnx_env
 
@@ -49,13 +49,15 @@ cmake_ninja_workdir = C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.
 
 build cmake_object_order_depends_target_onnx_env: phony || CMakeFiles/onnx_env.dir
 
-build CMakeFiles/onnx_env.dir/onnx_env.cc.o: CXX_COMPILER__onnx_env_Debug C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/onnx_env.cc || cmake_object_order_depends_target_onnx_env
+build CMakeFiles/onnx_env.dir/onnx_env.cc.o: CXX_COMPILER__onnx_env_Debug C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/onnx_env.cc || cmake_object_order_depends_target_onnx_env
   DEFINES = -Donnx_env_EXPORTS
   DEP_FILE = CMakeFiles\onnx_env.dir\onnx_env.cc.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -fPIC
-  INCLUDES = -isystem C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/include -isystem C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/include/onnxruntime
+  INCLUDES = -isystem C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/include -isystem C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/include/onnxruntime
   OBJECT_DIR = CMakeFiles\onnx_env.dir
   OBJECT_FILE_DIR = CMakeFiles\onnx_env.dir
+  TARGET_COMPILE_PDB = CMakeFiles\onnx_env.dir\
+  TARGET_PDB = C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\build\intermediates\cxx\Debug\h3n6d6m1\obj\arm64-v8a\libonnx_env.pdb
 
 
 # =============================================================================
@@ -63,19 +65,20 @@ build CMakeFiles/onnx_env.dir/onnx_env.cc.o: CXX_COMPILER__onnx_env_Debug C$:/Us
 
 
 #############################################
-# Link the shared library C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\build\intermediates\cxx\Debug\h3n6d6m1\obj\arm64-v8a\libonnx_env.so
+# Link the shared library C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\build\intermediates\cxx\Debug\h3n6d6m1\obj\arm64-v8a\libonnx_env.so
 
-build C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/Debug/h3n6d6m1/obj/arm64-v8a/libonnx_env.so: CXX_SHARED_LIBRARY_LINKER__onnx_env_Debug CMakeFiles/onnx_env.dir/onnx_env.cc.o | C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/onnxruntime/lib/arm64-v8a/libonnxruntime.so
+build C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/Debug/h3n6d6m1/obj/arm64-v8a/libonnx_env.so: CXX_SHARED_LIBRARY_LINKER__onnx_env_Debug CMakeFiles/onnx_env.dir/onnx_env.cc.o | C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/onnxruntime/lib/arm64-v8a/libonnxruntime.so
   LANGUAGE_COMPILE_FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info
   LINK_FLAGS = -Wl,--build-id=sha1 -Wl,--no-rosegment -Wl,--fatal-warnings -Wl,--gc-sections -Wl,--no-undefined -Qunused-arguments
-  LINK_LIBRARIES = C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/onnxruntime/lib/arm64-v8a/libonnxruntime.so  -llog  -ldl  -latomic -lm
+  LINK_LIBRARIES = C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/onnxruntime/lib/arm64-v8a/libonnxruntime.so  -llog  -ldl  -latomic -lm
   OBJECT_DIR = CMakeFiles\onnx_env.dir
   POST_BUILD = cd .
   PRE_LINK = cd .
   SONAME = libonnx_env.so
   SONAME_FLAG = -Wl,-soname,
-  TARGET_FILE = C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\build\intermediates\cxx\Debug\h3n6d6m1\obj\arm64-v8a\libonnx_env.so
-  TARGET_PDB = onnx_env.so.dbg
+  TARGET_COMPILE_PDB = CMakeFiles\onnx_env.dir\
+  TARGET_FILE = C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\build\intermediates\cxx\Debug\h3n6d6m1\obj\arm64-v8a\libonnx_env.so
+  TARGET_PDB = C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\build\intermediates\cxx\Debug\h3n6d6m1\obj\arm64-v8a\libonnx_env.pdb
 
 # =============================================================================
 # Object build statements for SHARED_LIBRARY target asr_jni
@@ -86,37 +89,45 @@ build C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/build/intermediat
 
 build cmake_object_order_depends_target_asr_jni: phony || cmake_object_order_depends_target_kaldi-native-fbank-core cmake_object_order_depends_target_kissfft cmake_object_order_depends_target_onnx_env
 
-build CMakeFiles/asr_jni.dir/asr/asr_jni.cc.o: CXX_COMPILER__asr_jni_Debug C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/asr/asr_jni.cc || cmake_object_order_depends_target_asr_jni
+build CMakeFiles/asr_jni.dir/asr/asr_jni.cc.o: CXX_COMPILER__asr_jni_Debug C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/asr/asr_jni.cc || cmake_object_order_depends_target_asr_jni
   DEFINES = -Dasr_jni_EXPORTS -Dkiss_fft_scalar=float
   DEP_FILE = CMakeFiles\asr_jni.dir\asr\asr_jni.cc.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -fPIC
-  INCLUDES = -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3 -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -isystem C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/include -isystem C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/include/onnxruntime
+  INCLUDES = -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3 -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -isystem C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/include -isystem C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/include/onnxruntime
   OBJECT_DIR = CMakeFiles\asr_jni.dir
   OBJECT_FILE_DIR = CMakeFiles\asr_jni.dir\asr
+  TARGET_COMPILE_PDB = CMakeFiles\asr_jni.dir\
+  TARGET_PDB = C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\build\intermediates\cxx\Debug\h3n6d6m1\obj\arm64-v8a\libasr_jni.pdb
 
-build CMakeFiles/asr_jni.dir/asr/zipformer2_model.cc.o: CXX_COMPILER__asr_jni_Debug C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/asr/zipformer2_model.cc || cmake_object_order_depends_target_asr_jni
+build CMakeFiles/asr_jni.dir/asr/zipformer2_model.cc.o: CXX_COMPILER__asr_jni_Debug C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/asr/zipformer2_model.cc || cmake_object_order_depends_target_asr_jni
   DEFINES = -Dasr_jni_EXPORTS -Dkiss_fft_scalar=float
   DEP_FILE = CMakeFiles\asr_jni.dir\asr\zipformer2_model.cc.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -fPIC
-  INCLUDES = -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3 -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -isystem C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/include -isystem C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/include/onnxruntime
+  INCLUDES = -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3 -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -isystem C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/include -isystem C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/include/onnxruntime
   OBJECT_DIR = CMakeFiles\asr_jni.dir
   OBJECT_FILE_DIR = CMakeFiles\asr_jni.dir\asr
+  TARGET_COMPILE_PDB = CMakeFiles\asr_jni.dir\
+  TARGET_PDB = C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\build\intermediates\cxx\Debug\h3n6d6m1\obj\arm64-v8a\libasr_jni.pdb
 
-build CMakeFiles/asr_jni.dir/asr/feature_extractor.cc.o: CXX_COMPILER__asr_jni_Debug C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/asr/feature_extractor.cc || cmake_object_order_depends_target_asr_jni
+build CMakeFiles/asr_jni.dir/asr/feature_extractor.cc.o: CXX_COMPILER__asr_jni_Debug C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/asr/feature_extractor.cc || cmake_object_order_depends_target_asr_jni
   DEFINES = -Dasr_jni_EXPORTS -Dkiss_fft_scalar=float
   DEP_FILE = CMakeFiles\asr_jni.dir\asr\feature_extractor.cc.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -fPIC
-  INCLUDES = -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3 -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -isystem C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/include -isystem C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/include/onnxruntime
+  INCLUDES = -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3 -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -isystem C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/include -isystem C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/include/onnxruntime
   OBJECT_DIR = CMakeFiles\asr_jni.dir
   OBJECT_FILE_DIR = CMakeFiles\asr_jni.dir\asr
+  TARGET_COMPILE_PDB = CMakeFiles\asr_jni.dir\
+  TARGET_PDB = C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\build\intermediates\cxx\Debug\h3n6d6m1\obj\arm64-v8a\libasr_jni.pdb
 
-build CMakeFiles/asr_jni.dir/asr/streaming_recognizer.cc.o: CXX_COMPILER__asr_jni_Debug C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/asr/streaming_recognizer.cc || cmake_object_order_depends_target_asr_jni
+build CMakeFiles/asr_jni.dir/asr/streaming_recognizer.cc.o: CXX_COMPILER__asr_jni_Debug C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/asr/streaming_recognizer.cc || cmake_object_order_depends_target_asr_jni
   DEFINES = -Dasr_jni_EXPORTS -Dkiss_fft_scalar=float
   DEP_FILE = CMakeFiles\asr_jni.dir\asr\streaming_recognizer.cc.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -fPIC
-  INCLUDES = -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3 -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -isystem C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/include -isystem C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/include/onnxruntime
+  INCLUDES = -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3 -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -isystem C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/include -isystem C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/include/onnxruntime
   OBJECT_DIR = CMakeFiles\asr_jni.dir
   OBJECT_FILE_DIR = CMakeFiles\asr_jni.dir\asr
+  TARGET_COMPILE_PDB = CMakeFiles\asr_jni.dir\
+  TARGET_PDB = C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\build\intermediates\cxx\Debug\h3n6d6m1\obj\arm64-v8a\libasr_jni.pdb
 
 
 # =============================================================================
@@ -124,26 +135,27 @@ build CMakeFiles/asr_jni.dir/asr/streaming_recognizer.cc.o: CXX_COMPILER__asr_jn
 
 
 #############################################
-# Link the shared library C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\build\intermediates\cxx\Debug\h3n6d6m1\obj\arm64-v8a\libasr_jni.so
+# Link the shared library C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\build\intermediates\cxx\Debug\h3n6d6m1\obj\arm64-v8a\libasr_jni.so
 
-build C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/Debug/h3n6d6m1/obj/arm64-v8a/libasr_jni.so: CXX_SHARED_LIBRARY_LINKER__asr_jni_Debug CMakeFiles/asr_jni.dir/asr/asr_jni.cc.o CMakeFiles/asr_jni.dir/asr/zipformer2_model.cc.o CMakeFiles/asr_jni.dir/asr/feature_extractor.cc.o CMakeFiles/asr_jni.dir/asr/streaming_recognizer.cc.o | C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/Debug/h3n6d6m1/obj/arm64-v8a/libonnx_env.so lib/libkaldi-native-fbank-core.so C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/onnxruntime/lib/arm64-v8a/libonnxruntime.so lib/libkissfft-float.a || C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/Debug/h3n6d6m1/obj/arm64-v8a/libonnx_env.so lib/libkaldi-native-fbank-core.so lib/libkissfft-float.a
+build C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/Debug/h3n6d6m1/obj/arm64-v8a/libasr_jni.so: CXX_SHARED_LIBRARY_LINKER__asr_jni_Debug CMakeFiles/asr_jni.dir/asr/asr_jni.cc.o CMakeFiles/asr_jni.dir/asr/zipformer2_model.cc.o CMakeFiles/asr_jni.dir/asr/feature_extractor.cc.o CMakeFiles/asr_jni.dir/asr/streaming_recognizer.cc.o | C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/Debug/h3n6d6m1/obj/arm64-v8a/libonnx_env.so lib/libkaldi-native-fbank-core.so C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/onnxruntime/lib/arm64-v8a/libonnxruntime.so lib/libkissfft-float.a || C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/Debug/h3n6d6m1/obj/arm64-v8a/libonnx_env.so lib/libkaldi-native-fbank-core.so lib/libkissfft-float.a
   LANGUAGE_COMPILE_FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info
   LINK_FLAGS = -Wl,--build-id=sha1 -Wl,--no-rosegment -Wl,--fatal-warnings -Wl,--gc-sections -Wl,--no-undefined -Qunused-arguments    -Wl,--allow-shlib-undefined -Wl,-z,max-page-size=16384
-  LINK_LIBRARIES = C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/Debug/h3n6d6m1/obj/arm64-v8a/libonnx_env.so  lib/libkaldi-native-fbank-core.so  -llog  -ldl  C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/onnxruntime/lib/arm64-v8a/libonnxruntime.so  lib/libkissfft-float.a  -latomic -lm
+  LINK_LIBRARIES = C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/Debug/h3n6d6m1/obj/arm64-v8a/libonnx_env.so  lib/libkaldi-native-fbank-core.so  -llog  -ldl  C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/onnxruntime/lib/arm64-v8a/libonnxruntime.so  lib/libkissfft-float.a  -latomic -lm
   OBJECT_DIR = CMakeFiles\asr_jni.dir
   POST_BUILD = cd .
   PRE_LINK = cd .
   SONAME = libasr_jni.so
   SONAME_FLAG = -Wl,-soname,
-  TARGET_FILE = C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\build\intermediates\cxx\Debug\h3n6d6m1\obj\arm64-v8a\libasr_jni.so
-  TARGET_PDB = asr_jni.so.dbg
+  TARGET_COMPILE_PDB = CMakeFiles\asr_jni.dir\
+  TARGET_FILE = C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\build\intermediates\cxx\Debug\h3n6d6m1\obj\arm64-v8a\libasr_jni.so
+  TARGET_PDB = C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\build\intermediates\cxx\Debug\h3n6d6m1\obj\arm64-v8a\libasr_jni.pdb
 
 
 #############################################
 # Utility command for edit_cache
 
 build CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -E echo "No interactive CMake dialog available.""
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -E echo "No interactive CMake dialog available.""
   DESC = No interactive CMake dialog available...
   restat = 1
 
@@ -154,7 +166,7 @@ build edit_cache: phony CMakeFiles/edit_cache.util
 # Utility command for rebuild_cache
 
 build CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe --regenerate-during-build -SC:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\src\main\jni -BC:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a"
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe --regenerate-during-build -SC:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\src\main\jni -BC:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a"
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -172,7 +184,7 @@ build list_install_components: phony
 # Utility command for install
 
 build CMakeFiles/install.util: CUSTOM_COMMAND all
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -P cmake_install.cmake"
   DESC = Install the project...
   pool = console
   restat = 1
@@ -184,7 +196,7 @@ build install: phony CMakeFiles/install.util
 # Utility command for install/local
 
 build CMakeFiles/install/local.util: CUSTOM_COMMAND all
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
   DESC = Installing only the local directory...
   pool = console
   restat = 1
@@ -196,7 +208,7 @@ build install/local: phony CMakeFiles/install/local.util
 # Utility command for install/strip
 
 build CMakeFiles/install/strip.util: CUSTOM_COMMAND all
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
   DESC = Installing the project stripped...
   pool = console
   restat = 1
@@ -205,7 +217,7 @@ build install/strip: phony CMakeFiles/install/strip.util
 
 # =============================================================================
 # Write statements declared in CMakeLists.txt:
-# C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/CMakeLists.txt
+# C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/CMakeLists.txt
 # =============================================================================
 
 
@@ -213,7 +225,7 @@ build install/strip: phony CMakeFiles/install/strip.util
 # Utility command for edit_cache
 
 build knf_build/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -E echo "No interactive CMake dialog available.""
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -E echo "No interactive CMake dialog available.""
   DESC = No interactive CMake dialog available...
   restat = 1
 
@@ -224,7 +236,7 @@ build knf_build/edit_cache: phony knf_build/CMakeFiles/edit_cache.util
 # Utility command for rebuild_cache
 
 build knf_build/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe --regenerate-during-build -SC:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\src\main\jni -BC:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a"
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe --regenerate-during-build -SC:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\src\main\jni -BC:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a"
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -242,7 +254,7 @@ build knf_build/list_install_components: phony
 # Utility command for install
 
 build knf_build/CMakeFiles/install.util: CUSTOM_COMMAND knf_build/all
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -P cmake_install.cmake"
   DESC = Install the project...
   pool = console
   restat = 1
@@ -254,7 +266,7 @@ build knf_build/install: phony knf_build/CMakeFiles/install.util
 # Utility command for install/local
 
 build knf_build/CMakeFiles/install/local.util: CUSTOM_COMMAND knf_build/all
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
   DESC = Installing only the local directory...
   pool = console
   restat = 1
@@ -266,7 +278,7 @@ build knf_build/install/local: phony knf_build/CMakeFiles/install/local.util
 # Utility command for install/strip
 
 build knf_build/CMakeFiles/install/strip.util: CUSTOM_COMMAND knf_build/all
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
   DESC = Installing the project stripped...
   pool = console
   restat = 1
@@ -275,7 +287,7 @@ build knf_build/install/strip: phony knf_build/CMakeFiles/install/strip.util
 
 # =============================================================================
 # Write statements declared in CMakeLists.txt:
-# C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/cmake/kissfft.cmake
+# C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/cmake/kissfft.cmake
 # =============================================================================
 
 # =============================================================================
@@ -287,45 +299,55 @@ build knf_build/install/strip: phony knf_build/CMakeFiles/install/strip.util
 
 build cmake_object_order_depends_target_kissfft: phony || _deps/kissfft-build/CMakeFiles/kissfft.dir
 
-build _deps/kissfft-build/CMakeFiles/kissfft.dir/kiss_fft.c.o: C_COMPILER__kissfft_Debug C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/kiss_fft.c || cmake_object_order_depends_target_kissfft
+build _deps/kissfft-build/CMakeFiles/kissfft.dir/kiss_fft.c.o: C_COMPILER__kissfft_Debug C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/kiss_fft.c || cmake_object_order_depends_target_kissfft
   DEFINES = -Dkiss_fft_scalar=float
   DEP_FILE = _deps\kissfft-build\CMakeFiles\kissfft.dir\kiss_fft.c.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -fno-limit-debug-info  -fPIC -fvisibility=hidden -ffast-math -fomit-frame-pointer -W -Wall -Wcast-align -Wcast-qual -Wshadow -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Wbad-function-cast
-  INCLUDES = -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft
+  INCLUDES = -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft
   OBJECT_DIR = _deps\kissfft-build\CMakeFiles\kissfft.dir
   OBJECT_FILE_DIR = _deps\kissfft-build\CMakeFiles\kissfft.dir
+  TARGET_COMPILE_PDB = _deps\kissfft-build\CMakeFiles\kissfft.dir\kissfft.pdb
+  TARGET_PDB = lib\libkissfft-float.pdb
 
-build _deps/kissfft-build/CMakeFiles/kissfft.dir/kfc.c.o: C_COMPILER__kissfft_Debug C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/kfc.c || cmake_object_order_depends_target_kissfft
+build _deps/kissfft-build/CMakeFiles/kissfft.dir/kfc.c.o: C_COMPILER__kissfft_Debug C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/kfc.c || cmake_object_order_depends_target_kissfft
   DEFINES = -Dkiss_fft_scalar=float
   DEP_FILE = _deps\kissfft-build\CMakeFiles\kissfft.dir\kfc.c.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -fno-limit-debug-info  -fPIC -fvisibility=hidden -ffast-math -fomit-frame-pointer -W -Wall -Wcast-align -Wcast-qual -Wshadow -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Wbad-function-cast
-  INCLUDES = -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft
+  INCLUDES = -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft
   OBJECT_DIR = _deps\kissfft-build\CMakeFiles\kissfft.dir
   OBJECT_FILE_DIR = _deps\kissfft-build\CMakeFiles\kissfft.dir
+  TARGET_COMPILE_PDB = _deps\kissfft-build\CMakeFiles\kissfft.dir\kissfft.pdb
+  TARGET_PDB = lib\libkissfft-float.pdb
 
-build _deps/kissfft-build/CMakeFiles/kissfft.dir/kiss_fftnd.c.o: C_COMPILER__kissfft_Debug C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/kiss_fftnd.c || cmake_object_order_depends_target_kissfft
+build _deps/kissfft-build/CMakeFiles/kissfft.dir/kiss_fftnd.c.o: C_COMPILER__kissfft_Debug C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/kiss_fftnd.c || cmake_object_order_depends_target_kissfft
   DEFINES = -Dkiss_fft_scalar=float
   DEP_FILE = _deps\kissfft-build\CMakeFiles\kissfft.dir\kiss_fftnd.c.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -fno-limit-debug-info  -fPIC -fvisibility=hidden -ffast-math -fomit-frame-pointer -W -Wall -Wcast-align -Wcast-qual -Wshadow -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Wbad-function-cast
-  INCLUDES = -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft
+  INCLUDES = -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft
   OBJECT_DIR = _deps\kissfft-build\CMakeFiles\kissfft.dir
   OBJECT_FILE_DIR = _deps\kissfft-build\CMakeFiles\kissfft.dir
+  TARGET_COMPILE_PDB = _deps\kissfft-build\CMakeFiles\kissfft.dir\kissfft.pdb
+  TARGET_PDB = lib\libkissfft-float.pdb
 
-build _deps/kissfft-build/CMakeFiles/kissfft.dir/kiss_fftndr.c.o: C_COMPILER__kissfft_Debug C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/kiss_fftndr.c || cmake_object_order_depends_target_kissfft
+build _deps/kissfft-build/CMakeFiles/kissfft.dir/kiss_fftndr.c.o: C_COMPILER__kissfft_Debug C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/kiss_fftndr.c || cmake_object_order_depends_target_kissfft
   DEFINES = -Dkiss_fft_scalar=float
   DEP_FILE = _deps\kissfft-build\CMakeFiles\kissfft.dir\kiss_fftndr.c.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -fno-limit-debug-info  -fPIC -fvisibility=hidden -ffast-math -fomit-frame-pointer -W -Wall -Wcast-align -Wcast-qual -Wshadow -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Wbad-function-cast
-  INCLUDES = -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft
+  INCLUDES = -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft
   OBJECT_DIR = _deps\kissfft-build\CMakeFiles\kissfft.dir
   OBJECT_FILE_DIR = _deps\kissfft-build\CMakeFiles\kissfft.dir
+  TARGET_COMPILE_PDB = _deps\kissfft-build\CMakeFiles\kissfft.dir\kissfft.pdb
+  TARGET_PDB = lib\libkissfft-float.pdb
 
-build _deps/kissfft-build/CMakeFiles/kissfft.dir/kiss_fftr.c.o: C_COMPILER__kissfft_Debug C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/kiss_fftr.c || cmake_object_order_depends_target_kissfft
+build _deps/kissfft-build/CMakeFiles/kissfft.dir/kiss_fftr.c.o: C_COMPILER__kissfft_Debug C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/kiss_fftr.c || cmake_object_order_depends_target_kissfft
   DEFINES = -Dkiss_fft_scalar=float
   DEP_FILE = _deps\kissfft-build\CMakeFiles\kissfft.dir\kiss_fftr.c.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -fno-limit-debug-info  -fPIC -fvisibility=hidden -ffast-math -fomit-frame-pointer -W -Wall -Wcast-align -Wcast-qual -Wshadow -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Wbad-function-cast
-  INCLUDES = -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft
+  INCLUDES = -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft
   OBJECT_DIR = _deps\kissfft-build\CMakeFiles\kissfft.dir
   OBJECT_FILE_DIR = _deps\kissfft-build\CMakeFiles\kissfft.dir
+  TARGET_COMPILE_PDB = _deps\kissfft-build\CMakeFiles\kissfft.dir\kissfft.pdb
+  TARGET_PDB = lib\libkissfft-float.pdb
 
 
 # =============================================================================
@@ -340,15 +362,16 @@ build lib/libkissfft-float.a: C_STATIC_LIBRARY_LINKER__kissfft_Debug _deps/kissf
   OBJECT_DIR = _deps\kissfft-build\CMakeFiles\kissfft.dir
   POST_BUILD = cd .
   PRE_LINK = cd .
+  TARGET_COMPILE_PDB = _deps\kissfft-build\CMakeFiles\kissfft.dir\kissfft.pdb
   TARGET_FILE = lib\libkissfft-float.a
-  TARGET_PDB = kissfft-float.a.dbg
+  TARGET_PDB = lib\libkissfft-float.pdb
 
 
 #############################################
 # Utility command for edit_cache
 
 build _deps/kissfft-build/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\_deps\kissfft-build && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -E echo "No interactive CMake dialog available.""
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\_deps\kissfft-build && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -E echo "No interactive CMake dialog available.""
   DESC = No interactive CMake dialog available...
   restat = 1
 
@@ -359,7 +382,7 @@ build _deps/kissfft-build/edit_cache: phony _deps/kissfft-build/CMakeFiles/edit_
 # Utility command for rebuild_cache
 
 build _deps/kissfft-build/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\_deps\kissfft-build && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe --regenerate-during-build -SC:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\src\main\jni -BC:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a"
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\_deps\kissfft-build && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe --regenerate-during-build -SC:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\src\main\jni -BC:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a"
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -377,7 +400,7 @@ build _deps/kissfft-build/list_install_components: phony
 # Utility command for install
 
 build _deps/kissfft-build/CMakeFiles/install.util: CUSTOM_COMMAND _deps/kissfft-build/all
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\_deps\kissfft-build && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\_deps\kissfft-build && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -P cmake_install.cmake"
   DESC = Install the project...
   pool = console
   restat = 1
@@ -389,7 +412,7 @@ build _deps/kissfft-build/install: phony _deps/kissfft-build/CMakeFiles/install.
 # Utility command for install/local
 
 build _deps/kissfft-build/CMakeFiles/install/local.util: CUSTOM_COMMAND _deps/kissfft-build/all
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\_deps\kissfft-build && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\_deps\kissfft-build && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
   DESC = Installing only the local directory...
   pool = console
   restat = 1
@@ -401,7 +424,7 @@ build _deps/kissfft-build/install/local: phony _deps/kissfft-build/CMakeFiles/in
 # Utility command for install/strip
 
 build _deps/kissfft-build/CMakeFiles/install/strip.util: CUSTOM_COMMAND _deps/kissfft-build/all
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\_deps\kissfft-build && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\_deps\kissfft-build && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
   DESC = Installing the project stripped...
   pool = console
   restat = 1
@@ -410,7 +433,7 @@ build _deps/kissfft-build/install/strip: phony _deps/kissfft-build/CMakeFiles/in
 
 # =============================================================================
 # Write statements declared in CMakeLists.txt:
-# C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/CMakeLists.txt
+# C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/CMakeLists.txt
 # =============================================================================
 
 
@@ -418,7 +441,7 @@ build _deps/kissfft-build/install/strip: phony _deps/kissfft-build/CMakeFiles/in
 # Utility command for edit_cache
 
 build knf_build/kaldi-native-fbank/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build\kaldi-native-fbank && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -E echo "No interactive CMake dialog available.""
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build\kaldi-native-fbank && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -E echo "No interactive CMake dialog available.""
   DESC = No interactive CMake dialog available...
   restat = 1
 
@@ -429,7 +452,7 @@ build knf_build/kaldi-native-fbank/edit_cache: phony knf_build/kaldi-native-fban
 # Utility command for rebuild_cache
 
 build knf_build/kaldi-native-fbank/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build\kaldi-native-fbank && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe --regenerate-during-build -SC:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\src\main\jni -BC:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a"
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build\kaldi-native-fbank && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe --regenerate-during-build -SC:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\src\main\jni -BC:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a"
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -447,7 +470,7 @@ build knf_build/kaldi-native-fbank/list_install_components: phony
 # Utility command for install
 
 build knf_build/kaldi-native-fbank/CMakeFiles/install.util: CUSTOM_COMMAND knf_build/kaldi-native-fbank/all
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build\kaldi-native-fbank && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build\kaldi-native-fbank && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -P cmake_install.cmake"
   DESC = Install the project...
   pool = console
   restat = 1
@@ -459,7 +482,7 @@ build knf_build/kaldi-native-fbank/install: phony knf_build/kaldi-native-fbank/C
 # Utility command for install/local
 
 build knf_build/kaldi-native-fbank/CMakeFiles/install/local.util: CUSTOM_COMMAND knf_build/kaldi-native-fbank/all
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build\kaldi-native-fbank && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build\kaldi-native-fbank && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
   DESC = Installing only the local directory...
   pool = console
   restat = 1
@@ -471,7 +494,7 @@ build knf_build/kaldi-native-fbank/install/local: phony knf_build/kaldi-native-f
 # Utility command for install/strip
 
 build knf_build/kaldi-native-fbank/CMakeFiles/install/strip.util: CUSTOM_COMMAND knf_build/kaldi-native-fbank/all
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build\kaldi-native-fbank && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build\kaldi-native-fbank && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
   DESC = Installing the project stripped...
   pool = console
   restat = 1
@@ -480,7 +503,7 @@ build knf_build/kaldi-native-fbank/install/strip: phony knf_build/kaldi-native-f
 
 # =============================================================================
 # Write statements declared in CMakeLists.txt:
-# C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/CMakeLists.txt
+# C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/CMakeLists.txt
 # =============================================================================
 
 # =============================================================================
@@ -492,101 +515,125 @@ build knf_build/kaldi-native-fbank/install/strip: phony knf_build/kaldi-native-f
 
 build cmake_object_order_depends_target_kaldi-native-fbank-core: phony || cmake_object_order_depends_target_kissfft
 
-build knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/feature-fbank.cc.o: CXX_COMPILER__kaldi-native-fbank-core_Debug C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-fbank.cc || cmake_object_order_depends_target_kaldi-native-fbank-core
+build knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/feature-fbank.cc.o: CXX_COMPILER__kaldi-native-fbank-core_Debug C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-fbank.cc || cmake_object_order_depends_target_kaldi-native-fbank-core
   DEFINES = -Dkaldi_native_fbank_core_EXPORTS -Dkiss_fft_scalar=float
   DEP_FILE = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\feature-fbank.cc.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -fPIC
-  INCLUDES = -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kissfft -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3
+  INCLUDES = -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kissfft -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3
   OBJECT_DIR = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir
   OBJECT_FILE_DIR = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir
+  TARGET_COMPILE_PDB = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\
+  TARGET_PDB = lib\libkaldi-native-fbank-core.pdb
 
-build knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/feature-functions.cc.o: CXX_COMPILER__kaldi-native-fbank-core_Debug C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-functions.cc || cmake_object_order_depends_target_kaldi-native-fbank-core
+build knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/feature-functions.cc.o: CXX_COMPILER__kaldi-native-fbank-core_Debug C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-functions.cc || cmake_object_order_depends_target_kaldi-native-fbank-core
   DEFINES = -Dkaldi_native_fbank_core_EXPORTS -Dkiss_fft_scalar=float
   DEP_FILE = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\feature-functions.cc.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -fPIC
-  INCLUDES = -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kissfft -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3
+  INCLUDES = -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kissfft -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3
   OBJECT_DIR = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir
   OBJECT_FILE_DIR = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir
+  TARGET_COMPILE_PDB = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\
+  TARGET_PDB = lib\libkaldi-native-fbank-core.pdb
 
-build knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/feature-mfcc.cc.o: CXX_COMPILER__kaldi-native-fbank-core_Debug C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-mfcc.cc || cmake_object_order_depends_target_kaldi-native-fbank-core
+build knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/feature-mfcc.cc.o: CXX_COMPILER__kaldi-native-fbank-core_Debug C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-mfcc.cc || cmake_object_order_depends_target_kaldi-native-fbank-core
   DEFINES = -Dkaldi_native_fbank_core_EXPORTS -Dkiss_fft_scalar=float
   DEP_FILE = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\feature-mfcc.cc.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -fPIC
-  INCLUDES = -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kissfft -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3
+  INCLUDES = -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kissfft -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3
   OBJECT_DIR = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir
   OBJECT_FILE_DIR = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir
+  TARGET_COMPILE_PDB = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\
+  TARGET_PDB = lib\libkaldi-native-fbank-core.pdb
 
-build knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/feature-raw-audio-samples.cc.o: CXX_COMPILER__kaldi-native-fbank-core_Debug C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-raw-audio-samples.cc || cmake_object_order_depends_target_kaldi-native-fbank-core
+build knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/feature-raw-audio-samples.cc.o: CXX_COMPILER__kaldi-native-fbank-core_Debug C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-raw-audio-samples.cc || cmake_object_order_depends_target_kaldi-native-fbank-core
   DEFINES = -Dkaldi_native_fbank_core_EXPORTS -Dkiss_fft_scalar=float
   DEP_FILE = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\feature-raw-audio-samples.cc.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -fPIC
-  INCLUDES = -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kissfft -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3
+  INCLUDES = -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kissfft -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3
   OBJECT_DIR = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir
   OBJECT_FILE_DIR = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir
+  TARGET_COMPILE_PDB = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\
+  TARGET_PDB = lib\libkaldi-native-fbank-core.pdb
 
-build knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/feature-window.cc.o: CXX_COMPILER__kaldi-native-fbank-core_Debug C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-window.cc || cmake_object_order_depends_target_kaldi-native-fbank-core
+build knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/feature-window.cc.o: CXX_COMPILER__kaldi-native-fbank-core_Debug C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/feature-window.cc || cmake_object_order_depends_target_kaldi-native-fbank-core
   DEFINES = -Dkaldi_native_fbank_core_EXPORTS -Dkiss_fft_scalar=float
   DEP_FILE = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\feature-window.cc.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -fPIC
-  INCLUDES = -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kissfft -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3
+  INCLUDES = -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kissfft -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3
   OBJECT_DIR = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir
   OBJECT_FILE_DIR = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir
+  TARGET_COMPILE_PDB = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\
+  TARGET_PDB = lib\libkaldi-native-fbank-core.pdb
 
-build knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/istft.cc.o: CXX_COMPILER__kaldi-native-fbank-core_Debug C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/istft.cc || cmake_object_order_depends_target_kaldi-native-fbank-core
+build knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/istft.cc.o: CXX_COMPILER__kaldi-native-fbank-core_Debug C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/istft.cc || cmake_object_order_depends_target_kaldi-native-fbank-core
   DEFINES = -Dkaldi_native_fbank_core_EXPORTS -Dkiss_fft_scalar=float
   DEP_FILE = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\istft.cc.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -fPIC
-  INCLUDES = -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kissfft -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3
+  INCLUDES = -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kissfft -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3
   OBJECT_DIR = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir
   OBJECT_FILE_DIR = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir
+  TARGET_COMPILE_PDB = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\
+  TARGET_PDB = lib\libkaldi-native-fbank-core.pdb
 
-build knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/kaldi-math.cc.o: CXX_COMPILER__kaldi-native-fbank-core_Debug C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/kaldi-math.cc || cmake_object_order_depends_target_kaldi-native-fbank-core
+build knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/kaldi-math.cc.o: CXX_COMPILER__kaldi-native-fbank-core_Debug C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/kaldi-math.cc || cmake_object_order_depends_target_kaldi-native-fbank-core
   DEFINES = -Dkaldi_native_fbank_core_EXPORTS -Dkiss_fft_scalar=float
   DEP_FILE = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\kaldi-math.cc.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -fPIC
-  INCLUDES = -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kissfft -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3
+  INCLUDES = -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kissfft -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3
   OBJECT_DIR = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir
   OBJECT_FILE_DIR = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir
+  TARGET_COMPILE_PDB = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\
+  TARGET_PDB = lib\libkaldi-native-fbank-core.pdb
 
-build knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/mel-computations.cc.o: CXX_COMPILER__kaldi-native-fbank-core_Debug C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/mel-computations.cc || cmake_object_order_depends_target_kaldi-native-fbank-core
+build knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/mel-computations.cc.o: CXX_COMPILER__kaldi-native-fbank-core_Debug C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/mel-computations.cc || cmake_object_order_depends_target_kaldi-native-fbank-core
   DEFINES = -Dkaldi_native_fbank_core_EXPORTS -Dkiss_fft_scalar=float
   DEP_FILE = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\mel-computations.cc.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -fPIC
-  INCLUDES = -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kissfft -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3
+  INCLUDES = -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kissfft -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3
   OBJECT_DIR = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir
   OBJECT_FILE_DIR = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir
+  TARGET_COMPILE_PDB = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\
+  TARGET_PDB = lib\libkaldi-native-fbank-core.pdb
 
-build knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/online-feature.cc.o: CXX_COMPILER__kaldi-native-fbank-core_Debug C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/online-feature.cc || cmake_object_order_depends_target_kaldi-native-fbank-core
+build knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/online-feature.cc.o: CXX_COMPILER__kaldi-native-fbank-core_Debug C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/online-feature.cc || cmake_object_order_depends_target_kaldi-native-fbank-core
   DEFINES = -Dkaldi_native_fbank_core_EXPORTS -Dkiss_fft_scalar=float
   DEP_FILE = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\online-feature.cc.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -fPIC
-  INCLUDES = -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kissfft -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3
+  INCLUDES = -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kissfft -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3
   OBJECT_DIR = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir
   OBJECT_FILE_DIR = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir
+  TARGET_COMPILE_PDB = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\
+  TARGET_PDB = lib\libkaldi-native-fbank-core.pdb
 
-build knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/rfft.cc.o: CXX_COMPILER__kaldi-native-fbank-core_Debug C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/rfft.cc || cmake_object_order_depends_target_kaldi-native-fbank-core
+build knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/rfft.cc.o: CXX_COMPILER__kaldi-native-fbank-core_Debug C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/rfft.cc || cmake_object_order_depends_target_kaldi-native-fbank-core
   DEFINES = -Dkaldi_native_fbank_core_EXPORTS -Dkiss_fft_scalar=float
   DEP_FILE = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\rfft.cc.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -fPIC
-  INCLUDES = -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kissfft -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3
+  INCLUDES = -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kissfft -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3
   OBJECT_DIR = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir
   OBJECT_FILE_DIR = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir
+  TARGET_COMPILE_PDB = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\
+  TARGET_PDB = lib\libkaldi-native-fbank-core.pdb
 
-build knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/stft.cc.o: CXX_COMPILER__kaldi-native-fbank-core_Debug C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/stft.cc || cmake_object_order_depends_target_kaldi-native-fbank-core
+build knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/stft.cc.o: CXX_COMPILER__kaldi-native-fbank-core_Debug C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/stft.cc || cmake_object_order_depends_target_kaldi-native-fbank-core
   DEFINES = -Dkaldi_native_fbank_core_EXPORTS -Dkiss_fft_scalar=float
   DEP_FILE = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\stft.cc.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -fPIC
-  INCLUDES = -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kissfft -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3
+  INCLUDES = -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kissfft -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3
   OBJECT_DIR = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir
   OBJECT_FILE_DIR = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir
+  TARGET_COMPILE_PDB = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\
+  TARGET_PDB = lib\libkaldi-native-fbank-core.pdb
 
-build knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/whisper-feature.cc.o: CXX_COMPILER__kaldi-native-fbank-core_Debug C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/whisper-feature.cc || cmake_object_order_depends_target_kaldi-native-fbank-core
+build knf_build/kaldi-native-fbank/csrc/CMakeFiles/kaldi-native-fbank-core.dir/whisper-feature.cc.o: CXX_COMPILER__kaldi-native-fbank-core_Debug C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/whisper-feature.cc || cmake_object_order_depends_target_kaldi-native-fbank-core
   DEFINES = -Dkaldi_native_fbank_core_EXPORTS -Dkiss_fft_scalar=float
   DEP_FILE = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\whisper-feature.cc.o.d
   FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -fPIC
-  INCLUDES = -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kissfft -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -IC:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3
+  INCLUDES = -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kissfft -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft -IC:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3
   OBJECT_DIR = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir
   OBJECT_FILE_DIR = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir
+  TARGET_COMPILE_PDB = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\
+  TARGET_PDB = lib\libkaldi-native-fbank-core.pdb
 
 
 # =============================================================================
@@ -605,15 +652,16 @@ build lib/libkaldi-native-fbank-core.so: CXX_SHARED_LIBRARY_LINKER__kaldi-native
   PRE_LINK = cd .
   SONAME = libkaldi-native-fbank-core.so
   SONAME_FLAG = -Wl,-soname,
+  TARGET_COMPILE_PDB = knf_build\kaldi-native-fbank\csrc\CMakeFiles\kaldi-native-fbank-core.dir\
   TARGET_FILE = lib\libkaldi-native-fbank-core.so
-  TARGET_PDB = kaldi-native-fbank-core.so.dbg
+  TARGET_PDB = lib\libkaldi-native-fbank-core.pdb
 
 
 #############################################
 # Utility command for edit_cache
 
 build knf_build/kaldi-native-fbank/csrc/CMakeFiles/edit_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build\kaldi-native-fbank\csrc && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -E echo "No interactive CMake dialog available.""
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build\kaldi-native-fbank\csrc && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -E echo "No interactive CMake dialog available.""
   DESC = No interactive CMake dialog available...
   restat = 1
 
@@ -624,7 +672,7 @@ build knf_build/kaldi-native-fbank/csrc/edit_cache: phony knf_build/kaldi-native
 # Utility command for rebuild_cache
 
 build knf_build/kaldi-native-fbank/csrc/CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build\kaldi-native-fbank\csrc && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe --regenerate-during-build -SC:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\src\main\jni -BC:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a"
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build\kaldi-native-fbank\csrc && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe --regenerate-during-build -SC:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\src\main\jni -BC:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a"
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
@@ -642,7 +690,7 @@ build knf_build/kaldi-native-fbank/csrc/list_install_components: phony
 # Utility command for install
 
 build knf_build/kaldi-native-fbank/csrc/CMakeFiles/install.util: CUSTOM_COMMAND knf_build/kaldi-native-fbank/csrc/all
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build\kaldi-native-fbank\csrc && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build\kaldi-native-fbank\csrc && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -P cmake_install.cmake"
   DESC = Install the project...
   pool = console
   restat = 1
@@ -654,7 +702,7 @@ build knf_build/kaldi-native-fbank/csrc/install: phony knf_build/kaldi-native-fb
 # Utility command for install/local
 
 build knf_build/kaldi-native-fbank/csrc/CMakeFiles/install/local.util: CUSTOM_COMMAND knf_build/kaldi-native-fbank/csrc/all
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build\kaldi-native-fbank\csrc && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build\kaldi-native-fbank\csrc && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake"
   DESC = Installing only the local directory...
   pool = console
   restat = 1
@@ -666,7 +714,7 @@ build knf_build/kaldi-native-fbank/csrc/install/local: phony knf_build/kaldi-nat
 # Utility command for install/strip
 
 build knf_build/kaldi-native-fbank/csrc/CMakeFiles/install/strip.util: CUSTOM_COMMAND knf_build/kaldi-native-fbank/csrc/all
-  COMMAND = cmd.exe /C "cd /D C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build\kaldi-native-fbank\csrc && C:\Users\wen\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
+  COMMAND = cmd.exe /C "cd /D C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\.cxx\Debug\h3n6d6m1\arm64-v8a\knf_build\kaldi-native-fbank\csrc && C:\Users\kuang\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake"
   DESC = Installing the project stripped...
   pool = console
   restat = 1
@@ -676,21 +724,21 @@ build knf_build/kaldi-native-fbank/csrc/install/strip: phony knf_build/kaldi-nat
 # =============================================================================
 # Target aliases.
 
-build asr_jni: phony C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/Debug/h3n6d6m1/obj/arm64-v8a/libasr_jni.so
+build asr_jni: phony C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/Debug/h3n6d6m1/obj/arm64-v8a/libasr_jni.so
 
 build kaldi-native-fbank-core: phony lib/libkaldi-native-fbank-core.so
 
 build kissfft: phony lib/libkissfft-float.a
 
-build libasr_jni.so: phony C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/Debug/h3n6d6m1/obj/arm64-v8a/libasr_jni.so
+build libasr_jni.so: phony C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/Debug/h3n6d6m1/obj/arm64-v8a/libasr_jni.so
 
 build libkaldi-native-fbank-core.so: phony lib/libkaldi-native-fbank-core.so
 
 build libkissfft-float.a: phony lib/libkissfft-float.a
 
-build libonnx_env.so: phony C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/Debug/h3n6d6m1/obj/arm64-v8a/libonnx_env.so
+build libonnx_env.so: phony C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/Debug/h3n6d6m1/obj/arm64-v8a/libonnx_env.so
 
-build onnx_env: phony C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/Debug/h3n6d6m1/obj/arm64-v8a/libonnx_env.so
+build onnx_env: phony C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/Debug/h3n6d6m1/obj/arm64-v8a/libonnx_env.so
 
 # =============================================================================
 # Folder targets.
@@ -698,35 +746,35 @@ build onnx_env: phony C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/b
 # =============================================================================
 
 #############################################
-# Folder: C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a
+# Folder: C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a
 
-build all: phony C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/Debug/h3n6d6m1/obj/arm64-v8a/libonnx_env.so C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/Debug/h3n6d6m1/obj/arm64-v8a/libasr_jni.so knf_build/all
+build all: phony C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/Debug/h3n6d6m1/obj/arm64-v8a/libonnx_env.so C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/Debug/h3n6d6m1/obj/arm64-v8a/libasr_jni.so knf_build/all
 
 # =============================================================================
 
 #############################################
-# Folder: C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/_deps/kissfft-build
+# Folder: C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/_deps/kissfft-build
 
 build _deps/kissfft-build/all: phony lib/libkissfft-float.a
 
 # =============================================================================
 
 #############################################
-# Folder: C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/knf_build
+# Folder: C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/knf_build
 
 build knf_build/all: phony knf_build/kaldi-native-fbank/all
 
 # =============================================================================
 
 #############################################
-# Folder: C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/knf_build/kaldi-native-fbank
+# Folder: C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/knf_build/kaldi-native-fbank
 
 build knf_build/kaldi-native-fbank/all: phony knf_build/kaldi-native-fbank/csrc/all
 
 # =============================================================================
 
 #############################################
-# Folder: C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/knf_build/kaldi-native-fbank/csrc
+# Folder: C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/knf_build/kaldi-native-fbank/csrc
 
 build knf_build/kaldi-native-fbank/csrc/all: phony lib/libkaldi-native-fbank-core.so
 
@@ -737,14 +785,14 @@ build knf_build/kaldi-native-fbank/csrc/all: phony lib/libkaldi-native-fbank-cor
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja: RERUN_CMAKE | C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/CMakeLists.txt C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/CMakeLists.txt C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/cmake/Modules/FetchContent.cmake C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/cmake/kissfft.cmake C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/CMakeLists.txt C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/CMakeLists.txt C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/CMakeLists.txt C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/kissfft-config.cmake.in C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/BasicConfigVersion-AnyNewerVersion.cmake.in C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeCInformation.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeCXXInformation.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeCommonLanguageInclude.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeGenericSystem.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeInitializeConfigs.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeLanguageInformation.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakePackageConfigHelpers.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeSystemSpecificInformation.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeSystemSpecificInitialize.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CheckIncludeFileCXX.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/CMakeCommonCompilerMacros.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Clang-C.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Clang-CXX.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Clang.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/GNU.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android-Clang-C.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android-Clang-CXX.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android-Clang.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android-Initialize.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Linux.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/UnixPaths.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/WriteBasicConfigVersionFile.cmake C$:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/android-legacy.toolchain.cmake C$:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/android.toolchain.cmake C$:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/flags.cmake C$:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/hooks/pre/Android-Clang.cmake C$:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/hooks/pre/Android-Initialize.cmake C$:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/hooks/pre/Android.cmake C$:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/platforms.cmake CMakeCache.txt CMakeFiles/3.22.1-g37088a8-dirty/CMakeCCompiler.cmake CMakeFiles/3.22.1-g37088a8-dirty/CMakeCXXCompiler.cmake CMakeFiles/3.22.1-g37088a8-dirty/CMakeSystem.cmake
+build build.ninja: RERUN_CMAKE | C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/CMakeLists.txt C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/CMakeLists.txt C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/cmake/Modules/FetchContent.cmake C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/cmake/kissfft.cmake C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/CMakeLists.txt C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/CMakeLists.txt C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/CMakeLists.txt C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/kissfft-config.cmake.in C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/BasicConfigVersion-AnyNewerVersion.cmake.in C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeCCompiler.cmake.in C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeCCompilerABI.c C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeCInformation.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeCXXCompiler.cmake.in C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeCXXCompilerABI.cpp C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeCXXInformation.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeCommonLanguageInclude.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeCompilerIdDetection.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeDetermineCCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeDetermineCXXCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeDetermineCompileFeatures.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeDetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeDetermineCompilerABI.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeDetermineCompilerId.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeDetermineSystem.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeFindBinUtils.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeGenericSystem.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeInitializeConfigs.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeLanguageInformation.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakePackageConfigHelpers.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeParseImplicitIncludeInfo.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeParseImplicitLinkInfo.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeParseLibraryArchitecture.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeSystem.cmake.in C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeSystemSpecificInformation.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeSystemSpecificInitialize.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeTestCCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeTestCXXCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeTestCompilerCommon.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CheckIncludeFile.cxx.in C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CheckIncludeFileCXX.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/ADSP-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/ARMCC-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/ARMClang-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/AppleClang-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Borland-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Bruce-C-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/CMakeCommonCompilerMacros.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Clang-C.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Clang-CXX.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Clang-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Clang-DetermineCompilerInternal.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Clang-FindBinUtils.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Clang.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Comeau-CXX-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Compaq-C-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Compaq-CXX-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Cray-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Embarcadero-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Fujitsu-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/FujitsuClang-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/GHS-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/GNU-C-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/GNU-CXX-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/GNU.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/HP-C-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/HP-CXX-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/IAR-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/IBMCPP-C-DetermineVersionInternal.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/IBMCPP-CXX-DetermineVersionInternal.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Intel-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/IntelLLVM-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/MSVC-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/NVHPC-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/NVIDIA-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/OpenWatcom-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/PGI-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/PathScale-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/SCO-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/SDCC-C-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/SunPro-C-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/SunPro-CXX-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/TI-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/TinyCC-C-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/VisualAge-C-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/VisualAge-CXX-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Watcom-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/XL-C-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/XL-CXX-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/XLClang-C-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/XLClang-CXX-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/zOS-C-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/zOS-CXX-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Internal/FeatureTesting.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android-Clang-C.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android-Clang-CXX.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android-Clang.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android-Determine-C.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android-Determine-CXX.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android-Determine.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android-Initialize.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android/Determine-Compiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Linux.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/UnixPaths.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/WriteBasicConfigVersionFile.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/android-legacy.toolchain.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/android.toolchain.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/flags.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/hooks/pre/Android-Clang.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/hooks/pre/Android-Determine.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/hooks/pre/Android-Initialize.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/hooks/pre/Android.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/hooks/pre/Determine-Compiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/platforms.cmake CMakeCache.txt CMakeFiles/3.22.1-g37088a8-dirty/CMakeCCompiler.cmake CMakeFiles/3.22.1-g37088a8-dirty/CMakeCXXCompiler.cmake CMakeFiles/3.22.1-g37088a8-dirty/CMakeSystem.cmake
   pool = console
 
 
 #############################################
 # A missing CMake input file is not an error.
 
-build C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/CMakeLists.txt C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/CMakeLists.txt C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/cmake/Modules/FetchContent.cmake C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/cmake/kissfft.cmake C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/CMakeLists.txt C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/CMakeLists.txt C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/CMakeLists.txt C$:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/kissfft-config.cmake.in C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/BasicConfigVersion-AnyNewerVersion.cmake.in C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeCInformation.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeCXXInformation.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeCommonLanguageInclude.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeGenericSystem.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeInitializeConfigs.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeLanguageInformation.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakePackageConfigHelpers.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeSystemSpecificInformation.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeSystemSpecificInitialize.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CheckIncludeFileCXX.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/CMakeCommonCompilerMacros.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Clang-C.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Clang-CXX.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Clang.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/GNU.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android-Clang-C.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android-Clang-CXX.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android-Clang.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android-Initialize.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Linux.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/UnixPaths.cmake C$:/Users/wen/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/WriteBasicConfigVersionFile.cmake C$:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/android-legacy.toolchain.cmake C$:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/android.toolchain.cmake C$:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/flags.cmake C$:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/hooks/pre/Android-Clang.cmake C$:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/hooks/pre/Android-Initialize.cmake C$:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/hooks/pre/Android.cmake C$:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/platforms.cmake CMakeCache.txt CMakeFiles/3.22.1-g37088a8-dirty/CMakeCCompiler.cmake CMakeFiles/3.22.1-g37088a8-dirty/CMakeCXXCompiler.cmake CMakeFiles/3.22.1-g37088a8-dirty/CMakeSystem.cmake: phony
+build C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/CMakeLists.txt C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/CMakeLists.txt C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/cmake/Modules/FetchContent.cmake C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/cmake/kissfft.cmake C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/CMakeLists.txt C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kaldi-native-fbank-1.22.3/kaldi-native-fbank/csrc/CMakeLists.txt C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/CMakeLists.txt C$:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/third_party/knf/kissfft/kissfft-config.cmake.in C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/BasicConfigVersion-AnyNewerVersion.cmake.in C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeCCompiler.cmake.in C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeCCompilerABI.c C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeCInformation.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeCXXCompiler.cmake.in C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeCXXCompilerABI.cpp C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeCXXInformation.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeCommonLanguageInclude.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeCompilerIdDetection.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeDetermineCCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeDetermineCXXCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeDetermineCompileFeatures.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeDetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeDetermineCompilerABI.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeDetermineCompilerId.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeDetermineSystem.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeFindBinUtils.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeGenericSystem.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeInitializeConfigs.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeLanguageInformation.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakePackageConfigHelpers.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeParseImplicitIncludeInfo.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeParseImplicitLinkInfo.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeParseLibraryArchitecture.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeSystem.cmake.in C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeSystemSpecificInformation.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeSystemSpecificInitialize.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeTestCCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeTestCXXCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CMakeTestCompilerCommon.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CheckIncludeFile.cxx.in C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/CheckIncludeFileCXX.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/ADSP-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/ARMCC-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/ARMClang-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/AppleClang-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Borland-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Bruce-C-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/CMakeCommonCompilerMacros.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Clang-C.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Clang-CXX.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Clang-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Clang-DetermineCompilerInternal.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Clang-FindBinUtils.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Clang.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Comeau-CXX-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Compaq-C-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Compaq-CXX-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Cray-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Embarcadero-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Fujitsu-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/FujitsuClang-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/GHS-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/GNU-C-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/GNU-CXX-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/GNU.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/HP-C-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/HP-CXX-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/IAR-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/IBMCPP-C-DetermineVersionInternal.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/IBMCPP-CXX-DetermineVersionInternal.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Intel-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/IntelLLVM-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/MSVC-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/NVHPC-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/NVIDIA-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/OpenWatcom-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/PGI-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/PathScale-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/SCO-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/SDCC-C-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/SunPro-C-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/SunPro-CXX-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/TI-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/TinyCC-C-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/VisualAge-C-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/VisualAge-CXX-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/Watcom-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/XL-C-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/XL-CXX-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/XLClang-C-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/XLClang-CXX-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/zOS-C-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Compiler/zOS-CXX-DetermineCompiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Internal/FeatureTesting.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android-Clang-C.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android-Clang-CXX.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android-Clang.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android-Determine-C.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android-Determine-CXX.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android-Determine.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android-Initialize.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Android/Determine-Compiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/Linux.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/Platform/UnixPaths.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/cmake/3.22.1/share/cmake-3.22/Modules/WriteBasicConfigVersionFile.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/android-legacy.toolchain.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/android.toolchain.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/flags.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/hooks/pre/Android-Clang.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/hooks/pre/Android-Determine.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/hooks/pre/Android-Initialize.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/hooks/pre/Android.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/hooks/pre/Determine-Compiler.cmake C$:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/build/cmake/platforms.cmake CMakeCache.txt CMakeFiles/3.22.1-g37088a8-dirty/CMakeCCompiler.cmake CMakeFiles/3.22.1-g37088a8-dirty/CMakeCXXCompiler.cmake CMakeFiles/3.22.1-g37088a8-dirty/CMakeSystem.cmake: phony
 
 
 #############################################

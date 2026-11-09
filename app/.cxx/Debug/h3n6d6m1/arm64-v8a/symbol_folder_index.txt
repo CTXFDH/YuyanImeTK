@@ -1,1 +1,1 @@
-C:\Users\wen\AndroidStudioProjects\YuyanImeK-master\app\build\intermediates\cxx\Debug\h3n6d6m1\obj\arm64-v8a
+C:\Users\kuang\AndroidStudioProjects\YuyanImeK-master\app\build\intermediates\cxx\Debug\h3n6d6m1\obj\arm64-v8a

@@ -11,6 +11,7 @@ import com.yuyan.imemodule.view.preference.ManagedPreference
 class InputSettingsFragment: ManagedPreferenceFragment(AppPrefs.getInstance().input){
 
     private val emojiInput = AppPrefs.getInstance().input.emojiInput
+    private val cnEnInput = AppPrefs.getInstance().input.cnEnInput
     private val doublePYSchemaMode = AppPrefs.getInstance().input.doublePYSchemaMode
 
     private val switchKeyListener = ManagedPreference.OnChangeListener<Boolean> { _, _ ->
@@ -23,12 +24,14 @@ class InputSettingsFragment: ManagedPreferenceFragment(AppPrefs.getInstance().in
     override fun onStart() {
         super.onStart()
         emojiInput.registerOnChangeListener(switchKeyListener)
+        cnEnInput.registerOnChangeListener(switchKeyListener)
         doublePYSchemaMode.registerOnChangeListener(schemaModeListener)
     }
 
     override fun onStop() {
         super.onStop()
         emojiInput.unregisterOnChangeListener(switchKeyListener)
+        cnEnInput.unregisterOnChangeListener(switchKeyListener)
         doublePYSchemaMode.unregisterOnChangeListener(schemaModeListener)
     }
 }

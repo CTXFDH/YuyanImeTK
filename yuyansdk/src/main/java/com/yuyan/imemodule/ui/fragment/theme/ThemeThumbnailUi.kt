@@ -1,8 +1,8 @@
-
 package com.yuyan.imemodule.ui.fragment.theme
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
@@ -14,8 +14,8 @@ import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.isVisible
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.data.theme.Theme
-import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.displayName
+import com.yuyan.imemodule.utils.DialogStyleUtils
 import com.yuyan.imemodule.utils.rippleDrawable
 import splitties.dimensions.dp
 import splitties.views.dsl.constraintlayout.bottomOfParent
@@ -64,11 +64,11 @@ class ThemeThumbnailUi(override val ctx: Context) : Ui {
     private val themeNameView = textView {
         textSize = 11.5f
         typeface = android.graphics.Typeface.DEFAULT_BOLD
-        setTextColor(android.graphics.Color.WHITE)
-        gravity = android.view.Gravity.CENTER
+        setTextColor(Color.WHITE)
+        gravity = Gravity.CENTER
         background = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
-            setColor(android.graphics.Color.parseColor("#B3000000"))
+            setColor(Color.parseColor("#B3000000"))
             cornerRadius = dp(4f)
         }
         setPadding(dp(6), dp(2), dp(6), dp(2))
@@ -104,15 +104,38 @@ class ThemeThumbnailUi(override val ctx: Context) : Ui {
     fun setTheme(theme: Theme) {
         root.apply {
             foreground = rippleDrawable(theme.keyboardColor)
-            setOnLongClickListener {
+            setOnLongClickListener { anchorView ->
                 if (theme is Theme.Custom) {
-                    val popup = android.widget.PopupMenu(ctx, it)
-                    popup.menu.add("导出主题 (.yus)")
-                    popup.setOnMenuItemClickListener { item ->
-                        if (item.title == "导出主题 (.yus)") {
+                    // 解耦键盘选中的主题，按钮背景色严格根据设置页面是深色模式还是浅色模式而决定
+                    val isDarkUi = DialogStyleUtils.isDarkUiMode(ctx)
+                    val bgColor = if (isDarkUi) Color.parseColor("#232427") else Color.parseColor("#FFFFFF")
+                    val textColor = if (isDarkUi) Color.WHITE else Color.parseColor("#1F2937")
+
+                    val popup = androidx.appcompat.widget.ListPopupWindow(ctx).apply {
+                        this.anchorView = anchorView
+                        isModal = true
+                        width = ctx.dp(160)
+                        setBackgroundDrawable(GradientDrawable().apply {
+                            shape = GradientDrawable.RECTANGLE
+                            cornerRadius = ctx.dp(12f)
+                            setColor(bgColor)
+                            setStroke(ctx.dp(1), if (isDarkUi) 0x30FFFFFF.toInt() else Color.parseColor("#E5E7EB"))
+                        })
+                        setAdapter(object : android.widget.ArrayAdapter<String>(ctx, android.R.layout.simple_list_item_1, arrayOf("导出主题 (.yus)")) {
+                            override fun getView(position: Int, convertView: View?, parent: android.view.ViewGroup): View {
+                                val view = super.getView(position, convertView, parent)
+                                (view as? android.widget.TextView)?.apply {
+                                    setTextColor(textColor)
+                                    textSize = 13.5f
+                                    gravity = Gravity.CENTER
+                                }
+                                return view
+                            }
+                        })
+                        setOnItemClickListener { _, _, _, _ ->
                             onExportClick?.invoke()
+                            dismiss()
                         }
-                        true
                     }
                     popup.show()
                     true

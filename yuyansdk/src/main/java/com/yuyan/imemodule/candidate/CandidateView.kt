@@ -47,6 +47,7 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
 
     init {
         initDisplayCutout(service)
+        mFloatCandidateBarWidth = (if(instance.isLandscape)instance.mScreenHeight else instance.mScreenWidth) - dp(40)
         mSkbRoot = LayoutInflater.from(context).inflate(R.layout.sdk_candidate_container, this, false) as RelativeLayout
         addView(mSkbRoot)
         mSkbCandidatesBarView = mSkbRoot.findViewById(R.id.candidates_bar)
@@ -75,7 +76,6 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
 
     @SuppressLint("ClickableViewAccessibility")
     fun initView() {
-        mFloatCandidateBarWidth = instance.mScreenWidth - dp(40)
         mSkbCandidatesBarView.initialize(mChoiceNotifier)
         mSkbRoot.layoutParams.width = mFloatCandidateBarWidth
         updateTheme()
@@ -92,7 +92,7 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
         val bottom = instance.mScreenHeight - anchor[1].toInt()
         val diffHight = (instance.heightForCandidatesArea * 1.5).toInt()
         leftPadding = if(!instance.isLandscape) 0
-         else if(mHorizontalCutoutWidth - anchor[0] > mFloatCandidateBarWidth)anchor[0].toInt() - dp(20)
+        else if(mHorizontalCutoutWidth - anchor[0] > mFloatCandidateBarWidth)anchor[0].toInt() - dp(20)
         else mHorizontalCutoutWidth - mFloatCandidateBarWidth
         bottomPadding = if(bottom > diffHight) bottom - diffHight else bottom + instance.heightForCandidatesArea
     }
@@ -132,7 +132,7 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
                 if(keyCode == KeyEvent.KEYCODE_SPACE && event.isCtrlPressed ){
                     InputModeSwitcher.switchModeForUserKey(InputModeSwitcher.USER_KEYCODE_LANG)
                     resetToIdleState()
-                    Toast.makeText(context, if(InputModeSwitcher.isEnglish)"语燕输入法K-英文" else "语燕输入法K-拼音", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, if(InputModeSwitcher.isEnglish)"语燕输入法-英文" else "语燕输入法-拼音", Toast.LENGTH_LONG).show()
                 }
                 true
             }
@@ -152,6 +152,10 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
                 } else {
                     sendKeyEvent(keyCode)
                 }
+                true
+            }
+            KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_UP -> {
+                mSkbCandidatesBarView.pageChange(keyCode)
                 true
             }
             else -> false
@@ -177,10 +181,7 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
                 true
             }
             label.isDigitsOnly() ->{
-                val candIndex = label.toInt() - 1
-                if (candIndex in 0..<DictDecoder.candidateSize) {
-                    chooseAndUpdate(candIndex)
-                }
+                chooseAndUpdate(mSkbCandidatesBarView.getVisibleCandPosition(label.toInt()))
                 true
             }
             Character.isLetter(keyChar) || keyCode == KeyEvent.KEYCODE_APOSTROPHE || keyCode == KeyEvent.KEYCODE_SEMICOLON -> {
@@ -201,9 +202,7 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
     }
 
     fun chooseAndUpdate(candId: Int = mSkbCandidatesBarView.getActiveCandNo()) {
-        if (DictDecoder.candidateSize == 0) return
-        val validCandId = candId.coerceIn(0, DictDecoder.candidateSize - 1)
-        val choice = DictDecoder.chooseDecodingCandidate(validCandId)
+        val choice = DictDecoder.chooseDecodingCandidate(candId)
         if (DictDecoder.isCandidatesEmpty || DictDecoder.isAssociate) {
             commitDecInfoText(choice)
             resetToIdleState()

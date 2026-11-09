@@ -189,7 +189,7 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                 addDestinationPreference(
                     "语音识别设置",
                     "离线语音识别引擎与模型设置",
-                    R.drawable.ic_menu_touch,
+                    R.drawable.ic_menu_voice,
                     R.id.action_settingsFragment_to_voiceSettingsFragment,
                 )
                 addDestinationPreference(
@@ -197,6 +197,12 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                     "剪切板历史与快捷常用语",
                     R.drawable.ic_menu_clipboard,
                     R.id.action_settingsFragment_to_clipboardSettingsFragment,
+                )
+                addDestinationPreference(
+                    "个性化短语",
+                    "自定义快捷码与常用短语映射",
+                    R.drawable.ic_menu_phrases,
+                    R.id.action_settingsFragment_to_phrasesSettingsFragment,
                 )
 
                 // 点击展开【用户数据】选项
@@ -209,15 +215,16 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                         exportLauncher.launch("yuyanIme_${TimeUtils.iso8601UTCDateTime(exportTimestamp)}.zip")
                     }
                     onImportClick = {
-                        AlertDialog.Builder(requireContext())
+                        val dialog = AlertDialog.Builder(requireContext())
                             .setIconAttribute(android.R.attr.alertDialogIcon)
                             .setTitle(R.string.import_user_data)
                             .setMessage(R.string.confirm_import_user_data)
                             .setPositiveButton(android.R.string.ok) { _, _ ->
                                 importLauncher.launch("application/zip")
                             }
-                            .setNegativeButton(android.R.string.cancel, null)
-                            .show()
+                            .create()
+                        com.yuyan.imemodule.utils.DialogStyleUtils.styleDialog(dialog, requireContext())
+                        dialog.show()
                     }
                 }
                 addPreference(userDataPref)

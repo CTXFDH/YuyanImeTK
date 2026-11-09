@@ -92,8 +92,8 @@
 			"destination" : "/cmake/kissfft",
 			"paths" : 
 			[
-				"C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/_deps/kissfft-build/kissfft-config.cmake",
-				"C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/_deps/kissfft-build/kissfft-config-version.cmake"
+				"C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/_deps/kissfft-build/kissfft-config.cmake",
+				"C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a/_deps/kissfft-build/kissfft-config-version.cmake"
 			],
 			"type" : "file"
 		}

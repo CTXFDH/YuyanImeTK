@@ -17,6 +17,7 @@ import com.yuyan.imemodule.data.theme.ThemeFilesManager
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.view.widget.applyNavBarInsetsBottomPadding
 import kotlinx.coroutines.launch
+import splitties.dimensions.dp
 import splitties.resources.styledDrawable
 
 class ThemeListFragment : Fragment() {
@@ -153,24 +154,22 @@ class ThemeListFragment : Fragment() {
     private fun addTheme() {
         val ctx = requireContext()
         val actions = arrayOf(
-            getString(R.string.choose_image),
-            getString(R.string.duplicate_builtin_theme),
-            "导入皮肤 (.yus)"
+            "📸  " + getString(R.string.choose_image),
+            "📋  " + getString(R.string.duplicate_builtin_theme),
+            "📦  导入皮肤 (.yus)"
         )
-        AlertDialog.Builder(ctx)
+        val dialog = AlertDialog.Builder(ctx)
             .setTitle(R.string.new_theme)
-            .setNegativeButton(android.R.string.cancel, null)
             .setItems(actions) { _, i ->
                 when (i) {
                     0 -> imageLauncher.launch(null)
                     1 -> {
                         val view = ResponsiveThemeListView(ctx).apply {
-                            // force AlertDialog's customPanel to grow
-                            minimumHeight = Int.MAX_VALUE
+                            setPadding(dp(16), dp(8), dp(16), dp(16))
+                            clipToPadding = false
                         }
-                        val dialog = AlertDialog.Builder(ctx)
+                        val dupDialog = AlertDialog.Builder(ctx)
                             .setTitle(getString(R.string.duplicate_builtin_theme).removeSuffix("…"))
-                            .setNegativeButton(android.R.string.cancel, null)
                             .setView(view)
                             .create()
                         view.adapter = object :
@@ -182,33 +181,37 @@ class ThemeListFragment : Fragment() {
                                 }
                                 themeListAdapter.prependTheme(newTheme)
                                 ThemeManager.saveTheme(newTheme)
-                                dialog.dismiss()
+                                dupDialog.dismiss()
                             }
                         }
-                        dialog.show()
+                        com.yuyan.imemodule.utils.DialogStyleUtils.styleDialog(dupDialog, ctx)
+                        dupDialog.show()
                     }
                     2 -> importYusLauncher.launch("*/*")
                 }
             }
-            .show()
+            .create()
+        com.yuyan.imemodule.utils.DialogStyleUtils.styleDialog(dialog, ctx)
+        dialog.show()
     }
 
     private fun selectTheme(theme: Theme) {
         if (followSystemDayNightTheme) {
             val ctx = requireContext()
-            AlertDialog.Builder(ctx)
+            val dialog = AlertDialog.Builder(ctx)
                 .setIcon(ctx.styledDrawable(android.R.attr.alertDialogIcon))
                 .setTitle(R.string.configure)
                 .setMessage(R.string.theme_message_follow_system_day_night_mode_enabled)
-                .setPositiveButton(android.R.string.cancel, null)
-                .setNegativeButton(R.string.disable_it) { _, _ ->
+                .setPositiveButton(R.string.disable_it) { _, _ ->
                     followSystemDayNightTheme = false
                     lifecycleScope.launch {
                         ThemeManager.setNormalModeTheme(theme)
                         updateSelectedThemes()
                     }
                 }
-                .show()
+                .create()
+            com.yuyan.imemodule.utils.DialogStyleUtils.styleDialog(dialog, ctx)
+            dialog.show()
             return
         }
         ThemeManager.setNormalModeTheme(theme)

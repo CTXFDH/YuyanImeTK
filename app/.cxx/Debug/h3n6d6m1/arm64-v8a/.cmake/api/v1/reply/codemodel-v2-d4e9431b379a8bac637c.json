@@ -44,7 +44,7 @@
 				{
 					"build" : "_deps/kissfft-build",
 					"hasInstallRule" : true,
-					"jsonFile" : "directory-_deps.kissfft-build-Debug-70d412cbfaa283c95f96.json",
+					"jsonFile" : "directory-_deps.kissfft-build-Debug-4b1342fda95f152a4cfd.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.10"
@@ -145,28 +145,28 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "asr_jni::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-asr_jni-Debug-ad27ce6afe0f826e4899.json",
+					"jsonFile" : "target-asr_jni-Debug-d77e6e7edbad68c28794.json",
 					"name" : "asr_jni",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 4,
 					"id" : "kaldi-native-fbank-core::@c1d6fc37a606af214fe9",
-					"jsonFile" : "target-kaldi-native-fbank-core-Debug-bf96121c32806ccbb566.json",
+					"jsonFile" : "target-kaldi-native-fbank-core-Debug-c9e14a27005b5be7aa90.json",
 					"name" : "kaldi-native-fbank-core",
 					"projectIndex" : 1
 				},
 				{
 					"directoryIndex" : 2,
 					"id" : "kissfft::@8df36bbe327537f6f36a",
-					"jsonFile" : "target-kissfft-Debug-def991b38d6ea961ff23.json",
+					"jsonFile" : "target-kissfft-Debug-77201c1376a82d8d3df0.json",
 					"name" : "kissfft",
 					"projectIndex" : 2
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "onnx_env::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-onnx_env-Debug-9493746d30861f3e6250.json",
+					"jsonFile" : "target-onnx_env-Debug-3db01bc758a5e81e13c4.json",
 					"name" : "onnx_env",
 					"projectIndex" : 0
 				}
@@ -176,8 +176,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a",
-		"source" : "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni"
+		"build" : "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/.cxx/Debug/h3n6d6m1/arm64-v8a",
+		"source" : "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni"
 	},
 	"version" : 
 	{

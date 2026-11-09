@@ -87,7 +87,7 @@ class MenuAdapter (context: Context?, val data: MutableList<SkbFunItem>) : Recyc
         holder.entranceIconImageView?.getDrawable()?.setTint(color)
         if (dragOverListener != null) {
             holder.entranceOption?.visibility = View.VISIBLE
-            if(DataBaseKT.instance.skbFunDao().getBarMenu(item.skbMenuMode.name) != null){
+            if(com.yuyan.imemodule.manager.SkbMenuOrderManager.isInBarMenu(item.skbMenuMode)){
                 holder.entranceOption?.setImageResource(R.drawable.ic_menu_minus)
             } else {
                 holder.entranceOption?.setImageResource(R.drawable.ic_menu_plus)

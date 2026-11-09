@@ -2,7 +2,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/Debug/h3n6d6m1/obj/arm64-v8a/libonnx_env.so"
+			"path" : "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/Debug/h3n6d6m1/obj/arm64-v8a/libonnx_env.so"
 		}
 	],
 	"backtrace" : 1,
@@ -63,12 +63,12 @@
 				{
 					"backtrace" : 3,
 					"isSystem" : true,
-					"path" : "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/include"
+					"path" : "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/include"
 				},
 				{
 					"backtrace" : 3,
 					"isSystem" : true,
-					"path" : "C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/include/onnxruntime"
+					"path" : "C:/Users/kuang/AndroidStudioProjects/YuyanImeK-master/app/src/main/jni/include/onnxruntime"
 				}
 			],
 			"language" : "CXX",
@@ -86,7 +86,7 @@
 			],
 			"sysroot" : 
 			{
-				"path" : "C:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/sysroot"
+				"path" : "C:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/sysroot"
 			}
 		}
 	],
@@ -101,7 +101,7 @@
 			},
 			{
 				"backtrace" : 2,
-				"fragment" : "C:\\Users\\wen\\AndroidStudioProjects\\YuyanImeK-master\\app\\src\\main\\jni\\onnxruntime\\lib\\arm64-v8a\\libonnxruntime.so",
+				"fragment" : "C:\\Users\\kuang\\AndroidStudioProjects\\YuyanImeK-master\\app\\src\\main\\jni\\onnxruntime\\lib\\arm64-v8a\\libonnxruntime.so",
 				"role" : "libraries"
 			},
 			{
@@ -122,7 +122,7 @@
 		"language" : "CXX",
 		"sysroot" : 
 		{
-			"path" : "C:/Users/wen/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/sysroot"
+			"path" : "C:/Users/kuang/AppData/Local/Android/Sdk/ndk/25.1.8937393/toolchains/llvm/prebuilt/windows-x86_64/sysroot"
 		}
 	},
 	"name" : "onnx_env",

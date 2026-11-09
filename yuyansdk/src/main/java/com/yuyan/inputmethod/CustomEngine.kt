@@ -61,16 +61,25 @@ object CustomEngine {
 
     fun processPhrase(text: String): MutableList<String> {
         val phrases = mutableListOf<String>()
-        val chinesePredictionDate = getInstance().input.chinesePredictionDate.getValue()
-        if (chinesePredictionDate) {
-            phrases.addAll(DataBaseKT.instance.phraseDao().query(text).map { it.content })
-            val suffixesDate = setOf("rq", "riqi", "pgpg", "pp", "nq", "njqj")
-            if (suffixesDate.any { it.equals(text, ignoreCase = true) }) {
-                phrases.addAll(TimeUtils.getData())
-            }
-            val suffixesTime = setOf("sj", "shijian", "pj", "pggjgam", "sjjq", "mj", "mhjjjhn", "mjmj", "djmj", "uijm", "iijm", "vijw")
-            if (suffixesTime.any { it.equals(text, ignoreCase = true) }) {
-                phrases.addAll(TimeUtils.getTime())
+        val cleanText = text.replace("'", "").trim()
+        if (cleanText.isNotEmpty()) {
+            // 查询 9键(34944)、LX17(GXXD/gxxd) 或 26键(dizhi) 精确匹配短语
+            val matchedPhrases = DataBaseKT.instance.phraseDao().query(cleanText)
+                .ifEmpty { DataBaseKT.instance.phraseDao().query(cleanText.uppercase()) }
+                .ifEmpty { DataBaseKT.instance.phraseDao().query(cleanText.lowercase()) }
+                .map { it.content }
+            phrases.addAll(matchedPhrases)
+
+            val chinesePredictionDate = getInstance().input.chinesePredictionDate.getValue()
+            if (chinesePredictionDate) {
+                val suffixesDate = setOf("rq", "riqi", "pgpg", "pp", "nq", "njqj")
+                if (suffixesDate.any { it.equals(cleanText, ignoreCase = true) }) {
+                    phrases.addAll(TimeUtils.getData())
+                }
+                val suffixesTime = setOf("sj", "shijian", "pj", "pggjgam", "sjjq", "mj", "mhjjjhn", "mjmj", "djmj", "uijm", "iijm", "vijw")
+                if (suffixesTime.any { it.equals(cleanText, ignoreCase = true) }) {
+                    phrases.addAll(TimeUtils.getTime())
+                }
             }
         }
         return phrases
