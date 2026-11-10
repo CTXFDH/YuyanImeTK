@@ -209,45 +209,38 @@ class KeyboardLoaderUtil private constructor() {
                 rows.add(keyBeans)
             }
             InputModeSwitcher.MASK_SKB_LAYOUT_LX17 -> {     // 6000 乱序17键盘
-                var keyBeans: MutableList<SoftKey> = LinkedList()
-                if(AppPrefs.getInstance().keyboardSetting.lx17WithLeftPrefix.getValue()) {
-                    val keys = KeyboardData.layoutLX17CnWithLeftPrefix[skbStyleMode]!!
-                    var lX17Keys = createLX17Keys(keys[0], 0.1416667f)
-                    lX17Keys.first().apply {
-                        widthF = 0.140f
-                        heightF = 0.75f
+                val leftDelete = AppPrefs.getInstance().keyboardSetting.lx17LeftDeleteEnable.getValue()
+                val centerSymbol = AppPrefs.getInstance().keyboardSetting.lx17CenterSymbolEnable.getValue()
+                val withLeftPrefix = AppPrefs.getInstance().keyboardSetting.lx17WithLeftPrefix.getValue()
+
+                val rawKeys = KeyboardData.layoutLX17Cn[skbStyleMode]!!
+                for (rowIndex in 0..2) {
+                    val rowCodes = rawKeys[rowIndex].clone()
+                    if (leftDelete && rowIndex == 2) {
+                        val temp = rowCodes[0]
+                        rowCodes[0] = rowCodes[rowCodes.size - 1]
+                        rowCodes[rowCodes.size - 1] = temp
                     }
-                    lX17Keys[1].mLeftF = 0.145f
-                    keyBeans.addAll(lX17Keys)
-                    rows.add(keyBeans)
-                    keyBeans = LinkedList()
-                    lX17Keys = createLX17Keys(keys[1], 0.1416667f)
-                    lX17Keys.first().mLeftF = 0.145f
-                    keyBeans.addAll(lX17Keys)
-                    rows.add(keyBeans)
-                    keyBeans = LinkedList()
-                    lX17Keys = createLX17Keys(keys[2], 0.1416667f)
-                    lX17Keys.first().mLeftF = 0.145f
-                    keyBeans.addAll(lX17Keys)
-                    rows.add(keyBeans)
-                    keyBeans = lastRows(skbValue)
-                    rows.add(keyBeans)
-                } else {
-                    val keys =  KeyboardData.layoutLX17Cn[skbStyleMode]!!
-                    var lX17Keys = createLX17Keys(keys[0], 0.165f)
-                    keyBeans.addAll(lX17Keys)
-                    rows.add(keyBeans)
-                    keyBeans = LinkedList()
-                    lX17Keys = createLX17Keys(keys[1], 0.165f)
-                    keyBeans.addAll(lX17Keys)
-                    rows.add(keyBeans)
-                    keyBeans = LinkedList()
-                    lX17Keys = createLX17Keys(keys[2], 0.165f)
-                    keyBeans.addAll(lX17Keys)
-                    rows.add(keyBeans)
-                    keyBeans = lastRows(skbValue)
+
+                    val finalCodes = if (centerSymbol) {
+                        val list = rowCodes.toMutableList()
+                        list.add(3, InputModeSwitcher.USER_KEYCODE_LEFT_SYMBOL)
+                        list.toTypedArray()
+                    } else if (withLeftPrefix && rowIndex == 0) {
+                        val list = rowCodes.toMutableList()
+                        list.add(0, InputModeSwitcher.USER_KEYCODE_LEFT_SYMBOL)
+                        list.toTypedArray()
+                    } else {
+                        rowCodes
+                    }
+
+                    val width = if (finalCodes.size > 6) 0.125f else 0.165f
+                    val lX17Keys = createLX17Keys(finalCodes, width)
+                    val keyBeans = LinkedList<SoftKey>().apply { addAll(lX17Keys) }
                     rows.add(keyBeans)
                 }
+                val keyBeans = lastRows(skbValue)
+                rows.add(keyBeans)
             }
             InputModeSwitcher.MASK_SKB_LAYOUT_STROKE -> {  // 7000  笔画键盘
                 var keyBeans: MutableList<SoftKey> = LinkedList()

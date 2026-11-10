@@ -247,6 +247,8 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val keyboardMnemonic = bool("keyboard_mnemonic_show_enable", false)
 
         val lx17WithLeftPrefix = switch(R.string.lx17_with_left_prefix, "lx17_with_left_prefix_enable", true)
+        val lx17LeftDeleteEnable = switch(R.string.lx17_left_delete_title, "lx17_left_delete_enable", false)
+        val lx17CenterSymbolEnable = switch(R.string.lx17_center_symbol_title, "lx17_center_symbol_enable", false)
 
 
         val categoryPeripherals = category(R.string.category_symbols_peripherals)
