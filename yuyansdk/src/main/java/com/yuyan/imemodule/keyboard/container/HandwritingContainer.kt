@@ -18,6 +18,7 @@ import com.yuyan.imemodule.database.entry.SideSymbol
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcher
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
+import com.yuyan.inputmethod.HWEngine
 import com.yuyan.imemodule.utils.AppUtil
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
 import com.yuyan.imemodule.keyboard.InputView
@@ -67,6 +68,7 @@ class HandwritingContainer(context: Context?, inputView: InputView) : InputBaseC
      * 更新软键盘布局
      */
     override fun updateSkbLayout() {
+        HWEngine.prepare()
         if (null == mMajorView) {
             mMajorView = HandwritingKeyboard(context)
             val params = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)

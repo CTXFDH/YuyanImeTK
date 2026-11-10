@@ -37,7 +37,7 @@ class HandwritingKeyboard(context: Context?) : TextKeyboard(context) {
     private val mPaint = Paint()
     private var mSignatureBitmap: Bitmap? = null
     private var mSignatureBitmapCanvas: Canvas? = null
-    private val times = 1200L - getInstance().handwriting.handWritingSpeed.getValue()  // 默认1.3s
+    private val times: Long get() = getInstance().handwriting.handWritingSpeed.getValue().toLong().coerceIn(300L, 2000L)
 
     init {
         this.mPaint.setColor(ThemeManager.activeTheme.keyTextColor)
