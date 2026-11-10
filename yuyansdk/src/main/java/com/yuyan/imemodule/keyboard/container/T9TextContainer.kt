@@ -112,6 +112,13 @@ open class T9TextContainer(context: Context?, inputView: InputView, skbValue: In
                 topOfParent(softKeyboard.keyYMargin)
                 bottomOfParent(softKeyboard.keyYMargin)
             }
+        } else if (centerSymbol) {
+            val leftWidth = (skbWidth * 0.18).toInt()
+            LayoutParams(leftWidth, matchParent).apply {
+                leftOfParent(0)
+                topOfParent(softKeyboard.keyYMargin)
+                bottomOfParent(softKeyboard.keyYMargin)
+            }
         } else {
             val softKeySymbolHolder = softKeyboard.getKeyByCode(InputModeSwitcher.USER_KEYCODE_LEFT_SYMBOL)
             if (softKeySymbolHolder != null) {
