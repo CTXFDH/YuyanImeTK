@@ -103,6 +103,15 @@ open class T9TextContainer(context: Context?, inputView: InputView, skbValue: In
         val softKeyboard = mMajorView!!.getSoftKeyboard()
         val isLx17 = mSkbValue == InputModeSwitcher.MASK_SKB_LAYOUT_LX17
         val prefixMode = AppPrefs.getInstance().keyboardSetting.lx17PrefixMode.getValue()
+        if (isLx17 && prefixMode == Lx17PrefixMode.None) {
+            if (mRVLeftPrefix.parent != null) {
+                (mRVLeftPrefix.parent as ViewGroup).removeView(mRVLeftPrefix)
+            }
+            mRVLeftPrefix.visibility = GONE
+            return
+        }
+        mRVLeftPrefix.visibility = VISIBLE
+
         val centerSymbol = isLx17 && !mIsExpanded && prefixMode == Lx17PrefixMode.Center
         val skbWidth = EnvironmentSingleton.instance.skbWidth
         val softKeySymbolHolder = softKeyboard.getKeyByCode(InputModeSwitcher.USER_KEYCODE_LEFT_SYMBOL)
