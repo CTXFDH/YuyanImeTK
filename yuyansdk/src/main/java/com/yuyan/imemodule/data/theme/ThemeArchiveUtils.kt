@@ -62,8 +62,7 @@ object ThemeArchiveUtils {
                                 val baos = java.io.ByteArrayOutputStream()
                                 zipIn.copyTo(baos)
                                 val rawJson = baos.toString(Charsets.UTF_8.name())
-                                val jsonText = CustomThemeSerializer.stripJsonComments(rawJson)
-                                val (theme, _) = CustomThemeSerializer.LenientJson.decodeFromString(CustomThemeSerializer.WithMigrationStatus, jsonText)
+                                val (theme, _) = CustomThemeSerializer.decodeThemeCustom(rawJson)
                                 parsedTheme = theme
                             }
                             simpleName.startsWith("src.") || simpleName.startsWith("background_src.") -> {

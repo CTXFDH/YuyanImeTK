@@ -64,8 +64,7 @@ object ThemeFilesManager {
                 val jsonFile = File(subFile, "theme.json")
                 if (jsonFile.exists()) {
                     runCatching {
-                        val sanitizedJson = CustomThemeSerializer.stripJsonComments(jsonFile.readText())
-                        val (theme, migrated) = CustomThemeSerializer.LenientJson.decodeFromString(CustomThemeSerializer.WithMigrationStatus, sanitizedJson)
+                        val (theme, migrated) = CustomThemeSerializer.decodeThemeCustom(jsonFile.readText())
                         if (!seenNames.contains(theme.name)) {
                             seenNames.add(theme.name)
                             if (migrated) saveThemeFiles(theme)
@@ -80,8 +79,7 @@ object ThemeFilesManager {
             } else if (subFile.isFile && subFile.extension == "json") {
                 // 2. 自动无缝迁移旧版散落的 files/theme/<name>.json 文件到专属文件夹
                 runCatching {
-                    val sanitizedJson = CustomThemeSerializer.stripJsonComments(subFile.readText())
-                    val (theme, _) = CustomThemeSerializer.LenientJson.decodeFromString(CustomThemeSerializer.WithMigrationStatus, sanitizedJson)
+                    val (theme, _) = CustomThemeSerializer.decodeThemeCustom(subFile.readText())
                     saveThemeFiles(theme)
                     subFile.delete()
                     if (!seenNames.contains(theme.name)) {

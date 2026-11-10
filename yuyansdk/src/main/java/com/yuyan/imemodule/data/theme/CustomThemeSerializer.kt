@@ -1,16 +1,13 @@
 package com.yuyan.imemodule.data.theme
 
-import com.yuyan.imemodule.utils.NostalgicSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.JsonTransformingSerializer
-import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
-object CustomThemeSerializer : JsonTransformingSerializer<Theme.Custom>(Theme.Custom.serializer()) {
+object CustomThemeSerializer {
 
     val LenientJson = Json {
         ignoreUnknownKeys = true
@@ -18,21 +15,24 @@ object CustomThemeSerializer : JsonTransformingSerializer<Theme.Custom>(Theme.Cu
         coerceInputValues = true
     }
 
-    val WithMigrationStatus = NostalgicSerializer(this) {
-        it.jsonObject[VERSION]?.jsonPrimitive?.content != CURRENT_VERSION
+    fun decodeThemeCustom(jsonText: String): Pair<Theme.Custom, Boolean> {
+        val cleanText = stripJsonComments(jsonText)
+        val rawElement = LenientJson.parseToJsonElement(cleanText)
+        val isMigrated = rawElement.jsonObject[VERSION]?.jsonPrimitive?.content != CURRENT_VERSION
+        val transformedObj = transformThemeJsonObject(rawElement)
+        val theme = LenientJson.decodeFromJsonElement(Theme.Custom.serializer(), transformedObj)
+        return theme to isMigrated
     }
 
-    override fun transformSerialize(element: JsonElement): JsonElement =
-        element.jsonObject.addVersion()
-
-    override fun transformDeserialize(element: JsonElement): JsonElement {
-        if (element !is JsonObject) return element
-        val jsonObj = element.removeVersion()
-        val mutableMap = jsonObj.toMutableMap()
-        mutableMap.entries.removeAll { (_, value) ->
+    fun transformThemeJsonObject(element: JsonElement): JsonObject {
+        val obj = element.jsonObject
+        val map = obj.toMutableMap()
+        map.remove(VERSION)
+        map.remove("windowCornerRadiusDp")
+        map.entries.removeAll { (_, value) ->
             value is kotlinx.serialization.json.JsonNull || (value is JsonPrimitive && value.isString && value.content == "null")
         }
-        return transformElement(JsonObject(mutableMap))
+        return transformElement(JsonObject(map)) as JsonObject
     }
 
     private fun transformElement(element: JsonElement): JsonElement {
@@ -233,47 +233,6 @@ object CustomThemeSerializer : JsonTransformingSerializer<Theme.Custom>(Theme.Cu
         }
     }
 
-    private fun JsonObject.addVersion() =
-        JsonObject(this + (VERSION to JsonPrimitive(CURRENT_VERSION)))
-
-    private fun JsonObject.removeVersion() =
-        JsonObject(this - VERSION)
-
-    private val EmptyTransform: (JsonObject) -> JsonObject = { it }
-
-    data class MigrationStrategy(
-        val version: String,
-        val transformation: (JsonObject) -> JsonObject
-    )
-
-    @Suppress("UNUSED")
-    private val strategies: List<MigrationStrategy> =
-        // Add migrations here
-        listOf(
-            MigrationStrategy("2.0") {
-                JsonObject(it.toMutableMap().apply {
-                    if (get("backgroundImage") != null) {
-                        val popupBkgColor = if (getValue("isDark").jsonPrimitive.boolean) {
-                            ThemePreset.PixelDark.popupBackgroundColor
-                        } else {
-                            ThemePreset.PixelLight.popupBackgroundColor
-                        }
-                        put("popupBackgroundColor", JsonPrimitive(popupBkgColor))
-                        put("popupTextColor", getValue("keyTextColor"))
-                        put("genericActiveBackgroundColor", getValue("accentKeyBackgroundColor"))
-                        put("genericActiveForegroundColor", getValue("accentKeyTextColor"))
-                    } else {
-                        put("popupBackgroundColor", getValue("barColor"))
-                        put("popupTextColor", getValue("keyTextColor"))
-                        put("genericActiveBackgroundColor", getValue("accentKeyBackgroundColor"))
-                        put("genericActiveForegroundColor", getValue("accentKeyTextColor"))
-                    }
-                })
-            },
-            MigrationStrategy("1.0", EmptyTransform)
-        )
-
     private const val VERSION = "version"
-
     private const val CURRENT_VERSION = "2.0"
 }
