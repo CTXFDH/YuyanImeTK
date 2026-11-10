@@ -10,6 +10,8 @@ import com.yuyan.imemodule.entity.keyboard.ToggleState
 import com.yuyan.imemodule.keyboard.KeyPreset
 import com.yuyan.imemodule.keyboard.KeyboardData
 import com.yuyan.imemodule.manager.InputModeSwitcher
+import com.yuyan.imemodule.keyboard.KeyboardManager
+import com.yuyan.imemodule.keyboard.container.InputBaseContainer
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
@@ -210,8 +212,10 @@ class KeyboardLoaderUtil private constructor() {
             }
             InputModeSwitcher.MASK_SKB_LAYOUT_LX17 -> {     // 6000 乱序17键盘
                 val leftDelete = AppPrefs.getInstance().keyboardSetting.lx17LeftDeleteEnable.getValue()
-                val centerSymbol = AppPrefs.getInstance().keyboardSetting.lx17CenterSymbolEnable.getValue()
-                val withLeftPrefix = AppPrefs.getInstance().keyboardSetting.lx17WithLeftPrefix.getValue()
+                val currentContainer = KeyboardManager.instance.currentContainer
+                val isExpanded = (currentContainer as? InputBaseContainer)?.isCandidatesExpanded() == true
+                val centerSymbol = !isExpanded && AppPrefs.getInstance().keyboardSetting.lx17CenterSymbolEnable.getValue()
+                val withLeftPrefix = AppPrefs.getInstance().keyboardSetting.lx17WithLeftPrefix.getValue() || (isExpanded && AppPrefs.getInstance().keyboardSetting.lx17CenterSymbolEnable.getValue())
 
                 if (!leftDelete && !centerSymbol && !withLeftPrefix) {
                     val keys = KeyboardData.layoutLX17Cn[skbStyleMode]!!

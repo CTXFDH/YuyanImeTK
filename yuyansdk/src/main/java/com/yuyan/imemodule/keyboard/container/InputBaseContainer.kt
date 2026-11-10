@@ -42,6 +42,7 @@ open class InputBaseContainer(context: Context?, inputView: InputView) : BaseCon
     open fun toggleCandidatesMore() {
         mIsExpanded = !mIsExpanded
         updateCandidatesOverlayState()
+        updateSkbLayout()
     }
 
     open fun isCandidatesExpanded(): Boolean = mIsExpanded
