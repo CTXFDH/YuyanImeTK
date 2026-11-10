@@ -57,10 +57,11 @@ object CustomThemeSerializer {
     }
 
     fun stripJsonComments(jsonText: String): String {
-        return jsonText.lineSequence().filterNot { line ->
+        val noBomText = jsonText.removePrefix("\uFEFF").replace("\uFEFF", "").trim()
+        return noBomText.lineSequence().filterNot { line ->
             val trimmed = line.trim()
             trimmed.startsWith("#") || trimmed.startsWith("//")
-        }.joinToString("\n")
+        }.joinToString("\n").trim()
     }
 
     private fun Int.toHexString(): String {
