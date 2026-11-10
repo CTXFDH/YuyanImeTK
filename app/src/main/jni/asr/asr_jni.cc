@@ -88,7 +88,8 @@ Java_com_yuyan_imemodule_speech_AsrNative_nativeAcceptPcm(JNIEnv *env,
   if (!holder || !holder->rec) return;
   jsize n = env->GetArrayLength(pcm);
   if (n <= 0) return;
-  jbyte *bytes = env->GetByteArrayElements(pcm, nullptr);
+  jbyte *bytes = static_cast<jbyte *>(env->GetPrimitiveArrayCritical(pcm, nullptr));
+  if (!bytes) return;
 
   constexpr double kTargetRms = 0.008;    // 目标 RMS（约 -42dBFS，float 域）
   constexpr double kMaxGain = 20.0;       // 增益上限，防止噪音被过度放大
@@ -103,7 +104,7 @@ Java_com_yuyan_imemodule_speech_AsrNative_nativeAcceptPcm(JNIEnv *env,
     double v = static_cast<double>(s);
     sum_sq += v * v;
   }
-  env->ReleaseByteArrayElements(pcm, bytes, JNI_ABORT);
+  env->ReleasePrimitiveArrayCritical(pcm, bytes, JNI_ABORT);
 
   const size_t cnt = samples.size();
   double rms = (cnt > 0) ? std::sqrt(sum_sq / static_cast<double>(cnt)) : 0.0;
