@@ -559,11 +559,20 @@ class KeyboardLoaderUtil private constructor() {
             CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + DoublePinyinSchemaMode.ziguang -> doubleZiguangMnemonicPreset
             else -> emptyMap()
         }
+        val isLowercase = AppPrefs.getInstance().input.qwertyPinyinLowercase.getValue()
         val softKeys = mutableListOf<SoftKey>()
         val keyPreset = if(numberLine)KeyPreset.qwertyPYKeyPreset else KeyPreset.qwertyPYKeyNumberPreset
         for(code in codes){
             val labels = keyPreset[code]
-            softKeys.add(SoftKey(code = code, label = labels?.getOrNull(0) ?: "", labelSmall = labels?.getOrNull(1) ?: "", keyMnemonic = keyMnemonicPreset[code] ?: "").apply {
+            var mainLabel = labels?.getOrNull(0) ?: ""
+            if (isLowercase) {
+                if (code == KeyEvent.KEYCODE_V) {
+                    mainLabel = "ü"
+                } else if (mainLabel.length == 1 && mainLabel[0] in 'A'..'Z') {
+                    mainLabel = mainLabel.lowercase()
+                }
+            }
+            softKeys.add(SoftKey(code = code, label = mainLabel, labelSmall = labels?.getOrNull(1) ?: "", keyMnemonic = keyMnemonicPreset[code] ?: "").apply {
                 widthF = 0.099f
             })
         }

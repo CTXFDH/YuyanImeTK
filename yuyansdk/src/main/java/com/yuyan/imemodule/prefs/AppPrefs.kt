@@ -77,6 +77,13 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
         val titleChinese = category(R.string.chinese_input_setting)
 
+        val qwertyPinyinLowercase = switch(
+            R.string.qwerty_pinyin_lowercase_title,
+            "qwerty_pinyin_lowercase_enable",
+            false,
+            R.string.qwerty_pinyin_lowercase_summary
+        )
+
         val chineseFanTi = bool("chinese_jian_fan_enable", false)
 
         val doublePYSchemaMode =

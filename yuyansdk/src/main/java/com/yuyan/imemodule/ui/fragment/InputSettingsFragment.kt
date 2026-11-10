@@ -13,6 +13,7 @@ class InputSettingsFragment: ManagedPreferenceFragment(AppPrefs.getInstance().in
     private val emojiInput = AppPrefs.getInstance().input.emojiInput
     private val cnEnInput = AppPrefs.getInstance().input.cnEnInput
     private val doublePYSchemaMode = AppPrefs.getInstance().input.doublePYSchemaMode
+    private val qwertyPinyinLowercase = AppPrefs.getInstance().input.qwertyPinyinLowercase
 
     private val switchKeyListener = ManagedPreference.OnChangeListener<Boolean> { _, _ ->
         InputDispatcher.nativeUpdateImeOption()
@@ -20,12 +21,17 @@ class InputSettingsFragment: ManagedPreferenceFragment(AppPrefs.getInstance().in
     private val schemaModeListener = ManagedPreference.OnChangeListener<DoublePinyinSchemaMode> { _, doublePYSchemaMode ->
         InputModeSwitcher.switchModeForSetting(Pair(InputModeSwitcher.MASK_SKB_LAYOUT_QWERTY_PINYIN, CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + doublePYSchemaMode))
     }
+    private val keyboardRefreshListener = ManagedPreference.OnChangeListener<Boolean> { _, _ ->
+        com.yuyan.imemodule.utils.KeyboardLoaderUtil.instance.clearKeyboardMap()
+        com.yuyan.imemodule.keyboard.KeyboardManager.instance.clearKeyboard()
+    }
 
     override fun onStart() {
         super.onStart()
         emojiInput.registerOnChangeListener(switchKeyListener)
         cnEnInput.registerOnChangeListener(switchKeyListener)
         doublePYSchemaMode.registerOnChangeListener(schemaModeListener)
+        qwertyPinyinLowercase.registerOnChangeListener(keyboardRefreshListener)
     }
 
     override fun onStop() {
@@ -33,5 +39,6 @@ class InputSettingsFragment: ManagedPreferenceFragment(AppPrefs.getInstance().in
         emojiInput.unregisterOnChangeListener(switchKeyListener)
         cnEnInput.unregisterOnChangeListener(switchKeyListener)
         doublePYSchemaMode.unregisterOnChangeListener(schemaModeListener)
+        qwertyPinyinLowercase.unregisterOnChangeListener(keyboardRefreshListener)
     }
 }

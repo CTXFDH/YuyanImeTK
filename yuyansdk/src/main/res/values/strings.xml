@@ -25,6 +25,8 @@
     <string name="keyboard_font_size">键盘字体大小</string>
     <string name="changeKeyboard">切换键盘</string>
     <string name="chinese_input_setting">中文输入</string>
+    <string name="qwerty_pinyin_lowercase_title">拼音全键键盘小写</string>
+    <string name="qwerty_pinyin_lowercase_summary">拼音全键键盘按键显示为小写字母，并将 V 键显示为 ü</string>
     <string name="cn_en_input">中英混输</string>
     <string name="search_english_cell">英文单词补全</string>
     <string name="setting_jian_fan">繁体输入</string>
