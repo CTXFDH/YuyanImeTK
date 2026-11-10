@@ -19,6 +19,7 @@ import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcher
 import com.yuyan.imemodule.service.DictDecoder
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
+import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.utils.AppUtil
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
@@ -90,14 +91,26 @@ open class T9TextContainer(context: Context?, inputView: InputView, skbValue: In
     // 更新键盘上侧边符号列表
     private fun updateKeyboardView() {
         val softKeyboard = mMajorView!!.getSoftKeyboard()
-        val softKeySymbolHolder = softKeyboard.getKeyByCode(InputModeSwitcher.USER_KEYCODE_LEFT_SYMBOL) ?: return
-        val prefixLayoutParams = LayoutParams(softKeySymbolHolder.width(), softKeySymbolHolder.height())
-        prefixLayoutParams.setMargins(
-            softKeySymbolHolder.mLeft + softKeyboard.keyXMargin,
-            softKeySymbolHolder.mTop + softKeyboard.keyYMargin,
-            0,
-            0
-        )
+        val centerSymbol = AppPrefs.getInstance().keyboardSetting.lx17CenterSymbolEnable.getValue()
+        val skbWidth = EnvironmentSingleton.instance.skbWidth
+
+        val prefixLayoutParams = if (centerSymbol) {
+            val colWidth = (skbWidth / 7.0f).toInt()
+            val leftX = (skbWidth * (3.0f / 7.0f)).toInt()
+            LayoutParams(colWidth, LayoutParams.MATCH_PARENT).apply {
+                setMargins(leftX, softKeyboard.keyYMargin, 0, softKeyboard.keyYMargin)
+            }
+        } else {
+            val softKeySymbolHolder = softKeyboard.getKeyByCode(InputModeSwitcher.USER_KEYCODE_LEFT_SYMBOL) ?: return
+            LayoutParams(softKeySymbolHolder.width(), softKeySymbolHolder.height()).apply {
+                setMargins(
+                    softKeySymbolHolder.mLeft + softKeyboard.keyXMargin,
+                    softKeySymbolHolder.mTop + softKeyboard.keyYMargin,
+                    0,
+                    0
+                )
+            }
+        }
         val prefixLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         mRVLeftPrefix.setLayoutManager(prefixLayoutManager)
         if (mRVLeftPrefix.parent != null) {
