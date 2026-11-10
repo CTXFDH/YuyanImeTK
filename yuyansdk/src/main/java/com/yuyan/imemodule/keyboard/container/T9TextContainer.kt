@@ -122,14 +122,7 @@ open class T9TextContainer(context: Context?, inputView: InputView, skbValue: In
             softKeyboard.keyYMargin
         }
 
-        val prefixLayoutParams = if (mIsExpanded) {
-            val leftWidth = (skbWidth * 0.18).toInt()
-            LayoutParams(leftWidth, 0).apply {
-                leftOfParent(0)
-                topOfParent(softKeyboard.keyYMargin)
-                bottomOfParent(bottomMargin)
-            }
-        } else if (centerSymbol) {
+        val prefixLayoutParams = if (centerSymbol) {
             val colWidth = (skbWidth / 7.0f).toInt()
             val leftX = (skbWidth * (3.0f / 7.0f)).toInt()
             LayoutParams(colWidth, 0).apply {
@@ -138,18 +131,11 @@ open class T9TextContainer(context: Context?, inputView: InputView, skbValue: In
                 bottomOfParent(bottomMargin)
             }
         } else {
-            if (softKeySymbolHolder != null) {
-                LayoutParams(softKeySymbolHolder.width(), 0).apply {
-                    leftOfParent(softKeySymbolHolder.mLeft + softKeyboard.keyXMargin)
-                    topOfParent(softKeySymbolHolder.mTop + softKeyboard.keyYMargin)
-                    bottomOfParent(bottomMargin)
-                }
-            } else {
-                LayoutParams((skbWidth * 0.18).toInt(), 0).apply {
-                    leftOfParent(0)
-                    topOfParent(softKeyboard.keyYMargin)
-                    bottomOfParent(bottomMargin)
-                }
+            val colWidth = if (softKeySymbolHolder != null) softKeySymbolHolder.mRight else (skbWidth * 0.18).toInt()
+            LayoutParams(colWidth, 0).apply {
+                leftOfParent(0)
+                topOfParent(softKeyboard.keyYMargin)
+                bottomOfParent(bottomMargin)
             }
         }
         val prefixLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
