@@ -57,7 +57,7 @@ class CandidatesAdapter(context: Context?) :
             val view = holder.textView
             val lp = view.layoutParams as? FlexboxLayoutManager.LayoutParams
                 ?: FlexboxLayoutManager.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-            lp.flexBasisPercent = 1f / 6f
+            lp.flexBasisPercent = -1f // Use wrap_content so multi-character phrases never get clipped
 
             if (position == 0) {
                 val bg = GradientDrawable().apply {
