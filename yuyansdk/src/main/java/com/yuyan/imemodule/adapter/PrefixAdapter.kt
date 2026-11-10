@@ -20,7 +20,6 @@ class PrefixAdapter(context: Context?, private val mDatas: Array<String>) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SymbolTypeHolder {
         val view = inflater.inflate(R.layout.sdk_item_list_alpha_symbol_noraml, parent, false)
-        view.background = null
         return SymbolTypeHolder(view)
     }
 

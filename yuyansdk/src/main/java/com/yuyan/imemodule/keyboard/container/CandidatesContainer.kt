@@ -87,8 +87,9 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
     private fun initView(context: Context) {
         mRVSymbolsView = SwipeRecyclerView(context)
         mRVSymbolsView.setHasFixedSize(true)
-        mRVSymbolsView.setItemAnimator(null)
-        mRVLeftPrefix.setLayoutManager(LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false))
+        mRVSymbolsView.itemAnimator = null
+        mRVLeftPrefix.layoutManager = LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false)
+        mRVLeftPrefix.setBackgroundColor(ThemeManager.activeTheme.keyboardColor)
         val skbHeightMargins = (instance.skbHeight * 0.01).toInt()
 
         val softKeyboard = KeyboardLoaderUtil.instance.getSoftKeyboard(InputModeSwitcher.skbLayout)
