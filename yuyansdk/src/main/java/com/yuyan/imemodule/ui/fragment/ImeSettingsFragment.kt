@@ -199,10 +199,10 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                     R.id.action_settingsFragment_to_clipboardSettingsFragment,
                 )
                 addDestinationPreference(
-                    "词库管理",
-                    "用户自造词与个性化短语管理",
+                    "个性化短语",
+                    "自定义快捷码与常用短语映射",
                     R.drawable.ic_menu_phrases,
-                    R.id.action_settingsFragment_to_dictSettingsFragment,
+                    R.id.action_settingsFragment_to_phrasesSettingsFragment,
                 )
 
                 // 点击展开【用户数据】选项
