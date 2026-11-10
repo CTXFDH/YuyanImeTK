@@ -39,7 +39,6 @@ class ThemeListFragment : Fragment() {
             when (result) {
                 is CustomThemeActivity.BackgroundResult.Created -> {
                     val theme = result.theme
-                    ThemeManager.saveTheme(theme)
                     ThemeManager.refreshThemes()
                     themeListAdapter.setThemes(ThemeManager.getAllThemes())
                     updateSelectedThemes()
@@ -55,8 +54,6 @@ class ThemeListFragment : Fragment() {
                     updateSelectedThemes()
                 }
                 is CustomThemeActivity.BackgroundResult.Updated -> {
-                    val theme = result.theme
-                    ThemeManager.saveTheme(theme)
                     ThemeManager.refreshThemes()
                     themeListAdapter.setThemes(ThemeManager.getAllThemes())
                     updateSelectedThemes()
