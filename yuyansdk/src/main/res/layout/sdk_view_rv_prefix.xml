@@ -4,4 +4,5 @@
     android:id="@+id/rv_prefix"
     android:layout_width="55dp"
     android:layout_height="match_parent"
+    android:background="@drawable/skb_prefix_pinyin"
     android:layout_gravity="center"/>
