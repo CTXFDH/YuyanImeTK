@@ -32,7 +32,7 @@ class PrefixAdapter(context: Context?, private val mDatas: Array<String>) :
         }
         view.background = bg
         val lp = view.layoutParams as? ViewGroup.MarginLayoutParams ?: ViewGroup.MarginLayoutParams(view.layoutParams)
-        lp.setMargins(DevicesUtils.dip2px(2f), DevicesUtils.dip2px(3f), DevicesUtils.dip2px(2f), DevicesUtils.dip2px(3f))
+        lp.setMargins(0, DevicesUtils.dip2px(2f), 0, DevicesUtils.dip2px(2f))
         view.layoutParams = lp
         return SymbolTypeHolder(view)
     }
