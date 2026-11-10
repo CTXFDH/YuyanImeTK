@@ -8,9 +8,9 @@ internal class CtcDecoder(private val dictionary: List<String>) {
 
     companion object {
         private const val BLANK_INDEX = 0
-        private const val DEFAULT_BEAM_WIDTH = 10
-        private const val DEFAULT_TOP_K = 3
-        const val DEFAULT_MAX_CANDIDATES = 8
+        private const val DEFAULT_BEAM_WIDTH = 20
+        private const val DEFAULT_TOP_K = 10
+        const val DEFAULT_MAX_CANDIDATES = 16
         private const val SPACE_CHARS = " \u3000\t"
         private val NEG_INF = Double.NEGATIVE_INFINITY
 

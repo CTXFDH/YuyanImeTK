@@ -50,16 +50,7 @@ class ImagePreprocessor {
             scale = contentMaxWidth / boxWidth
         }
         val scaleY = scale
-        val minContentWidth = if (expectedChars > 1) {
-            minOf(contentHeight * expectedChars.coerceAtMost(MAX_EXPECTED_CHARS), contentMaxWidth)
-        } else {
-            targetHeight * MIN_CONTENT_WIDTH_RATIO
-        }
-        val scaleX = if (boxWidth * scale < minContentWidth) {
-            minContentWidth / boxWidth
-        } else {
-            scale
-        }
+        val scaleX = scale
 
         val drawWidth = boxWidth * scaleX
         val drawHeight = boxHeight * scaleY

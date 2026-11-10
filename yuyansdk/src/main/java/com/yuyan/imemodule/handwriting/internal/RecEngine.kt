@@ -13,8 +13,8 @@ internal class RecEngine(
 ) {
 
     companion object {
-        private const val MAX_ALTERNATIVES_PER_CHAR = 3
-        private const val MAX_CANDIDATES = 8
+        private const val MAX_ALTERNATIVES_PER_CHAR = 4
+        private const val MAX_CANDIDATES = 16
         private const val PER_CHAR_CONFIDENCE_WEIGHT = 0.9f
 
         private const val SKIP_PER_CHAR_MIN_CONFIDENCE = 0.9f
