@@ -38,8 +38,6 @@ open class InputBaseContainer(context: Context?, inputView: InputView) : BaseCon
     protected var mDeleteButton: ImageView? = null
     protected var mIsExpanded = false
 
-    open fun getMajorView(): TextKeyboard? = mMajorView
-
     open fun toggleCandidatesMore() {
         mIsExpanded = !mIsExpanded
         com.yuyan.imemodule.utils.KeyboardLoaderUtil.instance.clearKeyboardMap()
@@ -86,7 +84,7 @@ open class InputBaseContainer(context: Context?, inputView: InputView) : BaseCon
                     0
                 } else if (isT9OrLx17) {
                     if (softKeySymbolHolder != null && softKeySymbolHolder.mLeft == 0) {
-                        softKeySymbolHolder.mRight + (softKeyboard?.keyXMargin ?: 0)
+                        softKeySymbolHolder.mRight + softKeyboard.keyXMargin
                     } else if (InputModeSwitcher.isChineseT9) {
                         (EnvironmentSingleton.instance.skbWidth * 0.185f).toInt()
                     } else {
@@ -113,6 +111,7 @@ open class InputBaseContainer(context: Context?, inputView: InputView) : BaseCon
                 }
                 mCandidatesGridOverlay?.adapter = mCandidatesAdapter
 
+                @SuppressLint("ClickableViewAccessibility")
                 mDeleteButton = ImageView(context).apply {
                     setImageResource(R.drawable.sdk_skb_key_delete_icon)
                     val paddingBorder = DevicesUtils.dip2px(10f)
@@ -130,23 +129,47 @@ open class InputBaseContainer(context: Context?, inputView: InputView) : BaseCon
                     }
                     isClickable = true
                     isEnabled = true
+
+                    val deleteHandler = android.os.Handler(android.os.Looper.getMainLooper())
+                    var isDeleting = false
+                    val deleteRunnable = object : Runnable {
+                        override fun run() {
+                            if (isDeleting) {
+                                DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_DEL)
+                                DevicesUtils.tryVibrate(this@InputBaseContainer)
+                                inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
+                                deleteHandler.postDelayed(this, 80)
+                            }
+                        }
+                    }
+
+                    setOnClickListener { v ->
+                        v.performClick()
+                    }
+
                     setOnTouchListener { v, motionEvent ->
                         when (motionEvent.action) {
                             MotionEvent.ACTION_DOWN -> {
+                                isDeleting = true
                                 DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_DEL)
                                 DevicesUtils.tryVibrate(this@InputBaseContainer)
-                            }
-                            MotionEvent.ACTION_UP -> {
-                                v.performClick()
                                 inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
-                                postDelayed({
-                                    if (DictDecoder.isCandidatesEmpty || DictDecoder.composingStrForDisplay.isBlank()) {
-                                        if (mIsExpanded) {
-                                            toggleCandidatesMore()
-                                            inputView.updateCandidateBar()
+                                deleteHandler.postDelayed(deleteRunnable, 400)
+                            }
+                            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                                isDeleting = false
+                                deleteHandler.removeCallbacks(deleteRunnable)
+                                if (motionEvent.action == MotionEvent.ACTION_UP) {
+                                    v.performClick()
+                                    postDelayed({
+                                        if (DictDecoder.isCandidatesEmpty || DictDecoder.composingStrForDisplay.isBlank()) {
+                                            if (mIsExpanded) {
+                                                toggleCandidatesMore()
+                                                inputView.updateCandidateBar()
+                                            }
                                         }
-                                    }
-                                }, 50)
+                                    }, 50)
+                                }
                             }
                         }
                         true
