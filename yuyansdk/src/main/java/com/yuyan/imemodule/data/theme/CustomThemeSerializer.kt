@@ -1,13 +1,16 @@
 package com.yuyan.imemodule.data.theme
 
+import com.yuyan.imemodule.utils.NostalgicSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.JsonTransformingSerializer
+import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
-object CustomThemeSerializer {
+object CustomThemeSerializer : JsonTransformingSerializer<Theme.Custom>(Theme.Custom.serializer()) {
 
     val LenientJson = Json {
         ignoreUnknownKeys = true
@@ -15,45 +18,29 @@ object CustomThemeSerializer {
         coerceInputValues = true
     }
 
-    fun decodeThemeCustom(jsonText: String): Pair<Theme.Custom, Boolean> {
-        val cleanText = stripJsonComments(jsonText)
-        val rawElement = LenientJson.parseToJsonElement(cleanText)
-        val isMigrated = rawElement.jsonObject[VERSION]?.jsonPrimitive?.content != CURRENT_VERSION
-        val transformedObj = transformThemeJsonObject(rawElement)
-        val theme = LenientJson.decodeFromJsonElement(Theme.Custom.serializer(), transformedObj)
-        return theme to isMigrated
+    val WithMigrationStatus = NostalgicSerializer(this) {
+        it.jsonObject[VERSION]?.jsonPrimitive?.content != CURRENT_VERSION
     }
 
-    fun transformThemeJsonObject(element: JsonElement): JsonObject {
-        val obj = element.jsonObject
-        val map = obj.toMutableMap()
-        map.remove(VERSION)
-        map.remove("windowCornerRadiusDp")
-        map.entries.removeAll { (_, value) ->
-            value is kotlinx.serialization.json.JsonNull || (value is JsonPrimitive && value.isString && value.content == "null")
-        }
-        return transformElement(JsonObject(map)) as JsonObject
-    }
+    override fun transformSerialize(element: JsonElement): JsonElement =
+        element.jsonObject.addVersion()
 
-    private fun transformElement(element: JsonElement): JsonElement {
-        return when (element) {
-            is JsonObject -> {
-                val mutableMap = mutableMapOf<String, JsonElement>()
-                for ((key, value) in element) {
-                    mutableMap[key] = transformElement(value)
+    override fun transformDeserialize(element: JsonElement): JsonElement {
+        val jsonObj = element.jsonObject.removeVersion()
+        val mutableMap = jsonObj.toMutableMap()
+        mutableMap.remove("windowCornerRadiusDp")
+        for ((key, value) in jsonObj) {
+            if ((value is JsonPrimitive) && value.isString) {
+                val str = value.content.trim()
+                if (str.startsWith("#") || str.startsWith("0x") || str.startsWith("0X")) {
+                    val colorInt = parseColorString(str)
+                    colorInt?.let {
+                        mutableMap[key] = JsonPrimitive(it)
+                    }
                 }
-                JsonObject(mutableMap)
             }
-            is JsonPrimitive -> {
-                if (element.isString) {
-                    val str = element.content.trim()
-                    if (str.startsWith("#") || str.startsWith("0x") || str.startsWith("0X")) {
-                        parseColorString(str)?.let { JsonPrimitive(it) } ?: element
-                    } else element
-                } else element
-            }
-            else -> element
         }
+        return JsonObject(mutableMap)
     }
 
     fun stripJsonComments(jsonText: String): String {
@@ -233,6 +220,12 @@ object CustomThemeSerializer {
             null
         }
     }
+
+    private fun JsonObject.addVersion() =
+        JsonObject(this + (VERSION to JsonPrimitive(CURRENT_VERSION)))
+
+    private fun JsonObject.removeVersion() =
+        JsonObject(this - VERSION)
 
     private const val VERSION = "version"
     private const val CURRENT_VERSION = "2.0"

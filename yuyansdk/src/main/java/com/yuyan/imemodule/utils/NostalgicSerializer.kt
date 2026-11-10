@@ -1,10 +1,10 @@
 package com.yuyan.imemodule.utils
 
-import com.yuyan.imemodule.data.theme.CustomThemeSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonElement
 
@@ -17,7 +17,7 @@ class NostalgicSerializer<T, U>(
 ) : KSerializer<Pair<T, U>> {
     override fun deserialize(decoder: Decoder): Pair<T, U> {
         val json = (decoder as JsonDecoder).decodeJsonElement()
-        return CustomThemeSerializer.LenientJson.decodeFromJsonElement(serializer, json) to f(json)
+        return Json.decodeFromJsonElement(serializer, json) to f(json)
     }
 
     override val descriptor: SerialDescriptor = serializer.descriptor
