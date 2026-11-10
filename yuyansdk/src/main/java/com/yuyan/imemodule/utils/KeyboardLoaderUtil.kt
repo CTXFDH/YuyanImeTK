@@ -273,7 +273,7 @@ class KeyboardLoaderUtil private constructor() {
                             rowCodes[0] = rowCodes[rowCodes.size - 1]
                             rowCodes[rowCodes.size - 1] = temp
                         }
-                        val width = if (rowCodes.size > 6) 0.1416667f else 0.165f
+                        val width = if (withLeftPrefix) 0.1416667f else if (rowCodes.size > 6) 0.125f else 0.165f
                         val lX17Keys = createLX17Keys(rowCodes, width)
                         if (rowIndex == 0 && withLeftPrefix && lX17Keys.isNotEmpty()) {
                             lX17Keys.first().apply {
