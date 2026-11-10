@@ -231,7 +231,7 @@ class KeyboardLoaderUtil private constructor() {
                     rows.add(lastRow)
                 } else if (centerSymbol) {
                     val rawKeys = KeyboardData.layoutLX17Cn[skbStyleMode]!!
-                    val width = 0.125f
+                    val width = 1.0f / 7.0f
                     for (rowIndex in 0..2) {
                         val rowCodes = rawKeys[rowIndex].clone()
                         if (leftDelete && rowIndex == 2) {
@@ -245,18 +245,18 @@ class KeyboardLoaderUtil private constructor() {
                             val list = rowCodes.toMutableList()
                             list.add(3, InputModeSwitcher.USER_KEYCODE_LEFT_SYMBOL)
                             val keys = createLX17Keys(list.toTypedArray(), width)
-                            keys[3].apply {
-                                heightF = 0.75f
+                            for (i in keys.indices) {
+                                keys[i].mLeftF = i * width
+                                if (i == 3) {
+                                    keys[i].heightF = 0.75f
+                                }
                             }
                             keyBeans.addAll(keys)
                         } else {
                             val keys = createLX17Keys(rowCodes, width)
                             for (i in 0..5) {
-                                if (i >= 3) {
-                                    keys[i].mLeftF = (i + 1) * width
-                                } else {
-                                    keys[i].mLeftF = i * width
-                                }
+                                val targetCol = if (i >= 3) i + 1 else i
+                                keys[i].mLeftF = targetCol * width
                                 keyBeans.add(keys[i])
                             }
                         }
