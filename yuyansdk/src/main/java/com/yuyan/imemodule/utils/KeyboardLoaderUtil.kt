@@ -281,6 +281,8 @@ class KeyboardLoaderUtil private constructor() {
                                 heightF = 0.75f
                             }
                             if (lX17Keys.size > 1) lX17Keys[1].mLeftF = 0.145f
+                        } else if (rowIndex > 0 && withLeftPrefix && lX17Keys.isNotEmpty()) {
+                            lX17Keys.first().mLeftF = 0.145f
                         }
                         val keyBeans = LinkedList<SoftKey>().apply { addAll(lX17Keys) }
                         rows.add(keyBeans)
