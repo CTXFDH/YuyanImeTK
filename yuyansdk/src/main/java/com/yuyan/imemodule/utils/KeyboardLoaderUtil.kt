@@ -229,8 +229,9 @@ class KeyboardLoaderUtil private constructor() {
                     rows.add(keyBeans)
                     val lastRow = lastRows(skbValue)
                     rows.add(lastRow)
-                } else {
+                } else if (centerSymbol) {
                     val rawKeys = KeyboardData.layoutLX17Cn[skbStyleMode]!!
+                    val width = 0.125f
                     for (rowIndex in 0..2) {
                         val rowCodes = rawKeys[rowIndex].clone()
                         if (leftDelete && rowIndex == 2) {
@@ -239,20 +240,48 @@ class KeyboardLoaderUtil private constructor() {
                             rowCodes[rowCodes.size - 1] = temp
                         }
 
-                        val finalCodes = if (centerSymbol) {
+                        val keyBeans = LinkedList<SoftKey>()
+                        if (rowIndex == 0) {
                             val list = rowCodes.toMutableList()
                             list.add(3, InputModeSwitcher.USER_KEYCODE_LEFT_SYMBOL)
-                            list.toTypedArray()
-                        } else if (withLeftPrefix && rowIndex == 0) {
-                            val list = rowCodes.toMutableList()
-                            list.add(0, InputModeSwitcher.USER_KEYCODE_LEFT_SYMBOL)
-                            list.toTypedArray()
+                            val keys = createLX17Keys(list.toTypedArray(), width)
+                            keys[3].apply {
+                                heightF = 0.75f
+                            }
+                            keyBeans.addAll(keys)
                         } else {
-                            rowCodes
+                            val keys = createLX17Keys(rowCodes, width)
+                            for (i in 0..5) {
+                                if (i >= 3) {
+                                    keys[i].mLeftF = (i + 1) * width
+                                } else {
+                                    keys[i].mLeftF = i * width
+                                }
+                                keyBeans.add(keys[i])
+                            }
                         }
-
-                        val width = if (finalCodes.size > 6) 0.125f else 0.165f
-                        val lX17Keys = createLX17Keys(finalCodes, width)
+                        rows.add(keyBeans)
+                    }
+                    val lastRow = lastRows(skbValue)
+                    rows.add(lastRow)
+                } else {
+                    val keys = if (withLeftPrefix) KeyboardData.layoutLX17CnWithLeftPrefix[skbStyleMode]!! else KeyboardData.layoutLX17Cn[skbStyleMode]!!
+                    for (rowIndex in 0..2) {
+                        val rowCodes = keys[rowIndex].clone()
+                        if (leftDelete && rowIndex == 2) {
+                            val temp = rowCodes[0]
+                            rowCodes[0] = rowCodes[rowCodes.size - 1]
+                            rowCodes[rowCodes.size - 1] = temp
+                        }
+                        val width = if (rowCodes.size > 6) 0.1416667f else 0.165f
+                        val lX17Keys = createLX17Keys(rowCodes, width)
+                        if (rowIndex == 0 && withLeftPrefix && lX17Keys.isNotEmpty()) {
+                            lX17Keys.first().apply {
+                                widthF = 0.140f
+                                heightF = 0.75f
+                            }
+                            if (lX17Keys.size > 1) lX17Keys[1].mLeftF = 0.145f
+                        }
                         val keyBeans = LinkedList<SoftKey>().apply { addAll(lX17Keys) }
                         rows.add(keyBeans)
                     }
