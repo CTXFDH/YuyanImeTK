@@ -1578,9 +1578,9 @@ class CustomThemeActivity : AppCompatActivity() {
                     }
                 }
 
-                // 3. 保存最新主题 JSON
+                // 3. 保存最新主题 JSON 并同步内存列表与目录重命名
                 withContext(Dispatchers.IO) {
-                    ThemeFilesManager.saveThemeFiles(updatedTheme)
+                    ThemeManager.saveTheme(updatedTheme, originThemeName)
                 }
 
                 customTheme = updatedTheme

@@ -39,16 +39,20 @@ class ThemeListFragment : Fragment() {
             when (result) {
                 is CustomThemeActivity.BackgroundResult.Created -> {
                     val theme = result.theme
-                    themeListAdapter.prependTheme(theme)
                     ThemeManager.saveTheme(theme)
+                    ThemeManager.refreshThemes()
+                    themeListAdapter.setThemes(ThemeManager.getAllThemes())
+                    updateSelectedThemes()
                     if (!followSystemDayNightTheme) {
                         ThemeManager.setNormalModeTheme(theme)
                     }
                 }
                 is CustomThemeActivity.BackgroundResult.Deleted -> {
                     val name = result.name
-                    themeListAdapter.removeTheme(name)
                     ThemeManager.deleteTheme(name)
+                    ThemeManager.refreshThemes()
+                    themeListAdapter.setThemes(ThemeManager.getAllThemes())
+                    updateSelectedThemes()
                 }
                 is CustomThemeActivity.BackgroundResult.Updated -> {
                     val theme = result.theme

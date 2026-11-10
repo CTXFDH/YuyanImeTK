@@ -1,7 +1,6 @@
 package com.yuyan.imemodule.data.theme
 
 import com.yuyan.imemodule.application.Launcher
-import kotlinx.serialization.json.Json
 import java.io.File
 
 object ThemeFilesManager {
@@ -38,7 +37,10 @@ object ThemeFilesManager {
         return Pair(themeName, srcImageFile)
     }
 
-    fun saveThemeFiles(theme: Theme.Custom) {
+    fun saveThemeFiles(theme: Theme.Custom, oldName: String? = null) {
+        if (!oldName.isNullOrEmpty() && oldName != theme.name) {
+            deleteThemeFileByName(oldName)
+        }
         themeFile(theme).writeText(CustomThemeSerializer.encodeToChineseAnnotatedHexJson(theme))
     }
 
@@ -54,7 +56,8 @@ object ThemeFilesManager {
 
     fun listThemes(): MutableList<Theme.Custom> {
         val themes = mutableListOf<Theme.Custom>()
-        
+        val seenNames = mutableSetOf<String>()
+
         // 1. 优先扫描专属文件夹格式 files/theme/<theme_name>/theme.json
         dir.listFiles()?.forEach { subFile ->
             if (subFile.isDirectory) {
@@ -62,19 +65,29 @@ object ThemeFilesManager {
                 if (jsonFile.exists()) {
                     runCatching {
                         val sanitizedJson = CustomThemeSerializer.stripJsonComments(jsonFile.readText())
-                        val (theme, migrated) = Json.decodeFromString(CustomThemeSerializer.WithMigrationStatus, sanitizedJson)
-                        if (migrated) saveThemeFiles(theme)
-                        themes.add(theme)
+                        val (theme, migrated) = CustomThemeSerializer.LenientJson.decodeFromString(CustomThemeSerializer.WithMigrationStatus, sanitizedJson)
+                        if (!seenNames.contains(theme.name)) {
+                            seenNames.add(theme.name)
+                            if (migrated) saveThemeFiles(theme)
+                            themes.add(theme)
+                        } else {
+                            if (subFile.name != theme.name) {
+                                subFile.deleteRecursively()
+                            }
+                        }
                     }
                 }
             } else if (subFile.isFile && subFile.extension == "json") {
                 // 2. 自动无缝迁移旧版散落的 files/theme/<name>.json 文件到专属文件夹
                 runCatching {
                     val sanitizedJson = CustomThemeSerializer.stripJsonComments(subFile.readText())
-                    val (theme, _) = Json.decodeFromString(CustomThemeSerializer.WithMigrationStatus, sanitizedJson)
+                    val (theme, _) = CustomThemeSerializer.LenientJson.decodeFromString(CustomThemeSerializer.WithMigrationStatus, sanitizedJson)
                     saveThemeFiles(theme)
                     subFile.delete()
-                    themes.add(theme)
+                    if (!seenNames.contains(theme.name)) {
+                        seenNames.add(theme.name)
+                        themes.add(theme)
+                    }
                 }
             }
         }

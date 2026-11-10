@@ -77,12 +77,15 @@ object ThemeManager {
 
     val prefs = AppPrefs.getInstance().registerProvider(::ThemePrefs)
 
-    fun saveTheme(theme: Theme.Custom) {
-        ThemeFilesManager.saveThemeFiles(theme)
+    fun saveTheme(theme: Theme.Custom, oldName: String? = null) {
+        if (!oldName.isNullOrEmpty() && oldName != theme.name) {
+            customThemes.removeAll { it.name == oldName }
+        }
+        ThemeFilesManager.saveThemeFiles(theme, oldName)
         customThemes.indexOfFirst { it.name == theme.name }.also {
             if (it >= 0) customThemes[it] = theme else customThemes.add(0, theme)
         }
-        if (activeTheme.name == theme.name) {
+        if (activeTheme.name == oldName || activeTheme.name == theme.name) {
             activeTheme = theme
         }
     }
