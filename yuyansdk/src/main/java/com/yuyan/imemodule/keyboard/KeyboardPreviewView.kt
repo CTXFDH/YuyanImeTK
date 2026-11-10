@@ -158,11 +158,12 @@ class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
         val theme = currentTheme ?: ThemeManager.activeTheme
         val radiusPx = dp(radiusDp).toFloat()
 
-        // 真实精确高度 Bounds，彻底消除延伸 +1000 像素的巨型下方阴影与虚影框！
         this.clipToOutline = true
         this.outlineProvider = object : android.view.ViewOutlineProvider() {
             override fun getOutline(view: View, outline: android.graphics.Outline) {
-                outline.setRoundRect(0, 0, view.width, view.height, radiusPx)
+                val w = if (view.width > 0) view.width else instance.skbWidth
+                val h = if (view.height > 0) view.height else instance.skbHeight + instance.heightForCandidatesArea + dp(12)
+                outline.setRoundRect(0, 0, w, h, radiusPx)
             }
         }
 
@@ -170,7 +171,9 @@ class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
             chkView.clipToOutline = true
             chkView.outlineProvider = object : android.view.ViewOutlineProvider() {
                 override fun getOutline(view: View, outline: android.graphics.Outline) {
-                    outline.setRoundRect(0, 0, view.width, view.height, radiusPx)
+                    val w = if (view.width > 0) view.width else instance.skbWidth
+                    val h = if (view.height > 0) view.height else instance.skbHeight + instance.heightForCandidatesArea + dp(12)
+                    outline.setRoundRect(0, 0, w, h, radiusPx)
                 }
             }
         }
@@ -190,10 +193,13 @@ class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
             bgView.clipToOutline = true
             bgView.outlineProvider = object : android.view.ViewOutlineProvider() {
                 override fun getOutline(view: View, outline: android.graphics.Outline) {
-                    outline.setRoundRect(0, 0, view.width, view.height, radiusPx)
+                    val w = if (view.width > 0) view.width else instance.skbWidth
+                    val h = if (view.height > 0) view.height else instance.skbHeight + instance.heightForCandidatesArea + dp(12)
+                    outline.setRoundRect(0, 0, w, h, radiusPx)
                 }
             }
         }
+        post { invalidateOutline() }
         invalidate()
     }
 

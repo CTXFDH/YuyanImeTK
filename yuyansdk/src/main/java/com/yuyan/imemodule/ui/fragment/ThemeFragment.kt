@@ -72,6 +72,7 @@ class ThemeFragment : Fragment() {
             scaleY = scaleRatio
             isInteractiveMode = false
             elevation = dp(4f)
+            applyWindowTopCornerRadius()
         }
 
         val previewScaleContainer = android.widget.FrameLayout(this).apply {
