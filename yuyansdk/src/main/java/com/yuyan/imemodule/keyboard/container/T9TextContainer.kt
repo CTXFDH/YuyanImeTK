@@ -101,7 +101,7 @@ open class T9TextContainer(context: Context?, inputView: InputView, skbValue: In
     private fun updateKeyboardView() {
         val softKeyboard = mMajorView!!.getSoftKeyboard()
         val isLx17 = mSkbValue == InputModeSwitcher.MASK_SKB_LAYOUT_LX17
-        val centerSymbol = isLx17 && !mIsExpanded && AppPrefs.getInstance().keyboardSetting.lx17CenterSymbolEnable.getValue()
+        val centerSymbol = isLx17 && AppPrefs.getInstance().keyboardSetting.lx17CenterSymbolEnable.getValue()
         val skbWidth = EnvironmentSingleton.instance.skbWidth
         val softKeySymbolHolder = softKeyboard.getKeyByCode(InputModeSwitcher.USER_KEYCODE_LEFT_SYMBOL)
 
@@ -111,7 +111,14 @@ open class T9TextContainer(context: Context?, inputView: InputView, skbValue: In
             softKeyboard.keyYMargin
         }
 
-        val prefixLayoutParams = if (centerSymbol) {
+        val prefixLayoutParams = if (mIsExpanded) {
+            val leftWidth = (skbWidth * 0.18).toInt()
+            LayoutParams(leftWidth, 0).apply {
+                leftOfParent(0)
+                topOfParent(softKeyboard.keyYMargin)
+                bottomOfParent(bottomMargin)
+            }
+        } else if (centerSymbol) {
             val colWidth = (skbWidth / 7.0f).toInt()
             val leftX = (skbWidth * (3.0f / 7.0f)).toInt()
             LayoutParams(colWidth, 0).apply {
