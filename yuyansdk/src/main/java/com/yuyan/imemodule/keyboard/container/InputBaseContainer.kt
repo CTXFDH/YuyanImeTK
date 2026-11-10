@@ -78,8 +78,12 @@ open class InputBaseContainer(context: Context?, inputView: InputView) : BaseCon
                 val isT9OrLx17 = InputModeSwitcher.isChineseT9 || InputModeSwitcher.skbLayout == InputModeSwitcher.MASK_SKB_LAYOUT_LX17
                 val softKeyboard = mMajorView?.getSoftKeyboard()
                 val softKeySymbolHolder = softKeyboard?.getKeyByCode(InputModeSwitcher.USER_KEYCODE_LEFT_SYMBOL)
-                val leftOffset = if (isT9OrLx17 && softKeySymbolHolder != null) {
-                    (softKeySymbolHolder.mRight - DevicesUtils.dip2px(2f)).coerceAtLeast(0)
+                val leftOffset = if (isT9OrLx17) {
+                    if (softKeySymbolHolder != null && softKeySymbolHolder.mLeft == 0) {
+                        softKeySymbolHolder.mRight
+                    } else {
+                        (EnvironmentSingleton.instance.skbWidth * 0.142f).toInt()
+                    }
                 } else {
                     0
                 }
