@@ -101,37 +101,36 @@ open class T9TextContainer(context: Context?, inputView: InputView, skbValue: In
     private fun updateKeyboardView() {
         val softKeyboard = mMajorView!!.getSoftKeyboard()
         val isLx17 = mSkbValue == InputModeSwitcher.MASK_SKB_LAYOUT_LX17
-        val centerSymbol = isLx17 && AppPrefs.getInstance().keyboardSetting.lx17CenterSymbolEnable.getValue()
+        val centerSymbol = isLx17 && !mIsExpanded && AppPrefs.getInstance().keyboardSetting.lx17CenterSymbolEnable.getValue()
         val skbWidth = EnvironmentSingleton.instance.skbWidth
+        val softKeySymbolHolder = softKeyboard.getKeyByCode(InputModeSwitcher.USER_KEYCODE_LEFT_SYMBOL)
 
-        val prefixLayoutParams = if (centerSymbol && !mIsExpanded) {
+        val bottomMargin = if (softKeySymbolHolder != null) {
+            EnvironmentSingleton.instance.skbHeight - softKeySymbolHolder.mBottom + softKeyboard.keyYMargin
+        } else {
+            softKeyboard.keyYMargin
+        }
+
+        val prefixLayoutParams = if (centerSymbol) {
             val colWidth = (skbWidth / 7.0f).toInt()
             val leftX = (skbWidth * (3.0f / 7.0f)).toInt()
-            LayoutParams(colWidth, matchParent).apply {
+            LayoutParams(colWidth, 0).apply {
                 leftOfParent(leftX)
                 topOfParent(softKeyboard.keyYMargin)
-                bottomOfParent(softKeyboard.keyYMargin)
-            }
-        } else if (centerSymbol) {
-            val leftWidth = (skbWidth * 0.18).toInt()
-            LayoutParams(leftWidth, matchParent).apply {
-                leftOfParent(0)
-                topOfParent(softKeyboard.keyYMargin)
-                bottomOfParent(softKeyboard.keyYMargin)
+                bottomOfParent(bottomMargin)
             }
         } else {
-            val softKeySymbolHolder = softKeyboard.getKeyByCode(InputModeSwitcher.USER_KEYCODE_LEFT_SYMBOL)
             if (softKeySymbolHolder != null) {
-                LayoutParams(softKeySymbolHolder.width(), softKeySymbolHolder.height()).apply {
+                LayoutParams(softKeySymbolHolder.width(), 0).apply {
                     leftOfParent(softKeySymbolHolder.mLeft + softKeyboard.keyXMargin)
                     topOfParent(softKeySymbolHolder.mTop + softKeyboard.keyYMargin)
-                    bottomOfParent(EnvironmentSingleton.instance.skbHeight - softKeySymbolHolder.mBottom + softKeyboard.keyYMargin)
+                    bottomOfParent(bottomMargin)
                 }
             } else {
-                LayoutParams((skbWidth * 0.18).toInt(), matchParent).apply {
+                LayoutParams((skbWidth * 0.18).toInt(), 0).apply {
                     leftOfParent(0)
                     topOfParent(softKeyboard.keyYMargin)
-                    bottomOfParent(softKeyboard.keyYMargin)
+                    bottomOfParent(bottomMargin)
                 }
             }
         }
