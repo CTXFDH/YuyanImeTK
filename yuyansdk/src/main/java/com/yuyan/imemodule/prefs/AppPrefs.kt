@@ -17,6 +17,7 @@ import com.yuyan.imemodule.prefs.behavior.FullDisplayKeyMode
 import com.yuyan.imemodule.prefs.behavior.HalfWidthSymbolsMode
 import com.yuyan.imemodule.prefs.behavior.KeyboardOneHandedMod
 import com.yuyan.imemodule.prefs.behavior.KeyboardSymbolSlideUpMod
+import com.yuyan.imemodule.prefs.behavior.Lx17PrefixMode
 import com.yuyan.imemodule.utils.DevicesUtils
 
 
@@ -246,9 +247,24 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
         val keyboardMnemonic = bool("keyboard_mnemonic_show_enable", false)
 
-        val lx17WithLeftPrefix = switch(R.string.lx17_with_left_prefix, "lx17_with_left_prefix_enable", true)
+        val lx17PrefixMode = list(
+            R.string.lx17_prefix_mode_title,
+            "lx17_prefix_mode",
+            Lx17PrefixMode.Left,
+            Lx17PrefixMode,
+            listOf(
+                Lx17PrefixMode.None,
+                Lx17PrefixMode.Left,
+                Lx17PrefixMode.Center
+            ),
+            listOf(
+                R.string.lx17_prefix_mode_none,
+                R.string.lx17_prefix_mode_left,
+                R.string.lx17_prefix_mode_center
+            )
+        )
+
         val lx17LeftDeleteEnable = switch(R.string.lx17_left_delete_title, "lx17_left_delete_enable", false)
-        val lx17CenterSymbolEnable = switch(R.string.lx17_center_symbol_title, "lx17_center_symbol_enable", false)
 
 
         val categoryPeripherals = category(R.string.category_symbols_peripherals)

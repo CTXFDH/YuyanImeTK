@@ -20,6 +20,7 @@ import com.yuyan.imemodule.manager.InputModeSwitcher
 import com.yuyan.imemodule.service.DictDecoder
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.prefs.behavior.Lx17PrefixMode
 import com.yuyan.imemodule.utils.AppUtil
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
@@ -101,7 +102,8 @@ open class T9TextContainer(context: Context?, inputView: InputView, skbValue: In
     private fun updateKeyboardView() {
         val softKeyboard = mMajorView!!.getSoftKeyboard()
         val isLx17 = mSkbValue == InputModeSwitcher.MASK_SKB_LAYOUT_LX17
-        val centerSymbol = isLx17 && AppPrefs.getInstance().keyboardSetting.lx17CenterSymbolEnable.getValue()
+        val prefixMode = AppPrefs.getInstance().keyboardSetting.lx17PrefixMode.getValue()
+        val centerSymbol = isLx17 && !mIsExpanded && prefixMode == Lx17PrefixMode.Center
         val skbWidth = EnvironmentSingleton.instance.skbWidth
         val softKeySymbolHolder = softKeyboard.getKeyByCode(InputModeSwitcher.USER_KEYCODE_LEFT_SYMBOL)
 

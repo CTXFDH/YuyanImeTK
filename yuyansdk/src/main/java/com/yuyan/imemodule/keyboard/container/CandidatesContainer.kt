@@ -23,10 +23,11 @@ import com.yuyan.imemodule.adapter.PrefixAdapter
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.activeTheme
 import com.yuyan.imemodule.database.DataBaseKT
+import com.yuyan.imemodule.prefs.AppPrefs
+import com.yuyan.imemodule.prefs.behavior.Lx17PrefixMode
 import com.yuyan.imemodule.database.entry.SideSymbol
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.manager.InputModeSwitcher
-import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.service.DictDecoder
 import com.yuyan.imemodule.singleton.EnvironmentSingleton.Companion.instance
 import com.yuyan.imemodule.utils.AppUtil
@@ -197,8 +198,9 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
                 mCandidatesAdapter.notifyDataSetChanged()
             }
 //            if(DecodingInfo.candidateSize > DecodingInfo.activeCandidate) mRVSymbolsView.scrollToPosition(DecodingInfo.activeCandidate)
+            val prefixMode = AppPrefs.getInstance().keyboardSetting.lx17PrefixMode.getValue()
             val showPrefix = InputModeSwitcher.isChineseT9 ||
-                (InputModeSwitcher.skbLayout == InputModeSwitcher.MASK_SKB_LAYOUT_LX17 && AppPrefs.getInstance().keyboardSetting.lx17WithLeftPrefix.getValue())
+                (InputModeSwitcher.skbLayout == InputModeSwitcher.MASK_SKB_LAYOUT_LX17 && prefixMode != Lx17PrefixMode.None)
             if (showPrefix) {
                 mRVLeftPrefix.visibility = VISIBLE
                 updatePrefixsView()
