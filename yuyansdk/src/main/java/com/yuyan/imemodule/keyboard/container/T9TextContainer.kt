@@ -23,6 +23,10 @@ import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.utils.AppUtil
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
+import splitties.views.dsl.constraintlayout.bottomOfParent
+import splitties.views.dsl.constraintlayout.leftOfParent
+import splitties.views.dsl.constraintlayout.topOfParent
+import splitties.views.dsl.core.matchParent
 import com.yuyan.imemodule.keyboard.InputView
 import com.yuyan.imemodule.keyboard.TextKeyboard
 import com.yuyan.imemodule.keyboard.HandwritingKeyboard
@@ -97,18 +101,17 @@ open class T9TextContainer(context: Context?, inputView: InputView, skbValue: In
         val prefixLayoutParams = if (centerSymbol) {
             val colWidth = (skbWidth / 7.0f).toInt()
             val leftX = (skbWidth * (3.0f / 7.0f)).toInt()
-            LayoutParams(colWidth, LayoutParams.MATCH_PARENT).apply {
-                setMargins(leftX, softKeyboard.keyYMargin, 0, softKeyboard.keyYMargin)
+            LayoutParams(colWidth, matchParent).apply {
+                leftOfParent(leftX)
+                topOfParent(softKeyboard.keyYMargin)
+                bottomOfParent(softKeyboard.keyYMargin)
             }
         } else {
             val softKeySymbolHolder = softKeyboard.getKeyByCode(InputModeSwitcher.USER_KEYCODE_LEFT_SYMBOL) ?: return
             LayoutParams(softKeySymbolHolder.width(), softKeySymbolHolder.height()).apply {
-                setMargins(
-                    softKeySymbolHolder.mLeft + softKeyboard.keyXMargin,
-                    softKeySymbolHolder.mTop + softKeyboard.keyYMargin,
-                    0,
-                    0
-                )
+                leftOfParent(softKeySymbolHolder.mLeft + softKeyboard.keyXMargin)
+                topOfParent(softKeySymbolHolder.mTop + softKeyboard.keyYMargin)
+                bottomOfParent(EnvironmentSingleton.instance.skbHeight - softKeySymbolHolder.mBottom + softKeyboard.keyYMargin)
             }
         }
         val prefixLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
