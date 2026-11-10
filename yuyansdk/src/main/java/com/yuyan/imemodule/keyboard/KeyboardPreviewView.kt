@@ -181,12 +181,7 @@ class KeyboardPreviewView(context: Context) : RelativeLayout(context) {
                 val bg = GradientDrawable().apply {
                     shape = GradientDrawable.RECTANGLE
                     setColor(theme.keyboardColor)
-                    cornerRadii = floatArrayOf(
-                        radiusPx, radiusPx,  // Top-Left
-                        radiusPx, radiusPx,  // Top-Right
-                        0f, 0f,              // Bottom-Right
-                        0f, 0f               // Bottom-Left
-                    )
+                    cornerRadius = radiusPx
                 }
                 bgView.background = bg
             } else {
