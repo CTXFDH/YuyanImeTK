@@ -41,6 +41,7 @@ open class InputBaseContainer(context: Context?, inputView: InputView) : BaseCon
 
     open fun toggleCandidatesMore() {
         mIsExpanded = !mIsExpanded
+        com.yuyan.imemodule.utils.KeyboardLoaderUtil.instance.clearKeyboardMap()
         updateCandidatesOverlayState()
         updateSkbLayout()
     }
