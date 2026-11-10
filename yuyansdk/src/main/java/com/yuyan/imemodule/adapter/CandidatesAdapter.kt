@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.emoji2.widget.EmojiTextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.flexbox.FlexboxLayoutManager
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.callback.OnRecyclerItemClickListener
 import com.yuyan.imemodule.data.theme.Theme
@@ -54,7 +55,9 @@ class CandidatesAdapter(context: Context?) :
             holder.textView.setTextColor(textColor)
 
             val view = holder.textView
-            val lp = view.layoutParams as? ViewGroup.MarginLayoutParams
+            val lp = view.layoutParams as? FlexboxLayoutManager.LayoutParams
+                ?: FlexboxLayoutManager.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            lp.flexBasisPercent = 1f / 6f
 
             if (position == 0) {
                 val bg = GradientDrawable().apply {
@@ -64,18 +67,14 @@ class CandidatesAdapter(context: Context?) :
                 }
                 view.background = bg
                 view.setPadding(view.dp(12f).toInt(), view.dp(6f).toInt(), view.dp(12f).toInt(), view.dp(6f).toInt())
-                lp?.let {
-                    val m = view.dp(3f).toInt()
-                    it.setMargins(m, m, m, m)
-                    view.layoutParams = it
-                }
+                val m = view.dp(3f).toInt()
+                lp.setMargins(m, m, m, m)
+                view.layoutParams = lp
             } else {
                 view.background = null
                 view.setPadding(view.dp(10f).toInt(), view.dp(10f).toInt(), view.dp(10f).toInt(), view.dp(10f).toInt())
-                lp?.let {
-                    it.setMargins(0, 0, 0, 0)
-                    view.layoutParams = it
-                }
+                lp.setMargins(0, 0, 0, 0)
+                view.layoutParams = lp
             }
 
             view.setOnClickListener { v: View? ->
