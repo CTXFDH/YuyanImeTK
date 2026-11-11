@@ -51,3 +51,5 @@
 54	4682	8159356481090530	CMakeFiles/asr_jni.dir/asr/streaming_recognizer.cc.o	d2da692cae4b6e04
 19	5273	8159356486955976	CMakeFiles/asr_jni.dir/asr/zipformer2_model.cc.o	41ed1ed11d3068ab
 5274	5450	8159356488757169	C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/RelWithDebInfo/5t2u114k/obj/arm64-v8a/libasr_jni.so	c2ba0e731fdb9a25
+5	1900	8161090413056767	CMakeFiles/asr_jni.dir/asr/asr_jni.cc.o	d507cf5125979370
+1900	2166	8161090415715615	C:/Users/wen/AndroidStudioProjects/YuyanImeK-master/app/build/intermediates/cxx/RelWithDebInfo/5t2u114k/obj/arm64-v8a/libasr_jni.so	c2ba0e731fdb9a25

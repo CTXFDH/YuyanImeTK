@@ -131,45 +131,49 @@ open class InputBaseContainer(context: Context?, inputView: InputView) : BaseCon
                     isEnabled = true
 
                     val deleteHandler = android.os.Handler(android.os.Looper.getMainLooper())
-                    var isDeleting = false
                     val deleteRunnable = object : Runnable {
                         override fun run() {
-                            if (isDeleting) {
-                                DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_DEL)
-                                DevicesUtils.tryVibrate(this@InputBaseContainer)
-                                inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
-                                deleteHandler.postDelayed(this, 80)
+                            if (DictDecoder.isCandidatesEmpty || DictDecoder.composingStrForDisplay.isBlank()) {
+                                deleteHandler.removeCallbacks(this)
+                                if (mIsExpanded) {
+                                    toggleCandidatesMore()
+                                    inputView.updateCandidateBar()
+                                }
+                                return
                             }
+                            // 允许长按连续删除拼音，但不播放连续音效与震动（无哒哒哒声音）
+                            inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
+                            deleteHandler.postDelayed(this, 50)
                         }
                     }
 
-                    setOnClickListener { v ->
-                        v.performClick()
-                    }
-
-                    setOnTouchListener { v, motionEvent ->
+                    setOnTouchListener { _, motionEvent ->
                         when (motionEvent.action) {
                             MotionEvent.ACTION_DOWN -> {
-                                isDeleting = true
+                                if (DictDecoder.isCandidatesEmpty || DictDecoder.composingStrForDisplay.isBlank()) {
+                                    if (mIsExpanded) {
+                                        toggleCandidatesMore()
+                                        inputView.updateCandidateBar()
+                                    }
+                                    return@setOnTouchListener true
+                                }
+                                deleteHandler.removeCallbacks(deleteRunnable)
+                                // 仅在按下时播放单次音效与震动
                                 DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_DEL)
                                 DevicesUtils.tryVibrate(this@InputBaseContainer)
                                 inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
-                                deleteHandler.postDelayed(deleteRunnable, 400)
+                                if (DictDecoder.isCandidatesEmpty || DictDecoder.composingStrForDisplay.isBlank()) {
+                                    if (mIsExpanded) {
+                                        toggleCandidatesMore()
+                                        inputView.updateCandidateBar()
+                                    }
+                                    return@setOnTouchListener true
+                                }
+                                val longPressTimeout = AppPrefs.getInstance().keyboardSetting.longPressTimeout.getValue().toLong()
+                                deleteHandler.postDelayed(deleteRunnable, longPressTimeout)
                             }
                             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                                isDeleting = false
                                 deleteHandler.removeCallbacks(deleteRunnable)
-                                if (motionEvent.action == MotionEvent.ACTION_UP) {
-                                    v.performClick()
-                                    postDelayed({
-                                        if (DictDecoder.isCandidatesEmpty || DictDecoder.composingStrForDisplay.isBlank()) {
-                                            if (mIsExpanded) {
-                                                toggleCandidatesMore()
-                                                inputView.updateCandidateBar()
-                                            }
-                                        }
-                                    }, 50)
-                                }
                             }
                         }
                         true

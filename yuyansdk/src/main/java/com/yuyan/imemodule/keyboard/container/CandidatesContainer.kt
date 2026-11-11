@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -68,6 +70,33 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         }
         gravity = Gravity.CENTER
     }
+
+    private var mDeleteHandler: Handler? = null
+    private val mRepeatDeleteRunnable = object : Runnable {
+        override fun run() {
+            if (DictDecoder.isCandidatesEmpty || DictDecoder.composingStrForDisplay.isBlank()) {
+                mDeleteHandler?.removeCallbacks(this)
+                KeyboardManager.instance.switchKeyboard()
+                (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
+                return
+            }
+            inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
+            mDeleteHandler?.postDelayed(this, 50L)
+        }
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        if (mDeleteHandler == null) {
+            mDeleteHandler = Handler(Looper.getMainLooper())
+        }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        mDeleteHandler?.removeCallbacksAndMessages(null)
+    }
+
     init {
         initView(context)
         val ivAddSymbol = ImageView(context).apply {
@@ -157,17 +186,25 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         ivDelete.setOnTouchListener { _, motionEvent ->
             when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    // 播放按键声音和震动
-                    DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_DEL)
-                    DevicesUtils.tryVibrate(this)
-                }
-                MotionEvent.ACTION_MOVE -> { }
-                MotionEvent.ACTION_UP -> {
-                    inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
-                    if(DictDecoder.isCandidatesEmpty) {
+                    if (DictDecoder.isCandidatesEmpty || DictDecoder.composingStrForDisplay.isBlank()) {
                         KeyboardManager.instance.switchKeyboard()
                         (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
+                        return@setOnTouchListener true
                     }
+                    mDeleteHandler?.removeCallbacks(mRepeatDeleteRunnable)
+                    DevicesUtils.tryPlayKeyDown(KeyEvent.KEYCODE_DEL)
+                    DevicesUtils.tryVibrate(this)
+                    inputView.responseKeyEvent(SoftKey(KeyEvent.KEYCODE_DEL))
+                    if (DictDecoder.isCandidatesEmpty || DictDecoder.composingStrForDisplay.isBlank()) {
+                        KeyboardManager.instance.switchKeyboard()
+                        (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
+                        return@setOnTouchListener true
+                    }
+                    val longPressTimeout = AppPrefs.getInstance().keyboardSetting.longPressTimeout.getValue().toLong()
+                    mDeleteHandler?.postDelayed(mRepeatDeleteRunnable, longPressTimeout)
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    mDeleteHandler?.removeCallbacks(mRepeatDeleteRunnable)
                 }
             }
             true

@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import android.annotation.SuppressLint
 import com.yuyan.imemodule.utils.DevicesUtils
+import com.yuyan.imemodule.utils.DialogStyleUtils
 import com.yuyan.imemodule.view.CandidatesBar
 import androidx.appcompat.app.AlertDialog
 import android.content.Context
@@ -1815,16 +1816,64 @@ class CustomThemeActivity : AppCompatActivity() {
     }
 
     private fun showCustomHexColorDialog(title: String, currentColor: Int, onColorEntered: (Int) -> Unit) {
-        val input = android.widget.EditText(this).apply {
-            val hexStr = String.format("#%08X", currentColor)
-            setText(hexStr)
-            setSelection(hexStr.length)
-            setPadding(dp(16), dp(12), dp(16), dp(12))
-            hint = "#AARRGGBB 或 #RRGGBB"
+        val isDark = DialogStyleUtils.isDarkUiMode(this)
+        val textColor = if (isDark) Color.WHITE else Color.parseColor("#18181B")
+        val inputBgColor = if (isDark) Color.parseColor("#2D2D32") else Color.parseColor("#F3F4F6")
+        val accentColor = if (isDark) Color.parseColor("#10B981") else Color.parseColor("#07C160")
+
+        val root = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(dp(20), dp(16), dp(20), dp(8))
         }
-        AlertDialog.Builder(this)
+
+        val inputRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+        }
+
+        val previewSwatch = View(this).apply {
+            val sz = dp(36)
+            layoutParams = LinearLayout.LayoutParams(sz, sz).apply {
+                marginEnd = dp(12)
+            }
+            updateCapsuleDrawable(this, currentColor, isSelected = false)
+        }
+
+        val input = android.widget.EditText(this).apply {
+            setText("") // 进来这里本来就是来粘贴的，输入框保持为空
+            hint = "#AARRGGBB 或 #RRGGBB"
+            setTextColor(textColor)
+            setHintTextColor(if (isDark) Color.parseColor("#71717A") else Color.parseColor("#9CA3AF"))
+            textSize = 15f
+            typeface = android.graphics.Typeface.MONOSPACE
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = dp(10f)
+                setColor(inputBgColor)
+            }
+            setPadding(dp(14), dp(10), dp(14), dp(10))
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        }
+
+        input.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                val text = s?.toString()?.trim() ?: ""
+                try {
+                    val color = Color.parseColor(if (text.startsWith("#")) text else "#$text")
+                    updateCapsuleDrawable(previewSwatch, color, isSelected = false)
+                } catch (_: Exception) {}
+            }
+        })
+
+        inputRow.addView(previewSwatch)
+        inputRow.addView(input)
+        root.addView(inputRow)
+
+        val dialog = AlertDialog.Builder(this)
             .setTitle("输入色值 - $title")
-            .setView(input)
+            .setView(root)
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 val text = input.text.toString().trim()
                 try {
@@ -1835,7 +1884,30 @@ class CustomThemeActivity : AppCompatActivity() {
                 }
             }
             .setNegativeButton(android.R.string.cancel, null)
-            .show()
+            .create()
+
+        DialogStyleUtils.styleDialog(dialog, this)
+        dialog.setOnShowListener {
+            dialog.window?.let { win ->
+                val bgDrawable = GradientDrawable().apply {
+                    shape = GradientDrawable.RECTANGLE
+                    cornerRadius = dp(20f)
+                    setColor(if (isDark) Color.parseColor("#232427") else Color.parseColor("#FFFFFF"))
+                }
+                win.setBackgroundDrawable(bgDrawable)
+                win.decorView.outlineProvider = android.view.ViewOutlineProvider.BACKGROUND
+                win.decorView.clipToOutline = true
+            }
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.apply {
+                visibility = View.VISIBLE
+                setTextColor(if (isDark) Color.parseColor("#A1A1AA") else Color.parseColor("#71717A"))
+            }
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.apply {
+                visibility = View.VISIBLE
+                setTextColor(accentColor)
+            }
+        }
+        dialog.show()
     }
 
     private fun updateCapsuleDrawable(view: View, color: Int, isSelected: Boolean) {
