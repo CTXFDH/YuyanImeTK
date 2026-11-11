@@ -7,11 +7,7 @@ import android.text.InputType
 import android.view.KeyCharacterMap
 import android.view.KeyEvent
 import android.view.View
-import android.view.ViewGroup
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import android.view.inputmethod.CursorAnchorInfo
-import java.lang.Float.isNaN
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import androidx.lifecycle.Observer
@@ -19,7 +15,6 @@ import com.yuyan.imemodule.callback.IKeyboardView
 import com.yuyan.imemodule.candidate.CandidateView
 import com.yuyan.imemodule.data.emojicon.YuyanEmojiCompat
 import com.yuyan.imemodule.data.theme.Theme
-import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.data.theme.ThemeManager.OnThemeChangeListener
 import com.yuyan.imemodule.data.theme.ThemeManager.addOnChangedListener
 import com.yuyan.imemodule.data.theme.ThemeManager.onSystemDarkModeChange
@@ -35,10 +30,6 @@ import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.utils.isDarkMode
 import com.yuyan.imemodule.view.preference.ManagedPreference
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import splitties.bitflags.hasFlag
 import splitties.dimensions.dp
 
@@ -78,7 +69,7 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
                 val updateTime = getInstance().internal.clipboardUpdateTime.getValue()
                 val timeoutSec = getInstance().clipboard.clipboardItemTimeout.getValue()
                 val elapsedMs = System.currentTimeMillis() - updateTime
-                if (elapsedMs <= timeoutSec * 1000L) {
+                if (elapsedMs <= (timeoutSec * 1000L)) {
                     if (KeyboardManager.instance.currentContainer is ClipBoardContainer
                         && (KeyboardManager.instance.currentContainer as ClipBoardContainer).getMenuMode() == SkbMenuMode.ClipBoard
                     ) {
@@ -107,7 +98,7 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
         addOnChangedListener(onThemeChangeListener)
-        getInstance().keyboardSetting.showVirtualKeyboardOnPhysicalKeyboard.registerOnChangeListener(showVirtualKeyboardOnPhysicalKeyboardListener)
+        getInstance().input.showVirtualKeyboardOnPhysicalKeyboard.registerOnChangeListener(showVirtualKeyboardOnPhysicalKeyboardListener)
         getInstance().internal.clipboardUpdateContent.registerOnChangeListener(clipboardUpdateContentListener)
         handleHardwareKeyboard()
         DictDecoder.candidatesLiveData.observeForever(candidatesObserver)
@@ -133,7 +124,7 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
 
     override fun onEvaluateInputViewShown(): Boolean {
         super.onEvaluateInputViewShown()
-        return if(showVirtualKeyboardOnPhysicalKeyboard) true else !isHardwareKeyboard
+        return showVirtualKeyboardOnPhysicalKeyboard || !isHardwareKeyboard
     }
 
     override fun onStartInput(editorInfo: EditorInfo?, restarting: Boolean) {
@@ -162,7 +153,7 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
                 onCreateInputView()
             }
             currentInputConnection?.finishComposingText()
-            com.yuyan.imemodule.service.InputDispatcher.reset()
+            InputDispatcher.reset()
             mInputView.onStartInputView(editorInfo, restarting)
             super.onStartInputView(editorInfo, restarting)
         } catch (e: Exception) {
@@ -210,7 +201,7 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
         store.clear()
         super.onDestroy()
         DictDecoder.candidatesLiveData.removeObserver(candidatesObserver)
-        getInstance().keyboardSetting.showVirtualKeyboardOnPhysicalKeyboard.unregisterOnChangeListener(showVirtualKeyboardOnPhysicalKeyboardListener)
+        getInstance().input.showVirtualKeyboardOnPhysicalKeyboard.unregisterOnChangeListener(showVirtualKeyboardOnPhysicalKeyboardListener)
         removeOnChangedListener(onThemeChangeListener)
         getInstance().internal.clipboardUpdateContent.unregisterOnChangeListener(clipboardUpdateContentListener)
     }
@@ -232,7 +223,7 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
                     }
                 }
             },
-            getState = { com.yuyan.imemodule.service.VoiceState() },
+            getState = { VoiceState() },
             getInputConnection = { currentInputConnection },
             onVoiceComplete = {
                 isSpaceVoiceActive = false
@@ -245,7 +236,7 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
                 (KeyboardManager.instance.currentContainer as? com.yuyan.imemodule.keyboard.container.T9TextContainer)?.updateSymbolListView()
             },
             onAmplitudeChanged = {},
-            onSpectrumChanged = {}
+            onSpectrumChanged = {},
         ).apply { initialize() }
     }
 
@@ -371,7 +362,7 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
         if (!isHardwareKeyboard || cursorAnchorInfo == null) return
         cursorAnchorPosition[0] = cursorAnchorInfo.insertionMarkerHorizontal
         cursorAnchorPosition[1] = cursorAnchorInfo.insertionMarkerBottom
-        val matrix = cursorAnchorInfo.getMatrix()
+        val matrix = cursorAnchorInfo.matrix
         if (matrix != null) {
             matrix.mapPoints(cursorAnchorPosition)
         }
@@ -516,6 +507,7 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
     /**
      * 发送字符串给编辑框
      */
+    @Suppress("unused")
     fun commitText(text: String, newCursorPosition: Int) {
         currentInputConnection?.commitText(StringUtils.converted2FlowerTypeface(text), newCursorPosition)
     }
@@ -542,14 +534,14 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
         deleteSurroundingText(length, 0)
     }
 
+    @Suppress("unused")
     fun setSelection(start: Int, end: Int) {
         currentInputConnection?.setSelection(start, end)
     }
 
     fun handleHardwareKeyboard(newConfig: Configuration? = null): Boolean {
         val config = newConfig ?: resources.configuration
-        val isHardKb = if (showVirtualKeyboardOnPhysicalKeyboard) false
-            else (config.keyboard != Configuration.KEYBOARD_NOKEYS && config.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO)
+        val isHardKb = !showVirtualKeyboardOnPhysicalKeyboard && (config.keyboard != Configuration.KEYBOARD_NOKEYS && config.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO)
         isHardwareKeyboard = isHardKb
         return isHardKb
     }

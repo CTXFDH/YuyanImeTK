@@ -73,6 +73,7 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val windowCornerRadiusDp = int("window_corner_radius_dp", 16)
     }
 
+    @Suppress("unused")
     inner class Input : ManagedPreferenceCategory(R.string.setting_ime_input, sharedPreferences) {
 
         val titleChinese = category(R.string.chinese_input_setting)
@@ -81,7 +82,7 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             R.string.qwerty_pinyin_lowercase_title,
             "qwerty_pinyin_lowercase_enable",
             false,
-            R.string.qwerty_pinyin_lowercase_summary
+            R.string.qwerty_pinyin_lowercase_summary,
         )
 
         val chineseFanTi = bool("chinese_jian_fan_enable", false)
@@ -171,8 +172,12 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
                 R.string.half_width_symbols_tips_none
             )
         )
+
+        val categoryPeripherals = category(R.string.category_symbols_peripherals)
+        val showVirtualKeyboardOnPhysicalKeyboard = switch(R.string.show_virtual_keyboard_with_external, "show_virtual_keyboard_with_external", false)
     }
 
+    @Suppress("unused")
     inner class KeyboardSetting : ManagedPreferenceCategory(R.string.setting_ime_keyboard, sharedPreferences) {
 
         val categoryLayout = category(R.string.category_layout_habit)
@@ -283,11 +288,9 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val abcNumberLine = bool("keyboard_abc_number_line_enable", false)
 
         val keyboardMnemonic = bool("keyboard_mnemonic_show_enable", false)
-
-
-        val showVirtualKeyboardOnPhysicalKeyboard = switch(R.string.show_virtual_keyboard_with_external, "show_virtual_keyboard_with_external", false)
     }
 
+    @Suppress("unused")
     inner class Other : ManagedPreferenceCategory(R.string.setting_ime_other, sharedPreferences) {
         val imeHideIcon = switch(R.string.ime_hide_icon, "ime_hide_icon_enable", false, R.string.ime_hide_icon_tips)
     }
@@ -350,21 +353,21 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val ctx = Launcher.instance.context.createDeviceProtectedStorageContext()
         val sp = PreferenceManager.getDefaultSharedPreferences(ctx)
         sp.edit {
-            internal.managedPreferences.forEach {
-                it.value.putValueTo(this@edit)
+            internal.managedPreferences.forEach { (_, pref) ->
+                pref.putValueTo(this@edit)
             }
 
-            input.managedPreferences.forEach {
-                it.value.putValueTo(this@edit)
+            input.managedPreferences.forEach { (_, pref) ->
+                pref.putValueTo(this@edit)
             }
-            clipboard.managedPreferences.forEach {
-                it.value.putValueTo(this@edit)
+            clipboard.managedPreferences.forEach { (_, pref) ->
+                pref.putValueTo(this@edit)
             }
-            keyboardSetting.managedPreferences.forEach {
-                it.value.putValueTo(this@edit)
+            keyboardSetting.managedPreferences.forEach { (_, pref) ->
+                pref.putValueTo(this@edit)
             }
-            other.managedPreferences.forEach {
-                it.value.putValueTo(this@edit)
+            other.managedPreferences.forEach { (_, pref) ->
+                pref.putValueTo(this@edit)
             }
         }
     }
