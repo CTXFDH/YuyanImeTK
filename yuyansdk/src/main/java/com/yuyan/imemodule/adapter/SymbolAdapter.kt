@@ -37,7 +37,7 @@ class SymbolAdapter(context: Context?, val viewType: SymbolMode, private val pag
     RecyclerView.Adapter<SymbolAdapter.SymbolHolder>() {
     private val inflater: LayoutInflater
     var mDatas: List<String>? = null
-    private val halfWidthSymbolsMode = AppPrefs.getInstance().keyboardSetting.halfWidthSymbolsMode.getValue()
+    private val halfWidthSymbolsMode = AppPrefs.getInstance().input.halfWidthSymbolsMode.getValue()
 
     init {
         inflater = LayoutInflater.from(context)

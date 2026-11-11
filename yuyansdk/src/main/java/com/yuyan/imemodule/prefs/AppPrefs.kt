@@ -146,14 +146,30 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             abcSearchEnglishCell.getValue()
         }
 
-        val titleEmoji = category(R.string.emoji_setting)
+        val titleEmojiAndSymbol = category(R.string.emoji_symbol_setting)
         val emojiInput = switch(
             R.string.emoji_input, "emoji_input_enable", true
         )
 
-        val titleSymbol = category(R.string.symbol_setting)
         val symbolPairInput = switch(
             R.string.symbol_pair_input, "symbol_pair_input_enable", true
+        )
+
+        val halfWidthSymbolsMode = list(
+            R.string.half_width_symbols_tips,
+            "half_width_symbols_tips",
+            HalfWidthSymbolsMode.All,
+            HalfWidthSymbolsMode,
+            listOf(
+                HalfWidthSymbolsMode.All,
+                HalfWidthSymbolsMode.OnlyUsed,
+                HalfWidthSymbolsMode.None
+            ),
+            listOf(
+                R.string.half_width_symbols_tips_all,
+                R.string.half_width_symbols_tips_only_used,
+                R.string.half_width_symbols_tips_none
+            )
         )
     }
 
@@ -268,25 +284,6 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
         val keyboardMnemonic = bool("keyboard_mnemonic_show_enable", false)
 
-
-        val categoryPeripherals = category(R.string.category_symbols_peripherals)
-
-        val halfWidthSymbolsMode = list(
-            R.string.half_width_symbols_tips,
-            "half_width_symbols_tips",
-            HalfWidthSymbolsMode.All,
-            HalfWidthSymbolsMode,
-            listOf(
-                HalfWidthSymbolsMode.All,
-                HalfWidthSymbolsMode.OnlyUsed,
-                HalfWidthSymbolsMode.None
-            ),
-            listOf(
-                R.string.half_width_symbols_tips_all,
-                R.string.half_width_symbols_tips_only_used,
-                R.string.half_width_symbols_tips_none
-            )
-        )
 
         val showVirtualKeyboardOnPhysicalKeyboard = switch(R.string.show_virtual_keyboard_with_external, "show_virtual_keyboard_with_external", false)
     }
