@@ -58,8 +58,9 @@ class ThemeFragment : Fragment() {
         ThemeManager.addOnChangedListener(onThemeChangeListener)
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View = with(requireContext()) {
+        val extraBottom = dp(12)
         val origWidth = EnvironmentSingleton.instance.skbWidth
-        val origHeight = EnvironmentSingleton.instance.skbHeight + EnvironmentSingleton.instance.heightForCandidatesArea
+        val origHeight = EnvironmentSingleton.instance.skbHeight + EnvironmentSingleton.instance.heightForCandidatesArea + extraBottom
         val scaleRatio = 0.82f
         val scaledWidth = (origWidth * scaleRatio).toInt()
         val scaledHeight = (origHeight * scaleRatio).toInt()

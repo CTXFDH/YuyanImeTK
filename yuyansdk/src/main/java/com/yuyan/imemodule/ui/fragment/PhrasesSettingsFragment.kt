@@ -135,7 +135,7 @@ class PhrasesSettingsFragment : PreferenceFragmentCompat() {
         }
 
         val etQuickCode = KeyCaptureEditText(context).apply {
-            hint = "按键键值（如：34944 或 GXXD）"
+            hint = "按键键值"
             textSize = 15f
             setTextColor(inputTextColor)
             setHintTextColor(inputHintColor)
@@ -166,7 +166,7 @@ class PhrasesSettingsFragment : PreferenceFragmentCompat() {
         }
 
         val etContent = EditText(context).apply {
-            hint = "短语内容（如：长江路26号第三个胡同）"
+            hint = "短语内容"
             textSize = 15f
             setTextColor(inputTextColor)
             setHintTextColor(inputHintColor)
