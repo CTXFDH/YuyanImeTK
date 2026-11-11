@@ -82,15 +82,18 @@ object CustomEngine {
             val chinesePredictionDate = getInstance().input.chinesePredictionDate.getValue()
             if (chinesePredictionDate) {
                 val isLx17 = InputModeSwitcher.skbLayout == InputModeSwitcher.MASK_SKB_LAYOUT_LX17
-                val suffixesDate = setOf("rq", "riqi", "pgpg", "pp", "nq", "njqj")
-                if (suffixesDate.any { it.equals(cleanText, ignoreCase = true) }) {
-                    phrases.addAll(TimeUtils.getData())
-                }
-                val suffixesTime = setOf("sj", "shijian", "pj", "pggjgam", "sjjq", "mj", "mhjjjhn", "mjmj", "djmj", "uijm", "iijm", "vijw")
-                if (suffixesTime.any { it.equals(cleanText, ignoreCase = true) }) {
-                    val isLx17ShJk = isLx17 && (cleanText.equals("sj", ignoreCase = true) || cleanText.equals("shjk", ignoreCase = true) || cleanText.equals("sjk", ignoreCase = true))
-                    if (!isLx17ShJk) {
-                        phrases.addAll(TimeUtils.getTime())
+                val containsNrOrQInLx17 = isLx17 && cleanText.any { it == 'n' || it == 'N' || it == 'r' || it == 'R' || it == 'q' || it == 'Q' }
+                if (!containsNrOrQInLx17) {
+                    val suffixesDate = setOf("rq", "riqi", "pgpg", "pp", "nq", "njqj")
+                    if (suffixesDate.any { it.equals(cleanText, ignoreCase = true) }) {
+                        phrases.addAll(TimeUtils.getData())
+                    }
+                    val suffixesTime = setOf("sj", "shijian", "pj", "pggjgam", "sjjq", "mj", "mhjjjhn", "mjmj", "djmj", "uijm", "iijm", "vijw")
+                    if (suffixesTime.any { it.equals(cleanText, ignoreCase = true) }) {
+                        val isLx17ShJk = isLx17 && (cleanText.equals("sj", ignoreCase = true) || cleanText.equals("shjk", ignoreCase = true) || cleanText.equals("sjk", ignoreCase = true))
+                        if (!isLx17ShJk) {
+                            phrases.addAll(TimeUtils.getTime())
+                        }
                     }
                 }
             }
