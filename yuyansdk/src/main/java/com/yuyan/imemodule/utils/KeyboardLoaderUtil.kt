@@ -2,7 +2,6 @@ package com.yuyan.imemodule.utils
 
 import android.view.KeyEvent
 import com.yuyan.imemodule.application.CustomConstant
-import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.entity.keyboard.SoftKey
 import com.yuyan.imemodule.entity.keyboard.SoftKeyToggle
 import com.yuyan.imemodule.entity.keyboard.SoftKeyboard
@@ -190,8 +189,8 @@ class KeyboardLoaderUtil private constructor() {
                 val prefixMode = AppPrefs.getInstance().keyboardSetting.lx17PrefixMode.getValue()
                 val currentContainer = KeyboardManager.instance.currentContainer
                 val isExpanded = (currentContainer as? InputBaseContainer)?.isCandidatesExpanded() == true
-                val centerSymbol = prefixMode == Lx17PrefixMode.Center && !isExpanded
-                val withLeftPrefix = prefixMode == Lx17PrefixMode.Left || (prefixMode == Lx17PrefixMode.Center && isExpanded)
+                val centerSymbol = (prefixMode == Lx17PrefixMode.Center) && !isExpanded
+                val withLeftPrefix = (prefixMode == Lx17PrefixMode.Left) || (prefixMode == Lx17PrefixMode.Center && isExpanded)
 
                 if (!leftDelete && !centerSymbol && !withLeftPrefix) {
                     val keys = KeyboardData.layoutLX17Cn[skbStyleMode]!!

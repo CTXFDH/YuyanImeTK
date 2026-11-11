@@ -74,7 +74,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
             setPadding(dp(6))
             setImageResource(R.drawable.ic_menu_setting)
             layoutParams = LinearLayout.LayoutParams(dp(36), dp(36))
-            drawable?.setTint(ThemeManager.activeTheme.keyTextColor)
+            drawable?.setTint(activeTheme.keyTextColor)
         }
         ivAddSymbol.setOnClickListener { _:View ->
             val arguments = Bundle()
