@@ -24,7 +24,11 @@ class Tokenizer(expression: String, private val userFunctions: Map<String, Funct
     fun nextToken(): Token {
         var ch = expression[pos]
         while (Character.isWhitespace(ch)) {
-            ch = expression[++pos]
+            pos++
+            if (pos >= expressionLength) {
+                throw IllegalArgumentException("Unexpected end of expression at position $pos")
+            }
+            ch = expression[pos]
         }
         if (Character.isDigit(ch) || ch == '.') {
             if (lastToken != null) {

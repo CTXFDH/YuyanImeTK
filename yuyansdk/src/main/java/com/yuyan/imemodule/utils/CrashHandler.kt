@@ -51,7 +51,7 @@ class CrashHandler private constructor() : Thread.UncaughtExceptionHandler {
                 val pi: PackageInfo = pm.getPackageInfo(context.packageName, PackageManager.GET_ACTIVITIES)
                 pi.let {
                     mInfoMap["versionName"] = pi.versionName ?: "null"
-                    mInfoMap["versionCode"] = pi.versionCode.toString()
+                    mInfoMap["versionCode"] = androidx.core.content.pm.PackageInfoCompat.getLongVersionCode(pi).toString()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

@@ -501,6 +501,14 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
     // 增加窗口防抖机制
     private var pendingMenuJob: Job? = null
     private val serviceScope = MainScope()
+
+    override fun onDetachedFromWindow() {
+        pendingMenuJob?.cancel()
+        pendingMenuJob = null
+        kotlinx.coroutines.Job().cancel()
+        super.onDetachedFromWindow()
+    }
+
     fun scheduleShowCandidates() {
         if (!DictDecoder.isCandidatesEmpty) {
             pendingMenuJob?.cancel()

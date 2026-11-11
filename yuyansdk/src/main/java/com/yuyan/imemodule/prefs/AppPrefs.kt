@@ -136,6 +136,9 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
         val titleEnglish = category(R.string.EnglishInput)
 
+        // 锁定英语键盘:锁定后，切换到英语键盘，下次弹出键盘使用英语模式
+        val keyboardLockEnglish = switch(R.string.keyboard_menu_lock_english, "keyboard_menu_lock_english_enable", false)
+
         //输出英文单词:英文补全
         val abcSearchEnglishCell = switch(
             R.string.search_english_cell, "search_english_cell_enable", true
@@ -198,19 +201,6 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         )
 
         val oneHandedModSwitch = bool("keyboard_one_handed_mod_enable", false)
-
-        val candidateTextSize = int(
-            R.string.candidate_size_input_setting,
-            "candidate_size",
-            55,
-            25,
-            100,
-            "%",
-            defaultLabel = R.string.system_default
-        )
-
-        // 锁定英语键盘:锁定后，切换到英语键盘，下次弹出键盘使用英语模式
-        val keyboardLockEnglish = switch(R.string.keyboard_menu_lock_english, "keyboard_menu_lock_english_enable", false)
 
         val keyboardDoubleInputKey = switch(R.string.keyboard_double_input_key, "keyboard_double_input_pinyin_enable", true)
 

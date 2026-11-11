@@ -240,6 +240,7 @@ class PhrasesSettingsFragment : PreferenceFragmentCompat() {
                 )
 
                 DataBaseKT.instance.phraseDao().insert(phrase)
+                com.yuyan.inputmethod.CustomEngine.clearCache()
                 Toast.makeText(context, "保存成功", Toast.LENGTH_SHORT).show()
                 onCreatePreferences(null, null)
             }
@@ -259,6 +260,7 @@ class PhrasesSettingsFragment : PreferenceFragmentCompat() {
                     0 -> showAddPhraseDialog(phrase)
                     1 -> {
                         DataBaseKT.instance.phraseDao().deleteByContent(phrase.content)
+                        com.yuyan.inputmethod.CustomEngine.clearCache()
                         Toast.makeText(requireContext(), "已删除短语", Toast.LENGTH_SHORT).show()
                         onCreatePreferences(null, null)
                     }

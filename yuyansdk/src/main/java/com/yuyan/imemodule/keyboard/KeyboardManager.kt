@@ -34,7 +34,13 @@ class KeyboardManager {
 
     fun clearKeyboard() {
         keyboards.clear()
+        currentContainer = null
         if (::mInputView.isInitialized) mInputView.initView(mInputView.context)
+    }
+
+    fun release() {
+        keyboards.clear()
+        currentContainer = null
     }
 
     fun clearNonMainKeyboards(keepType: KeyboardType) {

@@ -10,13 +10,13 @@ fun ZipInputStream.extract(destDir: File): List<File> {
     var entry = nextEntry
     val canonicalDest = destDir.canonicalPath
     while (entry != null) {
+        val targetFile = File(destDir, entry.name)
+        if (!targetFile.canonicalPath.startsWith(canonicalDest)) throw SecurityException("Zip Slip detected: ${entry.name}")
         if (!entry.isDirectory) {
-            val file = File(destDir, entry.name)
-            if (!file.canonicalPath.startsWith(canonicalDest)) throw SecurityException()
-            copyTo(file.outputStream())
+            targetFile.parentFile?.mkdirs()
+            targetFile.outputStream().use { out -> copyTo(out) }
         } else {
-            val dir = File(destDir, entry.name)
-            dir.mkdir()
+            targetFile.mkdirs()
         }
         entry = nextEntry
     }

@@ -70,13 +70,6 @@ class AsrInferenceService : Service() {
                 shouldReloadHandle(asrHandle, loadedModelDir, modelDir)
             }
             if (needReload) {
-                synchronized(asrLock) {
-                    if (asrHandle != 0L) {
-                        AsrNative.nativeRelease(asrHandle)
-                        asrHandle = 0L
-                    }
-                    loadedModelDir = null
-                }
                 val handle = createAsrHandle(modelDir)
                 if (handle == 0L) {
                     Log.e(TAG, "Failed to create ASR recognizer from $modelDir")
@@ -84,7 +77,10 @@ class AsrInferenceService : Service() {
                     return false
                 }
                 synchronized(asrLock) {
-                    if (asrHandle == 0L) {
+                    if (shouldReloadHandle(asrHandle, loadedModelDir, modelDir)) {
+                        if (asrHandle != 0L) {
+                            AsrNative.nativeRelease(asrHandle)
+                        }
                         asrHandle = handle
                         loadedModelDir = modelDir
                     } else {
@@ -95,7 +91,9 @@ class AsrInferenceService : Service() {
             return try {
                 synchronized(asrLock) {
                     asrCallback = callback
-                    AsrNative.nativeReset(asrHandle)
+                    if (asrHandle != 0L) {
+                        AsrNative.nativeReset(asrHandle)
+                    }
                 }
                 true
             } catch (e: Exception) {

@@ -95,13 +95,11 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
         super.onCreate()
         savedStateRegistryController.performRestore(null)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
-        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
         addOnChangedListener(onThemeChangeListener)
         getInstance().input.showVirtualKeyboardOnPhysicalKeyboard.registerOnChangeListener(showVirtualKeyboardOnPhysicalKeyboardListener)
         getInstance().internal.clipboardUpdateContent.registerOnChangeListener(clipboardUpdateContentListener)
         handleHardwareKeyboard()
-        DictDecoder.candidatesLiveData.observeForever(candidatesObserver)
+        DictDecoder.candidatesLiveData.observe(this, candidatesObserver)
     }
 
     override fun onCreateInputView(): View {
@@ -204,6 +202,10 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
         getInstance().input.showVirtualKeyboardOnPhysicalKeyboard.unregisterOnChangeListener(showVirtualKeyboardOnPhysicalKeyboardListener)
         removeOnChangedListener(onThemeChangeListener)
         getInstance().internal.clipboardUpdateContent.unregisterOnChangeListener(clipboardUpdateContentListener)
+        KeyboardManager.instance.release()
+        try {
+            spaceVoiceRecognitionHandler.release()
+        } catch (_: Exception) {}
     }
 
     @Volatile
@@ -442,7 +444,10 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
                 if (nextNewLine >= 0) {
                     val textBefore = ic.getTextBeforeCursor(1000, 0)?.toString() ?: ""
                     val currentColumn = textBefore.length - (textBefore.lastIndexOf('\n') + 1)
-                    val newPos = textBefore.length + nextNewLine + 1 + currentColumn
+                    val line2StartRel = nextNewLine + 1
+                    val line2EndRel = textAfter.indexOf('\n', line2StartRel).let { if (it >= 0) it else textAfter.length }
+                    val targetRel = (line2StartRel + currentColumn).coerceAtMost(line2EndRel)
+                    val newPos = textBefore.length + targetRel
                     ic.setSelection(newPos, newPos)
                 } else {
                     val textBefore = ic.getTextBeforeCursor(1000, 0)?.toString() ?: ""
@@ -543,6 +548,11 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
         val config = newConfig ?: resources.configuration
         val isHardKb = !showVirtualKeyboardOnPhysicalKeyboard && (config.keyboard != Configuration.KEYBOARD_NOKEYS && config.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO)
         isHardwareKeyboard = isHardKb
+        if (isHardKb) {
+            if (::candidateView.isInitialized) mInputView = candidateView
+        } else {
+            if (::inputView.isInitialized) mInputView = inputView
+        }
         return isHardKb
     }
 

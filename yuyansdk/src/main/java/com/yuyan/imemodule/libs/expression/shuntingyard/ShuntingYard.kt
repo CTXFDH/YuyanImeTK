@@ -48,9 +48,10 @@ object ShuntingYard {
 
                 Token.TOKEN_PARENTHESES_OPEN -> stack.push(token)
                 Token.TOKEN_PARENTHESES_CLOSE -> {
-                    while (stack.peek().type != Token.TOKEN_PARENTHESES_OPEN) {
+                    while (!stack.empty() && stack.peek().type != Token.TOKEN_PARENTHESES_OPEN) {
                         output.add(stack.pop())
                     }
+                    require(!stack.empty() && stack.peek().type == Token.TOKEN_PARENTHESES_OPEN) { "Mismatched parentheses detected" }
                     stack.pop()
                     if (!stack.isEmpty() && stack.peek().type == Token.TOKEN_FUNCTION) {
                         output.add(stack.pop())

@@ -20,6 +20,14 @@ object DictDecoder {
     var isAssociate = false
     var justCommittedAssociateWord = false // 记录是否刚提交了联想词
 
+    private fun updateCandidatesValue(list: List<CandidateListItem>) {
+        if (android.os.Looper.myLooper() == android.os.Looper.getMainLooper()) {
+            candidatesLiveData.value = list
+        } else {
+            candidatesLiveData.postValue(list)
+        }
+    }
+
     /**
      * 重置候选词
      */
@@ -28,7 +36,7 @@ object DictDecoder {
         justCommittedAssociateWord = false
         activeCandidate = 0
         activeCandidateBar = 0
-        candidatesLiveData.value = emptyList()
+        updateCandidatesValue(emptyList())
     }
 
     val isCandidatesEmpty: Boolean
@@ -82,7 +90,8 @@ object DictDecoder {
         get() {
             val cands = RimeEngine.getNextPageCandidates()
             if (cands.isNotEmpty()) {
-                candidatesLiveData.postValue(candidatesLiveData.value?.plus(cands))
+                val current = candidatesLiveData.value ?: emptyList()
+                updateCandidatesValue(current.plus(cands))
                 return cands.size
             }
             return 0
@@ -104,15 +113,16 @@ object DictDecoder {
             if (isEnglishWord && chosenItem != null) {
                 candidate = chosenItem.text
                 InputDispatcher.reset()
-                candidatesLiveData.value = emptyList()
+                updateCandidatesValue(emptyList())
             } else {
                 // 计算在 candId 之前有多少个强行插入的英文候选词，消除 Rime 索引偏移错位 Bug
-                val englishOffset = if (candId > 0 && currentList.isNotEmpty()) {
-                    currentList.take(candId).count { it.comment == "🔤" }
+                val safeIndex = candId.coerceIn(0, currentList.size.coerceAtLeast(1) - 1)
+                val englishOffset = if (safeIndex > 0 && currentList.isNotEmpty()) {
+                    currentList.take(safeIndex).count { it.comment == "🔤" }
                 } else 0
                 val realRimeIndex = (candId - englishOffset).coerceAtLeast(0)
 
-                if (candId >= 0) InputDispatcher.getWordSelectedWord(realRimeIndex)
+                if (candId >= 0 && candId in currentList.indices) InputDispatcher.getWordSelectedWord(realRimeIndex)
 
                 val newCandidates = RimeEngine.showCandidates
                 candidate = if (newCandidates.isNotEmpty()) RimeEngine.preCommitText
@@ -122,7 +132,7 @@ object DictDecoder {
                 if (newCandidates.isNotEmpty()) {
                     updateDecodingCandidate()
                 } else {
-                    candidatesLiveData.value = emptyList()
+                    updateCandidatesValue(emptyList())
                 }
                 justCommittedAssociateWord = wasAssociate
             }
@@ -163,7 +173,7 @@ object DictDecoder {
                 }
             }
         }
-        candidatesLiveData.value = rimeCandidates
+        updateCandidatesValue(rimeCandidates)
     }
 
     /**
@@ -181,7 +191,7 @@ object DictDecoder {
         }
         activeCandidate = 0
         activeCandidateBar = 0
-        candidatesLiveData.value = words.asList()
+        updateCandidatesValue(words.asList())
     }
 
     /**

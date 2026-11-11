@@ -78,6 +78,16 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
         "dp"
     )
 
+    val candidateTextSize = int(
+        R.string.candidate_size_input_setting,
+        "candidate_size",
+        100,
+        70,
+        130,
+        "%",
+        defaultLabel = R.string.system_default
+    )
+
     val keyboardFontWeight = int(
         R.string.keyboard_font_bold,
         "keyboard_font_weight_level",

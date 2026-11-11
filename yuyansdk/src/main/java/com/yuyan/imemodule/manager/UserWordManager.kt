@@ -58,6 +58,7 @@ object UserWordManager {
      */
     fun syncCustomPhraseFile() {
         try {
+            com.yuyan.inputmethod.CustomEngine.clearCache()
             val dir = File(CustomConstant.RIME_DICT_PATH)
             if (!dir.exists()) dir.mkdirs()
             val userWords = DataBaseKT.instance.userWordDao().getAll()

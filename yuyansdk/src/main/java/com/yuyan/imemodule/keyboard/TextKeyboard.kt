@@ -58,6 +58,35 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
     private var keyboardMnemonic = false
     protected var mDirtyRect = Rect()
 
+    private val symbolChangeListener = com.yuyan.imemodule.view.preference.ManagedPreference.OnChangeListener<Boolean> { _, value ->
+        keyboardSymbol = value
+        mBuffer = null
+        mKeyboardChanged = true
+        invalidateView()
+        invalidate()
+    }
+    private val fontWeightChangeListener = com.yuyan.imemodule.view.preference.ManagedPreference.OnChangeListener<Int> { _, value ->
+        keyboardFontWeight = value
+        mBuffer = null
+        mKeyboardChanged = true
+        invalidateView()
+        invalidate()
+    }
+    private val keyBorderChangeListener = com.yuyan.imemodule.view.preference.ManagedPreference.OnChangeListener<Boolean> { _, value ->
+        isKeyBorder = value
+        mBuffer = null
+        mKeyboardChanged = true
+        invalidateView()
+        invalidate()
+    }
+    private val keyShadowChangeListener = com.yuyan.imemodule.view.preference.ManagedPreference.OnChangeListener<Boolean> { _, value ->
+        isKeyShadow = value
+        mBuffer = null
+        mKeyboardChanged = true
+        invalidateView()
+        invalidate()
+    }
+
     /**
      * 构造方法
      */
@@ -69,34 +98,6 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         keyboardMnemonic = AppPrefs.getInstance().keyboardSetting.keyboardMnemonic.getValue()
         isKeyBorder = prefs.keyBorder.getValue()
         isKeyShadow = prefs.keyShadow.getValue()
-        AppPrefs.getInstance().keyboardSetting.keyboardSymbol.registerOnChangeListener { _, value ->
-            keyboardSymbol = value
-            mBuffer = null
-            mKeyboardChanged = true
-            invalidateView()
-            invalidate()
-        }
-        prefs.keyboardFontWeight.registerOnChangeListener { _, value ->
-            keyboardFontWeight = value
-            mBuffer = null
-            mKeyboardChanged = true
-            invalidateView()
-            invalidate()
-        }
-        prefs.keyBorder.registerOnChangeListener { _, value ->
-            isKeyBorder = value
-            mBuffer = null
-            mKeyboardChanged = true
-            invalidateView()
-            invalidate()
-        }
-        prefs.keyShadow.registerOnChangeListener { _, value ->
-            isKeyShadow = value
-            mBuffer = null
-            mKeyboardChanged = true
-            invalidateView()
-            invalidate()
-        }
     }
 
     override fun getKeyIndices(x: Int, y: Int): SoftKey? {
@@ -813,8 +814,20 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         canvas.drawPath(marqueePath, whitePaint)
     }
 
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        AppPrefs.getInstance().keyboardSetting.keyboardSymbol.registerOnChangeListener(symbolChangeListener)
+        prefs.keyboardFontWeight.registerOnChangeListener(fontWeightChangeListener)
+        prefs.keyBorder.registerOnChangeListener(keyBorderChangeListener)
+        prefs.keyShadow.registerOnChangeListener(keyShadowChangeListener)
+    }
+
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
+        AppPrefs.getInstance().keyboardSetting.keyboardSymbol.unregisterOnChangeListener(symbolChangeListener)
+        prefs.keyboardFontWeight.unregisterOnChangeListener(fontWeightChangeListener)
+        prefs.keyBorder.unregisterOnChangeListener(keyBorderChangeListener)
+        prefs.keyShadow.unregisterOnChangeListener(keyShadowChangeListener)
         closing()
     }
 

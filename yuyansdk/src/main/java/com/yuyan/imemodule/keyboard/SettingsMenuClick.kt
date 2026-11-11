@@ -83,8 +83,8 @@ fun onSettingsMenuClick(inputView: InputView, skbMenuMode: SkbMenuMode) {
             KeyboardManager.instance.switchKeyboard()
         }
         SkbMenuMode.LockEnglish -> {
-            val keyboardLockEnglish = AppPrefs.getInstance().keyboardSetting.keyboardLockEnglish.getValue()
-            AppPrefs.getInstance().keyboardSetting.keyboardLockEnglish.setValue(!keyboardLockEnglish)
+            val keyboardLockEnglish = AppPrefs.getInstance().input.keyboardLockEnglish.getValue()
+            AppPrefs.getInstance().input.keyboardLockEnglish.setValue(!keyboardLockEnglish)
             KeyboardManager.instance.switchKeyboard()
         }
         SkbMenuMode.SymbolShow -> {

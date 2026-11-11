@@ -155,16 +155,9 @@ class KeyRecordStack {
     }
 
     private fun <T> ArrayList<T>.replaceAt(index: Int, elements: List<T>) {
-        if (index == lastIndex) {
+        if (index in 0 until size) {
             removeAt(index)
-            addAll(elements)
-        } else {
-            val heads = take(index)
-            val tails = takeLast(size - index - 1)
-            clear()
-            addAll(heads)
-            addAll(elements)
-            addAll(tails)
+            addAll(index, elements)
         }
     }
 }

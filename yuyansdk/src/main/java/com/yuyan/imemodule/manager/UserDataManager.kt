@@ -73,12 +73,8 @@ object UserDataManager {
     }
 
     private fun copyDir(source: File, target: File) {
-        val exists = source.exists()
-        val isDir = source.isDirectory
-        if (exists && isDir) {
+        if (source.exists() && source.isDirectory) {
             source.copyRecursively(target, overwrite = true)
-        } else {
-            source.toString()
         }
     }
 

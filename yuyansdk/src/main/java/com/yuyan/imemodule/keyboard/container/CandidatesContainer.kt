@@ -117,12 +117,12 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         mRVSymbolsView.addOnScrollListener(object :RecyclerView.OnScrollListener(){
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    val lastItem = (recyclerView.layoutManager as? CustomFlexboxLayoutManager)?.findLastCompletelyVisibleItemPosition() ?: 0
                     ThreadPoolUtils.executeSingleton {
                         if (!isLoadingMore) {
                             isLoadingMore = true
-                            val lastItem = (recyclerView.layoutManager as CustomFlexboxLayoutManager).findLastCompletelyVisibleItemPosition()
                             DictDecoder.activeCandidate = lastItem
-                            if (DictDecoder.candidateSize - lastItem <= 5) { // 未加载中、未加载完、向下滑动、还有30个数据滑动到底
+                            if (DictDecoder.candidateSize - lastItem <= 5) { // 未加载中、未加载完、向下滑动、还有数据滑动到底
                                 DictDecoder.nextPageCandidates
                             }
                             isLoadingMore = false
@@ -223,12 +223,14 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         mRVLeftPrefix.setAdapter(null)
         mRVLeftPrefix.setOnItemClickListener{ _: View?, position: Int ->
             if (isPrefixs) {
-                inputView.selectPrefix(position)
+                if (position in prefixs.indices) inputView.selectPrefix(position)
             } else {
-                val softKey = SoftKey(label = mSideSymbolsPinyin.map { it.symbolValue }[position])
-                DevicesUtils.tryPlayKeyDown()
-                DevicesUtils.tryVibrate(this)
-                inputView.responseKeyEvent(softKey)
+                if (position in mSideSymbolsPinyin.indices) {
+                    val softKey = SoftKey(label = mSideSymbolsPinyin[position].symbolValue)
+                    DevicesUtils.tryPlayKeyDown()
+                    DevicesUtils.tryVibrate(this)
+                    inputView.responseKeyEvent(softKey)
+                }
             }
         }
         mRVLeftPrefix.setAdapter(PrefixAdapter(context, prefixs))

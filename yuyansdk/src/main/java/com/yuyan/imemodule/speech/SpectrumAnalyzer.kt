@@ -33,7 +33,7 @@ class SpectrumAnalyzer(
             edges[i] = (freq / binWidth).toInt().coerceIn(0, fftSize / 2 - 1)
         }
         for (i in 1..bandCount) {
-            if (edges[i] <= edges[i - 1]) edges[i] = edges[i - 1] + 1
+            if (edges[i] <= edges[i - 1]) edges[i] = (edges[i - 1] + 1).coerceAtMost(fftSize / 2 - 1)
         }
         bandEdges = edges
     }

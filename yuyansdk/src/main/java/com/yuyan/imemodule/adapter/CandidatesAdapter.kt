@@ -92,7 +92,7 @@ class CandidatesAdapter(context: Context?) :
 
         init {
             textView.setTextColor(textColor)
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, instance.candidateTextSize)
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, instance.candidateTextSize)
         }
     }
 }

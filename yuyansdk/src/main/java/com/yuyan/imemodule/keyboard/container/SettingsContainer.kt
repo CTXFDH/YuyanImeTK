@@ -154,7 +154,7 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
                         DataBaseKT.instance.skbFunDao().delete(SkbFun(name = v.skbMenuMode.name, isKeep = 1))
                     }
                     inputView.updateCandidateBar()
-                    adapter?.notifyDataSetChanged()
+                    adapter?.notifyItemChanged(position)
                 }
             }
             itemTouchHelper.attachToRecyclerView(mRVMenuLayout)

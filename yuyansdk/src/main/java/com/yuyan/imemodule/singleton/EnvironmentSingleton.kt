@@ -90,12 +90,14 @@ class EnvironmentSingleton private constructor() {
             keyboardHeightRatio = AppPrefs.getInstance().internal.keyboardHeightRatio.getValue()
         }
         skbHeight = (screenHeightVertical * keyboardHeightRatio).toInt()
-        heightForcomposing = (screenHeightVertical * candidatesHeightRatio *
-                AppPrefs.getInstance().keyboardSetting.candidateTextSize.getValue() / 100f).toInt()
-        heightForCandidates = (heightForcomposing * 1.9).toInt()
-        heightForCandidatesArea = (heightForcomposing * 2.9).toInt()
-        composingTextSize = DevicesUtils.px2sp(heightForcomposing)
-        candidateTextSize = DevicesUtils.px2sp(heightForCandidates)
+        heightForCandidatesArea = (screenHeightVertical * candidatesHeightRatio * 1.3f).toInt().coerceAtLeast(DevicesUtils.dip2px(42f))
+        heightForcomposing = (heightForCandidatesArea * 0.35f).toInt()
+        heightForCandidates = (heightForCandidatesArea * 0.65f).toInt()
+        composingTextSize = DevicesUtils.px2sp((heightForcomposing * 0.85f).toInt())
+
+        val candidateSizePercent = prefs.candidateTextSize.getValue()
+        val baseCandidateSp = DevicesUtils.px2sp((heightForCandidatesArea.toFloat() * 0.52f).toInt())
+        candidateTextSize = baseCandidateSp * (candidateSizePercent / 100f)
         heightForFullDisplayBar = (skbHeight * 0.16f).toInt().coerceAtLeast(DevicesUtils.dip2px(44f))
         heightForKeyboardMove = (heightForCandidatesArea * 0.2f).toInt()
 

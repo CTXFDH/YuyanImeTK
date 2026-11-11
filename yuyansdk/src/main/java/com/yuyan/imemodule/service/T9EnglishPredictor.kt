@@ -6,6 +6,7 @@ import com.yuyan.imemodule.manager.InputModeSwitcher
 import com.yuyan.inputmethod.core.CandidateListItem
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * 中文九键 (T9) 与乱序 17 (LX17) 中英混输匹配预测引擎
@@ -18,10 +19,10 @@ object T9EnglishPredictor {
     private var isInitialized = false
 
     // T9 按键序列 -> 匹配的英文单词列表
-    private val t9Map = HashMap<String, MutableList<String>>(10000)
+    private val t9Map = ConcurrentHashMap<String, MutableList<String>>(10000)
 
     // LX17 键位序列 -> 匹配的英文单词列表
-    private val lx17Map = HashMap<String, MutableList<String>>(10000)
+    private val lx17Map = ConcurrentHashMap<String, MutableList<String>>(10000)
 
     fun init(context: Context = Launcher.instance.context) {
         if (isInitialized) return

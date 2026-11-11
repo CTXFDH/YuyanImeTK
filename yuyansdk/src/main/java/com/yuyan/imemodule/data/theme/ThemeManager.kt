@@ -32,7 +32,8 @@ object ThemeManager {
 
     val DefaultTheme = ThemePreset.PixelLight
 
-    private val customThemes: MutableList<Theme.Custom> = ThemeFilesManager.listThemes()
+    private val customThemes: java.util.concurrent.CopyOnWriteArrayList<Theme.Custom> =
+        java.util.concurrent.CopyOnWriteArrayList(ThemeFilesManager.listThemes())
 
     fun getTheme(name: String) =
         customThemes.find { it.name == name } ?: BuiltinThemes.find { it.name == name }

@@ -236,7 +236,7 @@ object InputModeSwitcher {
                 newInputMode = if (v == EditorInfo.TYPE_TEXT_VARIATION_EMAIL_ADDRESS || v == EditorInfo.TYPE_TEXT_VARIATION_PASSWORD
                     || v == EditorInfo.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD || v == EditorInfo.TYPE_TEXT_VARIATION_WEB_PASSWORD) {
                     MODE_SKB_ENGLISH_LOWER
-                } else if(getInstance().keyboardSetting.keyboardLockEnglish.getValue()){
+                } else if(getInstance().input.keyboardLockEnglish.getValue()){
                     getInstance().internal.inputDefaultMode.getValue()
                 } else{
                     getInstance().internal.inputMethodPinyinMode.getValue()
@@ -486,9 +486,9 @@ object InputModeSwitcher {
                 if (context !is android.app.Activity) {
                     window.setType(android.view.WindowManager.LayoutParams.TYPE_INPUT_METHOD)
                     val token = targetView?.windowToken ?: targetView?.rootView?.windowToken
-                    if (token != null) {
+                    token?.let {
                         val lp = window.attributes
-                        lp.token = token
+                        lp.token = it
                         window.attributes = lp
                     }
                 }

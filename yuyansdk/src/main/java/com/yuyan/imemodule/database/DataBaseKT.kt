@@ -77,8 +77,7 @@ abstract class DataBaseKT : RoomDatabase() {
 
         private val MIGRATION_5_6 = object : Migration(5, 6) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("DROP TABLE IF EXISTS user_word")
-                db.execSQL("CREATE TABLE IF NOT EXISTS user_word (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, word TEXT NOT NULL, pinyin TEXT NOT NULL, pinyinHead TEXT NOT NULL DEFAULT '', t9 TEXT NOT NULL DEFAULT '', frequency INTEGER NOT NULL DEFAULT 100, time INTEGER NOT NULL DEFAULT 0)")
+                // 升级保留 user_word 用户词表，防止数据丢失
             }
         }
 
@@ -132,9 +131,6 @@ abstract class DataBaseKT : RoomDatabase() {
                 "我很快就到，请稍微等一会儿。",
                 "麻烦放驿站，谢谢。"
             )
-            for (preset in presetContents) {
-                instance.phraseDao().deleteByContent(preset) // 清理旧表残余
-            }
             if (instance.quickPhraseDao().getAll().isEmpty()) {
                 val presets = presetContents.map { QuickPhrase(it) }
                 instance.quickPhraseDao().insertAll(presets)

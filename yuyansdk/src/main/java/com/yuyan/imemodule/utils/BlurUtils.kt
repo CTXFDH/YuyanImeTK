@@ -5,7 +5,7 @@ import android.graphics.Bitmap
 object BlurUtils {
 
     fun blurBitmap(src: Bitmap, blurPercent: Int): Bitmap {
-        if (blurPercent <= 0) return src
+        if (blurPercent <= 0 || src.width < 2 || src.height < 2 || src.isRecycled) return src
         val radius = ((blurPercent / 100f) * 25f).toInt().coerceIn(1, 25)
         val width = src.width
         val height = src.height

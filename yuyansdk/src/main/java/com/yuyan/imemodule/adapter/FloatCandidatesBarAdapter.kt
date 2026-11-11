@@ -93,8 +93,8 @@ class FloatCandidatesBarAdapter(context: Context?) :
         init {
             textViewIndex.setTextColor(activeTheme.keyTextColor)
             textViewCandidate.setTextColor(activeTheme.keyTextColor)
-            textViewIndex.setTextSize(TypedValue.COMPLEX_UNIT_DIP, instance.candidateTextSize * 0.7f)
-            textViewCandidate.setTextSize(TypedValue.COMPLEX_UNIT_DIP, instance.candidateTextSize * 0.7f)
+            textViewIndex.setTextSize(TypedValue.COMPLEX_UNIT_SP, instance.candidateTextSize * 0.7f)
+            textViewCandidate.setTextSize(TypedValue.COMPLEX_UNIT_SP, instance.candidateTextSize * 0.7f)
         }
     }
 }

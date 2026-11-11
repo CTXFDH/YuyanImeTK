@@ -61,6 +61,16 @@ object RimeEngine {
     }
 
     fun selectCandidate(index: Int): String? {
+        if (index in 0 until customPhraseSize) {
+            val selectedText = showCandidates.getOrNull(index)?.text ?: ""
+            keyRecordStack.clear()
+            Rime.clearComposition()
+            preCommitText = selectedText
+            showComposition = ""
+            showCandidates = emptyList()
+            customPhraseSize = 0
+            return preCommitText
+        }
         val indexReal = index - customPhraseSize
         Rime.selectCandidate(indexReal)
         keyRecordStack.pushCandidateSelectAction()

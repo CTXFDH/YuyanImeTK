@@ -41,8 +41,8 @@ class Expression internal constructor(private val tokens: Array<Token>) {
                 output.push(func.function.apply(*args))
             }
         }
-        if (output.size() > 1) {
-            throw IllegalArgumentException("Invalid number of items on the output queue. Might be caused by an invalid number of arguments for a function.")
+        if (output.size() != 1) {
+            throw IllegalArgumentException("Invalid number of items on the output queue (${output.size()}). Might be caused by an invalid expression or function parameters.")
         }
         return output.pop()
     }

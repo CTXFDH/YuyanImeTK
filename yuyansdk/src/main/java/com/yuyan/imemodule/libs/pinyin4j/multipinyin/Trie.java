@@ -37,11 +37,8 @@ public class Trie {
      * @throws IOException
      */
     public synchronized void load(InputStream inStream) throws IOException {
-        BufferedReader bufferedReader = null;
-        InputStreamReader inputStreamReader = null;
-        try {
-            inputStreamReader = new InputStreamReader(inStream);
-            bufferedReader = new BufferedReader(inputStreamReader);
+        if (inStream == null) return;
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inStream, java.nio.charset.StandardCharsets.UTF_8))) {
             String s;
             while ((s = bufferedReader.readLine()) != null) {
                 String[] keyAndValue = s.split(" ");
@@ -51,11 +48,6 @@ public class Trie {
                 trie.pinyin = keyAndValue[1];
                 put(keyAndValue[0], trie);
             }
-        } finally {
-            if (inputStreamReader != null)
-                inputStreamReader.close();
-            if (bufferedReader != null)
-                bufferedReader.close();
         }
     }
 
@@ -65,11 +57,8 @@ public class Trie {
      * @param inStream 拼音文件输入流
      */
     public synchronized void loadMultiPinyin(InputStream inStream) throws IOException {
-        BufferedReader bufferedReader = null;
-        InputStreamReader inputStreamReader = null;
-        try {
-            inputStreamReader = new InputStreamReader(inStream);
-            bufferedReader = new BufferedReader(inputStreamReader);
+        if (inStream == null) return;
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inStream, java.nio.charset.StandardCharsets.UTF_8))) {
             String s;
             while ((s = bufferedReader.readLine()) != null) {
                 String[] keyAndValue = s.split(" ");
@@ -93,7 +82,7 @@ public class Trie {
 
                     if (keys.length - 1 == i) {//最后一个字了,需要把拼音写进去
                         trieParent.pinyin = value;
-                        break;//此行其实并没有意义
+                        break;
                     }
 
                     if (trie == null) {
@@ -107,14 +96,8 @@ public class Trie {
                     } else {
                         currentTrie = trie;
                     }
-
                 }
             }
-        } finally {
-            if (inputStreamReader != null)
-                inputStreamReader.close();
-            if (bufferedReader != null)
-                bufferedReader.close();
         }
     }
 

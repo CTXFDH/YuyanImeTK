@@ -83,7 +83,7 @@ class SymbolAdapter(context: Context?, val viewType: SymbolMode, private val pag
         init {
             textView.setTextColor(activeTheme.keyTextColor)
             val textSizeMultiplier = if (viewType == SymbolMode.Emojicon || viewType == SymbolMode.Emoticon) 1.2f else 1.0f
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, instance.candidateTextSize * textSizeMultiplier)
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, instance.candidateTextSize * textSizeMultiplier)
             tVSdb = view.findViewById(R.id.tv_sdb_symbols_item)
             tVSdb.setTextColor(activeTheme.keyTextColor)
 

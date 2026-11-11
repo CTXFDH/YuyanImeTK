@@ -29,7 +29,7 @@ object DevicesUtils {
     @JvmStatic
     fun px2sp(px: Int): Float {
         val scale = Launcher.instance.context.resources.displayMetrics.density
-        return px / (scale + 1)
+        return if (scale > 0f) px / scale else px.toFloat()
     }
 
     /**

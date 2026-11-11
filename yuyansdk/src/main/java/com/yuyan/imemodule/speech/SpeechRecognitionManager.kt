@@ -65,24 +65,14 @@ class SpeechRecognitionManager(private val context: Context) {
 
     @RequiresPermission(Manifest.permission.RECORD_AUDIO)
     fun startRecognition() {
-        synchronized(preloadLock) {
-            while (isPreloading) {
-                try {
-                    preloadLock.wait()
-                } catch (_: InterruptedException) {
-                    Thread.currentThread().interrupt()
-                    return
-                }
-            }
-        }
-
         if (recordingThread != null) {
             return
         }
 
         setState(RecognitionState.PROCESSING)
 
-        if (backend == null) {
+        val currentBackend = synchronized(preloadLock) { backend }
+        if (currentBackend == null || synchronized(preloadLock) { isPreloading }) {
             synchronized(preloadLock) {
                 if (loadingInProgress) {
                     loadingCancelled = false
@@ -93,6 +83,16 @@ class SpeechRecognitionManager(private val context: Context) {
             }
             Thread {
                 try {
+                    synchronized(preloadLock) {
+                        while (isPreloading) {
+                            try {
+                                preloadLock.wait()
+                            } catch (_: InterruptedException) {
+                                Thread.currentThread().interrupt()
+                                return@Thread
+                            }
+                        }
+                    }
                     val ok = preload()
                     if (!ok || synchronized(preloadLock) { backend } == null) {
                         mainHandler.post {

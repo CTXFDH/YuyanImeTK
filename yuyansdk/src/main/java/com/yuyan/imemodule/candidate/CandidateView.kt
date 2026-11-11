@@ -123,16 +123,17 @@ class CandidateView(context: Context, private val service: ImeService) : IKeyboa
     private fun processFunctionKeys(event: KeyEvent): Boolean {
         return when (val keyCode = event.keyCode) {
             KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_SPACE -> {
-                if (DictDecoder.isCandidatesEmpty || (DictDecoder.isAssociate && !mSkbCandidatesBarView.isActiveCand())) {
-                    sendKeyEvent(keyCode)
-                    resetToIdleState()
-                } else {
-                    chooseAndUpdate()
-                }
-                if(keyCode == KeyEvent.KEYCODE_SPACE && event.isCtrlPressed ){
+                if (keyCode == KeyEvent.KEYCODE_SPACE && event.isCtrlPressed) {
                     InputModeSwitcher.switchModeForUserKey(InputModeSwitcher.USER_KEYCODE_LANG)
                     resetToIdleState()
-                    Toast.makeText(context, if(InputModeSwitcher.isEnglish)"语燕输入法-英文" else "语燕输入法-拼音", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, if (InputModeSwitcher.isEnglish) "语燕输入法-英文" else "语燕输入法-拼音", Toast.LENGTH_LONG).show()
+                } else {
+                    if (DictDecoder.isCandidatesEmpty || (DictDecoder.isAssociate && !mSkbCandidatesBarView.isActiveCand())) {
+                        sendKeyEvent(keyCode)
+                        resetToIdleState()
+                    } else {
+                        chooseAndUpdate()
+                    }
                 }
                 true
             }

@@ -9,7 +9,6 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.core.app.NotificationCompat
@@ -133,23 +132,26 @@ class SetupActivity : FragmentActivity() {
     }
 
     override fun onPause() {
-        if (SetupPage.hasUndonePage())
-            NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_sdk_launcher_transparent)
-                .setContentTitle(getText(R.string.app_name))
-                .setContentText(getText(R.string.setup_keyboard))
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setContentIntent(
-                    PendingIntent.getActivity(
-                        this,
-                        0,
-                        Intent(this, javaClass),
-                        PendingIntent.FLAG_IMMUTABLE
+        if (SetupPage.hasUndonePage()) {
+            runCatching {
+                NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.ic_sdk_launcher_transparent)
+                    .setContentTitle(getText(R.string.app_name))
+                    .setContentText(getText(R.string.setup_keyboard))
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setContentIntent(
+                        PendingIntent.getActivity(
+                            this,
+                            0,
+                            Intent(this, javaClass),
+                            PendingIntent.FLAG_IMMUTABLE
+                        )
                     )
-                )
-                .setAutoCancel(true)
-                .build()
-                .let { notificationManager.notify(NOTIFY_ID, it) }
+                    .setAutoCancel(true)
+                    .build()
+                    .let { notificationManager.notify(NOTIFY_ID, it) }
+            }
+        }
         super.onPause()
     }
 
