@@ -191,6 +191,8 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
         val categoryKeys = category(R.string.category_keys_gestures)
 
+        val spaceLongPressVoiceInput = switch(R.string.space_long_press_voice_input, "space_long_press_voice_input_enable", true)
+
         val keyboardBalloonShow = switch(R.string.keypopup_input_settings, "keyboard_balloon_show_enable", false)
 
         val longPressTimeout = int(
@@ -230,8 +232,6 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         }
 
         val spaceSwipeMoveCursor = switch(R.string.space_swipe_move_cursor, "space_swipe_move_cursor", true)
-
-        val spaceLongPressVoiceInput = switch(R.string.space_long_press_voice_input, "space_long_press_voice_input_enable", true)
 
         val spaceSwipeMoveCursorSpeed = int(
             R.string.swipe_move_cursor_speed,
