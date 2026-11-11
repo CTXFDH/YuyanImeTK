@@ -1,6 +1,7 @@
 package com.yuyan.inputmethod
 
 import com.yuyan.imemodule.database.DataBaseKT
+import com.yuyan.imemodule.manager.InputModeSwitcher
 import com.yuyan.imemodule.utils.StringUtils
 import com.yuyan.imemodule.utils.TimeUtils
 import com.yuyan.imemodule.libs.expression.ExpressionBuilder
@@ -80,13 +81,17 @@ object CustomEngine {
 
             val chinesePredictionDate = getInstance().input.chinesePredictionDate.getValue()
             if (chinesePredictionDate) {
+                val isLx17 = InputModeSwitcher.skbLayout == InputModeSwitcher.MASK_SKB_LAYOUT_LX17
                 val suffixesDate = setOf("rq", "riqi", "pgpg", "pp", "nq", "njqj")
                 if (suffixesDate.any { it.equals(cleanText, ignoreCase = true) }) {
                     phrases.addAll(TimeUtils.getData())
                 }
                 val suffixesTime = setOf("sj", "shijian", "pj", "pggjgam", "sjjq", "mj", "mhjjjhn", "mjmj", "djmj", "uijm", "iijm", "vijw")
                 if (suffixesTime.any { it.equals(cleanText, ignoreCase = true) }) {
-                    phrases.addAll(TimeUtils.getTime())
+                    val isLx17ShJk = isLx17 && (cleanText.equals("sj", ignoreCase = true) || cleanText.equals("shjk", ignoreCase = true) || cleanText.equals("sjk", ignoreCase = true))
+                    if (!isLx17ShJk) {
+                        phrases.addAll(TimeUtils.getTime())
+                    }
                 }
             }
         }
