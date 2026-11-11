@@ -392,6 +392,26 @@ object InputModeSwitcher {
         }.toTypedArray()
 
         val currentMode = getInstance().input.doublePYSchemaMode.getValue()
+
+        if (targetView != null) {
+            val popup = androidx.appcompat.widget.PopupMenu(context, targetView)
+            modes.forEachIndexed { index, mode ->
+                val name = modeNames[index]
+                popup.menu.add(0, index, index, if (mode == currentMode) "✓ $name" else "   $name")
+            }
+            popup.setOnMenuItemClickListener { menuItem ->
+                val selectedMode = modes[menuItem.itemId]
+                getInstance().input.doublePYSchemaMode.setValue(selectedMode)
+                switchModeForSetting(
+                    Pair(MASK_SKB_LAYOUT_QWERTY_PINYIN, CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + selectedMode)
+                )
+                onSchemaSelected?.invoke()
+                true
+            }
+            popup.show()
+            return
+        }
+
         val checkedIndex = modes.indexOf(currentMode).coerceAtLeast(0)
 
         try {

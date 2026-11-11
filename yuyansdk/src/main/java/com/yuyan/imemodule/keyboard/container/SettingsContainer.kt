@@ -244,8 +244,15 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
         mRVMenuLayout!!.layoutManager = layoutManager
 
         val adapter = MenuAdapter(context, funItems)
-        adapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, _: View?, position: Int ->
-            onKeyboardMenuClick(funItems[position])
+        adapter.setOnItemClickLitener { _: RecyclerView.Adapter<*>?, v: View?, position: Int ->
+            val item = funItems[position]
+            if (item.skbMenuMode == SkbMenuMode.Pinyin26Double) {
+                InputModeSwitcher.showDoublePinyinSchemaDialog(context, v ?: mRVMenuLayout) {
+                    showSkbSelelctModeView()
+                }
+            } else {
+                onKeyboardMenuClick(item)
+            }
         }
         adapter.setOnItemLongClickListener { _, v, position ->
             val item = funItems[position]
