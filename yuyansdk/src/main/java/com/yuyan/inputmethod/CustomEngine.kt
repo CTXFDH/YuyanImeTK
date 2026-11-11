@@ -82,18 +82,22 @@ object CustomEngine {
             val chinesePredictionDate = getInstance().input.chinesePredictionDate.getValue()
             if (chinesePredictionDate) {
                 val isLx17 = InputModeSwitcher.skbLayout == InputModeSwitcher.MASK_SKB_LAYOUT_LX17
-                val containsNrOrQInLx17 = isLx17 && cleanText.any { it == 'n' || it == 'N' || it == 'r' || it == 'R' || it == 'q' || it == 'Q' }
-                if (!containsNrOrQInLx17) {
+
+                // 乱序17下：简拼 rq / nq / pp / pgpg 不联想日期，全拼 riqi / njqj 可以联想日期
+                val isLx17ShortDate = isLx17 && (cleanText.equals("rq", ignoreCase = true) || cleanText.equals("nq", ignoreCase = true) || cleanText.equals("pp", ignoreCase = true) || cleanText.equals("pgpg", ignoreCase = true))
+                if (!isLx17ShortDate) {
                     val suffixesDate = setOf("rq", "riqi", "pgpg", "pp", "nq", "njqj")
                     if (suffixesDate.any { it.equals(cleanText, ignoreCase = true) }) {
                         phrases.addAll(TimeUtils.getData())
                     }
+                }
+
+                // 乱序17下：简拼 sj / pj / mj / sjk 不联想时间，全拼 shijian / shjk / pggjgam / mhjjjhn 可以联想时间
+                val isLx17ShortTime = isLx17 && (cleanText.equals("sj", ignoreCase = true) || cleanText.equals("pj", ignoreCase = true) || cleanText.equals("mj", ignoreCase = true) || cleanText.equals("sjk", ignoreCase = true))
+                if (!isLx17ShortTime) {
                     val suffixesTime = setOf("sj", "shijian", "pj", "pggjgam", "sjjq", "mj", "mhjjjhn", "mjmj", "djmj", "uijm", "iijm", "vijw")
                     if (suffixesTime.any { it.equals(cleanText, ignoreCase = true) }) {
-                        val isLx17ShJk = isLx17 && (cleanText.equals("sj", ignoreCase = true) || cleanText.equals("shjk", ignoreCase = true) || cleanText.equals("sjk", ignoreCase = true))
-                        if (!isLx17ShJk) {
-                            phrases.addAll(TimeUtils.getTime())
-                        }
+                        phrases.addAll(TimeUtils.getTime())
                     }
                 }
             }
