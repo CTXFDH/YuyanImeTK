@@ -188,12 +188,34 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             defaultLabel = R.string.system_default
         )
 
+        // 锁定英语键盘:锁定后，切换到英语键盘，下次弹出键盘使用英语模式
+        val keyboardLockEnglish = switch(R.string.keyboard_menu_lock_english, "keyboard_menu_lock_english_enable", false)
+
+        val keyboardDoubleInputKey = switch(R.string.keyboard_double_input_key, "keyboard_double_input_pinyin_enable", true)
+
+        val lx17PrefixMode = list(
+            R.string.lx17_prefix_mode_title,
+            "lx17_prefix_mode",
+            Lx17PrefixMode.Left,
+            Lx17PrefixMode,
+            listOf(
+                Lx17PrefixMode.None,
+                Lx17PrefixMode.Left,
+                Lx17PrefixMode.Center
+            ),
+            listOf(
+                R.string.lx17_prefix_mode_none,
+                R.string.lx17_prefix_mode_left,
+                R.string.lx17_prefix_mode_center
+            )
+        )
+
+        val lx17LeftDeleteEnable = switch(R.string.lx17_left_delete_title, "lx17_left_delete_enable", false)
+
 
         val categoryKeys = category(R.string.category_keys_gestures)
 
         val spaceLongPressVoiceInput = switch(R.string.space_long_press_voice_input, "space_long_press_voice_input_enable", true)
-
-        val keyboardBalloonShow = switch(R.string.keypopup_input_settings, "keyboard_balloon_show_enable", false)
 
         val longPressTimeout = int(
             R.string.long_press_timeout,
@@ -242,36 +264,9 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             "px"
         )
 
-
-        val categoryModes = category(R.string.category_modes_prompts)
-
         val abcNumberLine = bool("keyboard_abc_number_line_enable", false)
 
-        // 锁定英语键盘:锁定后，切换到英语键盘，下次弹出键盘使用英语模式
-        val keyboardLockEnglish = switch(R.string.keyboard_menu_lock_english, "keyboard_menu_lock_english_enable", false)
-
-        val keyboardDoubleInputKey = switch(R.string.keyboard_double_input_key, "keyboard_double_input_pinyin_enable", true)
-
         val keyboardMnemonic = bool("keyboard_mnemonic_show_enable", false)
-
-        val lx17PrefixMode = list(
-            R.string.lx17_prefix_mode_title,
-            "lx17_prefix_mode",
-            Lx17PrefixMode.Left,
-            Lx17PrefixMode,
-            listOf(
-                Lx17PrefixMode.None,
-                Lx17PrefixMode.Left,
-                Lx17PrefixMode.Center
-            ),
-            listOf(
-                R.string.lx17_prefix_mode_none,
-                R.string.lx17_prefix_mode_left,
-                R.string.lx17_prefix_mode_center
-            )
-        )
-
-        val lx17LeftDeleteEnable = switch(R.string.lx17_left_delete_title, "lx17_left_delete_enable", false)
 
 
         val categoryPeripherals = category(R.string.category_symbols_peripherals)

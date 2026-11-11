@@ -96,6 +96,12 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
         "%"
     )
 
+    val keyboardBalloonShow = switch(
+        R.string.keypopup_input_settings,
+        "keyboard_balloon_show_enable",
+        false
+    )
+
     val keyBorder = switch(R.string.key_border, "key_border", true)
 
     val keyShadow = switch(

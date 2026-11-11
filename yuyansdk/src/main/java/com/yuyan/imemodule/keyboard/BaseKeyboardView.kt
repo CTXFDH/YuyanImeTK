@@ -397,7 +397,7 @@ open class BaseKeyboardView(mContext: Context?) : View(mContext) {
     }
 
     private fun showBalloonText(key: SoftKey) {
-        val keyboardBalloonShow = AppPrefs.getInstance().keyboardSetting.keyboardBalloonShow.getValue()
+        val keyboardBalloonShow = ThemeManager.prefs.keyboardBalloonShow.getValue()
         if (keyboardBalloonShow && !TextUtils.isEmpty(key.getkeyLabel())) {
             val bounds = Rect(key.mLeft, key.mTop, key.mRight, key.mBottom)
             popupComponent.showPopup(key.getkeyLabel(), bounds)
