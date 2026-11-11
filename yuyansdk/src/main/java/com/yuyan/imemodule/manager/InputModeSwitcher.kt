@@ -7,9 +7,11 @@ import com.yuyan.imemodule.R
 import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.prefs.AppPrefs.Companion.getInstance
 import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
+import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.keyboard.container.InputBaseContainer
 import com.yuyan.imemodule.service.InputDispatcher
+import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 
 /**
@@ -394,22 +396,62 @@ object InputModeSwitcher {
         val currentMode = getInstance().input.doublePYSchemaMode.getValue()
 
         if (targetView != null) {
-            val themedContext = android.view.ContextThemeWrapper(context, R.style.Theme_AppTheme)
-            val popup = androidx.appcompat.widget.PopupMenu(themedContext, targetView)
+            val activeTheme = ThemeManager.activeTheme
+            val strokeColor = (activeTheme.keyTextColor and 0x00FFFFFF) or 0x22000000.toInt()
+            val listView = android.widget.LinearLayout(context).apply {
+                orientation = android.widget.LinearLayout.VERTICAL
+                val p = DevicesUtils.dip2px(6f)
+                setPadding(p, p, p, p)
+                val bg = android.graphics.drawable.GradientDrawable().apply {
+                    shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                    setColor(activeTheme.keyBackgroundColor)
+                    cornerRadius = DevicesUtils.dip2px(12f).toFloat()
+                    setStroke(DevicesUtils.dip2px(1f), strokeColor)
+                }
+                background = bg
+            }
+
+            var popupWindow: android.widget.PopupWindow? = null
+
             modes.forEachIndexed { index, mode ->
                 val name = modeNames[index]
-                popup.menu.add(0, index, index, if (mode == currentMode) "✓ $name" else "   $name")
+                val isSelected = mode == currentMode
+                val itemTextColor = if (isSelected) activeTheme.keyTextColor else ((activeTheme.keyTextColor and 0x00FFFFFF) or 0xBB000000.toInt())
+                val itemBgColor = if (isSelected) ((activeTheme.keyTextColor and 0x00FFFFFF) or 0x22000000.toInt()) else 0
+
+                val itemView = android.widget.TextView(context).apply {
+                    text = name
+                    setTextSize(android.util.TypedValue.COMPLEX_UNIT_DIP, 14f)
+                    setTextColor(itemTextColor)
+                    val hPad = DevicesUtils.dip2px(12f)
+                    val vPad = DevicesUtils.dip2px(8f)
+                    setPadding(hPad, vPad, hPad, vPad)
+                    gravity = android.view.Gravity.CENTER
+                    val itemBg = android.graphics.drawable.GradientDrawable().apply {
+                        shape = android.graphics.drawable.GradientDrawable.RECTANGLE
+                        setColor(itemBgColor)
+                        cornerRadius = DevicesUtils.dip2px(8f).toFloat()
+                    }
+                    background = itemBg
+                    setOnClickListener {
+                        getInstance().input.doublePYSchemaMode.setValue(mode)
+                        switchModeForSetting(
+                            Pair(MASK_SKB_LAYOUT_QWERTY_PINYIN, CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + mode)
+                        )
+                        onSchemaSelected?.invoke()
+                        popupWindow?.dismiss()
+                    }
+                }
+                listView.addView(itemView)
             }
-            popup.setOnMenuItemClickListener { menuItem ->
-                val selectedMode = modes[menuItem.itemId]
-                getInstance().input.doublePYSchemaMode.setValue(selectedMode)
-                switchModeForSetting(
-                    Pair(MASK_SKB_LAYOUT_QWERTY_PINYIN, CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY + selectedMode)
-                )
-                onSchemaSelected?.invoke()
-                true
+
+            val targetWidth = targetView.width.coerceAtLeast(DevicesUtils.dip2px(100f))
+            popupWindow = android.widget.PopupWindow(listView, targetWidth, android.view.ViewGroup.LayoutParams.WRAP_CONTENT, true).apply {
+                elevation = DevicesUtils.dip2px(8f).toFloat()
+                setBackgroundDrawable(android.graphics.drawable.ColorDrawable(0x00000000))
             }
-            popup.show()
+
+            popupWindow.showAsDropDown(targetView, 0, DevicesUtils.dip2px(4f))
             return
         }
 
