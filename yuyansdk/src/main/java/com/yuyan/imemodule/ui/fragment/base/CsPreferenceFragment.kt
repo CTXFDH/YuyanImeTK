@@ -16,6 +16,7 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.view.widget.applyNavBarInsetsBottomPadding
+import splitties.dimensions.dp
 
 abstract class CsPreferenceFragment : PreferenceFragmentCompat() {
 
@@ -50,7 +51,16 @@ abstract class CsPreferenceFragment : PreferenceFragmentCompat() {
         super.onViewCreated(view, savedInstanceState)
         val pageBgColor = ContextCompat.getColor(requireContext(), R.color.settings_page_bg)
         view.setBackgroundColor(pageBgColor)
-        listView.setBackgroundColor(pageBgColor)
+        listView.apply {
+            setBackgroundColor(pageBgColor)
+            clipToPadding = false
+            setPadding(
+                paddingLeft,
+                paddingTop,
+                paddingRight,
+                paddingBottom + dp(24)
+            )
+        }
         setDivider(null)
         setDividerHeight(0)
         for (i in (listView.itemDecorationCount - 1) downTo 0) {

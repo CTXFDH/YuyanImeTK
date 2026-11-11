@@ -12,8 +12,6 @@
     <string name="setting_ime_keyboard_show">键盘效果</string>
     <string name="window_corner_radius">窗口圆角半径</string>
     <string name="setting_ime_keyboard_height">键盘调节</string>
-    <string name="ime_settings_handwriting">手写设置</string>
-    <string name="key_press_sound_volume_title">按键音量调节</string>
     <string name="keypopup_input_settings">按键气泡</string>
     <string name="long_press_timeout">按键长按灵敏度</string>
     <string name="keyboard_mnemonic_show">双拼提示</string>
@@ -46,7 +44,6 @@
     <string name="emoji_symbol_setting">表情与符号</string>
     <string name="emoji_setting">表情输入</string>
     <string name="emoji_input">候选词中显示Emoji表情</string>
-    <string name="symbol_setting">符号输入</string>
     <string name="symbol_pair_input">成对符号自动匹配</string>
     <!-- Used by the toggle keys in soft keyboards. -->
     <string name="cancel">取消</string>
@@ -54,32 +51,21 @@
     <string name="skb_item_settings">设置</string>
     <string name="skb_item_custom">定制工具栏</string>
     <!--布局部分文件提取文本-->
-    <string name="paint_thickness">笔画粗细</string>
-    <string name="discern_sensitive">识别灵敏度</string>
     <string name="keyboard_theme_night">深色模式</string>
     <!--设置输入法高度-->
     <string name="setting_ime_keyboard_height_reset">重置</string>
     <string name="setting_ime_keyboard_height_sure">确认</string>
-    <!--手写模式-->
     <string name="keyboard_menu_lock_english">锁定英语键盘(下次弹出保持英语模式)</string>
     <string name="input_methods">输入法</string>
-    <string name="advanced">高级</string>
     <string name="button_vibration_amplitude">触感强度</string>
     <string name="clipboard_listening">记录剪切板历史</string>
     <string name="clipboard_limit">剪切板历史记录上限</string>
-    <string name="clipboard_layout_compact_mode">剪切板布局</string>
-    <string name="clipboard_layout_mode_list">单列布局</string>
-    <string name="clipboard_layout_mode_grid">双列布局</string>
-    <string name="clipboard_layout_mode_flexbox">紧凑布局</string>
     <string name="clipboard_clear">清空剪切板</string>
     <string name="clipboard_empty_ltip">无任何内容</string>
     <string name="about">关于</string>
     <string name="feedback">吐槽与反馈</string>
     <string name="app_version">应用版本</string>
-    <string name="sdk_version">SDK版本</string>
     <string name="version">版本</string>
-    <string name="build_git_hash">构建哈希</string>
-    <string name="build_time">构建时间</string>
     <string name="clipboard">剪切板</string>
     <string name="full_display_keyboard">全面屏键盘优化</string>
     <string name="keyboard_full_display_advanced_tip">多功能键盘</string>
@@ -94,7 +80,6 @@
     <string name="keyboard">外观与交互</string>
     <string name="keyboard_feedback">按键效果</string>
     <string name="clipboard_suggestion_timeout">剪切板提示超时</string>
-    <string name="source_code">源代码</string>
     <string name="privacy_policy">隐私政策</string>
     <string name="privacy_policy_sure">同意</string>
     <string name="privacy_policy_cancel">拒绝</string>
@@ -112,8 +97,6 @@
     <string name="num_50">50条</string>
     <string name="default_">默认</string>
     <string name="keyboard_one_handed_mod">单手模式</string>
-    <string name="keyboard_one_handed_mod_left">左手模式</string>
-    <string name="keyboard_one_handed_mod_right">右手模式</string>
     <string name="holding_habit">持机习惯</string>
     <string name="holding_habit_left">左手持机</string>
     <string name="holding_habit_right">右手持机</string>
@@ -123,10 +106,6 @@
     <string name="sound_start_time">开始时间</string>
     <string name="sound_end_time">结束时间</string>
     <string name="sound_effect_category">按键音效</string>
-    <string name="sound_effect_standard">标准按键音</string>
-    <string name="sound_effect_spacebar">空格键音效</string>
-    <string name="sound_effect_delete">删除键音效</string>
-    <string name="sound_effect_return">回车键音效</string>
 
     <string name="enable_ime">启用输入法</string>
     <string name="enable_ime_hint">在“语言和输入法设置”中启用&lt;b>%1$s&lt;/b></string>
@@ -137,7 +116,6 @@
     <string name="done">完成</string>
     <string name="setup_keyboard">请完成键盘设置</string>
     <string name="setup_channel">设置向导</string>
-    <string name="number_500_ms">500毫秒</string>
     <string name="number_400_ms">400毫秒</string>
 
     <string name="new_theme">新增主题</string>
@@ -155,7 +133,6 @@
     <string name="key_vertical_margin">按键纵向间距</string>
     <string name="configure">配置</string>
     <string name="choose_image">选择图片…</string>
-    <string name="dark_keys">暗色按键</string>
     <string name="recrop_image">更换图片</string>
     <string name="duplicate_builtin_theme">复制主题…</string>
     <string name="theme_message_follow_system_day_night_mode_enabled">“跟随系统夜间模式”已启用，不能手动更换主题。</string>
@@ -173,7 +150,6 @@
 
     <string name="keyboard_name_t9">中文9键</string>
     <string name="keyboard_name_cn26">拼音全键</string>
-    <string name="keyboard_name_hand">手写输入</string>
     <string name="keyboard_name_stroke">笔画键盘</string>
     <string name="double_pinyin_schema_mode">全键双拼方案</string>
     <string name="double_pinyin_flypy_plus">小鹤双拼</string>
@@ -195,13 +171,6 @@
     <string name="skb_prefix_show_tips">显示内容</string>
     <string name="skb_prefix_commit_tips">上屏内容</string>
     <string name="skb_prefix_sort_tips">长按排序\n(左滑删除)</string>
-    <string name="dialog_tips_title">提示</string>
-    <string name="app_build_timeout_30">距离该版本已超30天，为保证体验，建议下载最新版本。</string>
-    <string name="app_build_timeout_60">距离该版本已超60天，为保证体验，您需下载最新版本。</string>
-    <string name="go_download_github">Github下载</string>
-    <string name="go_download_gitee">Gitee下载</string>
-    <string name="go_download_appstore">应用商店</string>
-
     <string name="keyboard_symbol_slide_up_mod">上划输入灵敏度</string>
     <string name="keyboard_symbol_slide_up_short">易触发</string>
     <string name="keyboard_symbol_slide_up_medium">标准</string>
@@ -225,14 +194,8 @@
     <string name="pick_image_camera">相机</string>
     <string name="pick_image_gallery">图库</string>
 
-    <string name="x_recycler_data_empty">暂时没有数据</string>
-    <string name="x_recycler_more_not">没有更多数据啦</string>
-    <string name="x_recycler_click_load_more">点击加载更多</string>
-    <string name="x_recycler_load_error">加载出错啦，请稍后重试</string>
-    <string name="x_recycler_load_more_message">正在加载更多数据，请稍后</string>
     <string name="lock_view">锁定键盘</string>
     <string name="menu_text_edit">文本编辑</string>
-    <string name="export_user_data">导出用户数据</string>
     <string name="import_user_data">导入用户数据</string>
     <string name="app_log">日志</string>
     <string name="export_crash_log">导出崩溃日志</string>
@@ -243,16 +206,10 @@
     <string name="restart_channel">应用重启</string>
     <string name="restart_notify_msg">应用已被重启，点击此处打开</string>
 
-    <string name="keyboard_style_mod">键盘风格</string>
-    <string name="keyboard_style_mod_yuyan">默认</string>
-    <string name="keyboard_style_mod_google">谷歌</string>
-    <string name="keyboard_style_mod_samsung">三星</string>
-
     <string name="show_virtual_keyboard_with_external">物理键盘显示软键盘（插拔键盘生效）</string>
 
     <!-- 键盘设置分类标题 -->
     <string name="category_layout_habit">布局与习惯</string>
     <string name="category_keys_gestures">按键与手势</string>
-    <string name="category_modes_prompts">输入模式与提示</string>
-    <string name="category_symbols_peripherals">符号与外设</string>
+    <string name="category_symbols_peripherals">外设</string>
 </resources>
