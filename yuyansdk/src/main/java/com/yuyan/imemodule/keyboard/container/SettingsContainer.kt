@@ -184,6 +184,13 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
                 SkbMenuMode.Pinyin26Jian
             )
         )
+        funItems.add(
+            SkbFunItem(
+                "语音输入",
+                R.drawable.ic_menu_voice,
+                SkbMenuMode.VoiceInput
+            )
+        )
         val doublePYSchemaMode = AppPrefs.getInstance().input.doublePYSchemaMode.getValue()
         val doublePinyinSchemaName = when (doublePYSchemaMode) {
             DoublePinyinSchemaMode.flypy -> R.string.double_pinyin_flypy_plus
@@ -212,13 +219,6 @@ class SettingsContainer(context: Context, inputView: InputView) : BaseContainer(
                 mContext.getString(R.string.keyboard_name_stroke),
                 R.drawable.selece_input_mode_stroke,
                 SkbMenuMode.PinyinStroke
-            )
-        )
-        funItems.add(
-            SkbFunItem(
-                "语音输入",
-                R.drawable.ic_menu_voice,
-                SkbMenuMode.VoiceInput
             )
         )
         funItems.add(
