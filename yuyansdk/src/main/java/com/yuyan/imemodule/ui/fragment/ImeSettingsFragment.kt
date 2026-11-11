@@ -11,7 +11,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceGroup
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.manager.UserDataManager
@@ -29,9 +28,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import com.yuyan.imemodule.ui.fragment.base.CsPreferenceFragment
 import kotlin.time.Duration.Companion.milliseconds
 
-class ImeSettingsFragment : PreferenceFragmentCompat() {
+class ImeSettingsFragment : CsPreferenceFragment() {
 
     private var exportTimestamp = System.currentTimeMillis()
     private lateinit var exportLauncher: ActivityResultLauncher<String>
