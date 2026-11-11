@@ -30,7 +30,6 @@ import splitties.views.dsl.constraintlayout.topOfParent
 import splitties.views.dsl.core.matchParent
 import com.yuyan.imemodule.keyboard.InputView
 import com.yuyan.imemodule.keyboard.TextKeyboard
-import com.yuyan.imemodule.keyboard.HandwritingKeyboard
 import com.yuyan.imemodule.libs.recyclerview.SwipeRecyclerView
 import splitties.dimensions.dp
 import splitties.views.dsl.core.margin
@@ -82,7 +81,7 @@ open class T9TextContainer(context: Context?, inputView: InputView, skbValue: In
      */
     override fun updateSkbLayout() {
         if (null == mMajorView) {
-            mMajorView = HandwritingKeyboard(context)
+            mMajorView = TextKeyboard(context)
             val params = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
             addView(mMajorView, params)
             mMajorView!!.setResponseKeyEvent(inputView)

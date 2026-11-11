@@ -106,7 +106,6 @@ fun onSettingsMenuClick(inputView: InputView, skbMenuMode: SkbMenuMode) {
             InputDispatcher.nativeUpdateImeOption()
             KeyboardManager.instance.switchKeyboard()
         }
-        SkbMenuMode.Handwriting -> AppUtil.launchSettingsToHandwriting(Launcher.instance.context)
         SkbMenuMode.Settings -> AppUtil.launchSettings(Launcher.instance.context)
         SkbMenuMode.OneHanded -> {
             AppPrefs.getInstance().keyboardSetting.oneHandedModSwitch.setValue(!AppPrefs.getInstance().keyboardSetting.oneHandedModSwitch.getValue())

@@ -11,9 +11,6 @@
             android:id="@+id/action_settingsFragment_to_inputSettingsFragment"
             app:destination="@id/inputSettingsFragment" />
         <action
-            android:id="@+id/action_settingsFragment_to_handwritingSettingsFragment"
-            app:destination="@id/handwritingSettingsFragment" />
-        <action
             android:id="@+id/action_settingsFragment_to_themeSettingsFragment"
             app:destination="@id/themeFragment" />
         <action
@@ -58,10 +55,6 @@
         android:id="@+id/inputSettingsFragment"
         android:name="com.yuyan.imemodule.ui.fragment.InputSettingsFragment"
         android:label="@string/setting_ime_input" />
-    <fragment
-        android:id="@+id/handwritingSettingsFragment"
-        android:name="com.yuyan.imemodule.ui.fragment.HandwritingSettingsFragment"
-        android:label="@string/ime_settings_handwriting" />
     <fragment
         android:id="@+id/keyboardFeedbackFragment"
         android:name="com.yuyan.imemodule.ui.fragment.KeyboardFeedbacksFragment"

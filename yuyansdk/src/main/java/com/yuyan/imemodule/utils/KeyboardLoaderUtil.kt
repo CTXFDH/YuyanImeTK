@@ -129,33 +129,7 @@ class KeyboardLoaderUtil private constructor() {
                 rows.add(keyBeans)
 
             }
-            InputModeSwitcher.MASK_SKB_LAYOUT_HANDWRITING -> {// 3000 手写键盘
-                var keyBeans: MutableList<SoftKey> = LinkedList()
-                val keys = KeyboardData.layoutHandwritingCn[skbStyleMode]!!
-                
-                // 第 1 行：符号选择框（拉长占两行 heightF = 0.50f）
-                var handwritingKey = createHandwritingKey(keys[0][0])
-                handwritingKey.mLeftF = 0.815f
-                handwritingKey.heightF = 0.50f
-                keyBeans.add(handwritingKey)
-                rows.add(keyBeans)
 
-                // 第 2 行：空行（让符号选择框向下跨越）
-                keyBeans = LinkedList()
-                rows.add(keyBeans)
-
-                // 第 3 行：删除键（放在原橙色叉的位置）
-                keyBeans = LinkedList()
-                handwritingKey = createHandwritingKey(keys[1][0])
-                handwritingKey.mLeftF = 0.815f
-                handwritingKey.heightF = 0.25f
-                keyBeans.add(handwritingKey)
-                rows.add(keyBeans)
-
-                // 第 4 行：底栏
-                keyBeans = lastRows(skbValue)
-                rows.add(keyBeans)
-            }
             InputModeSwitcher.MASK_SKB_LAYOUT_QWERTY_ABC -> {// 4000 英文全键
                 var keyBeans: MutableList<SoftKey> = LinkedList()
                 val keys = KeyboardData.layoutQwertyEn[skbStyleMode]!!
@@ -449,16 +423,7 @@ class KeyboardLoaderUtil private constructor() {
                         InputModeSwitcher.USER_KEYCODE_LEFT_COMMA, KeyEvent.KEYCODE_SPACE))
             }
         }
-        if (t9Keys.size == 3 && skbValue == InputModeSwitcher.MASK_SKB_LAYOUT_HANDWRITING) {
-            // 手写输入键盘：缩窄空格键 (0.388f)，加宽回车键 (0.285f)，右边界与上方删除键 100% 对齐
-            t9Keys[0].apply { mLeftF = 0.0f; widthF = 0.18f }
-            t9Keys[1].apply { mLeftF = 0.18f; widthF = 0.147f }
-            t9Keys[2].apply { mLeftF = 0.327f; widthF = 0.388f }
-            softKeyToggle.apply {
-                mLeftF = 0.715f
-                widthF = 0.285f
-            }
-        } else if (t9Keys.size == 3) {
+        if (t9Keys.size == 3) {
             t9Keys[0].apply { mLeftF = 0.005f; widthF = 0.140f }
             t9Keys[1].apply { mLeftF = 0.145f; widthF = 0.1416667f }
             t9Keys[2].apply { mLeftF = 0.2866667f; widthF = 0.425f }
@@ -591,13 +556,7 @@ class KeyboardLoaderUtil private constructor() {
         return softKeys.toTypedArray()
     }
 
-    private fun createHandwritingKey(code: Int): SoftKey {
-        val keyPreset = if(numberLine)KeyPreset.qwertyPYKeyPreset else KeyPreset.qwertyPYKeyNumberPreset
-        val labels = keyPreset[code]
-        return SoftKey(code = code, label = labels?.getOrNull(0) ?: "", labelSmall = labels?.getOrNull(1) ?: "").apply {
-            widthF = 0.18f
-        }
-    }
+
 
     private fun createNumberLineKeys(codes: Array<Int>): Array<SoftKey> {
         val softKeys = mutableListOf<SoftKey>()

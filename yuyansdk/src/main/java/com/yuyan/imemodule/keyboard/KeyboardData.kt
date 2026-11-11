@@ -19,12 +19,6 @@ object KeyboardData {
             arrayOf(KeyEvent.KEYCODE_P, KeyEvent.KEYCODE_T, KeyEvent.KEYCODE_W))
     )
 
-    val layoutHandwritingCn: Map<SkbStyleMode, ArrayList<Array<Int>>> = linkedMapOf(
-        SkbStyleMode.Yuyan to arrayListOf(
-            arrayOf(InputModeSwitcher.USER_KEYCODE_LEFT_SYMBOL),
-            arrayOf(KeyEvent.KEYCODE_DEL))
-    )
-
     val layoutStrokeCn: Map<SkbStyleMode, ArrayList<Array<Int>>> = linkedMapOf(
         SkbStyleMode.Yuyan to arrayListOf(
             arrayOf(InputModeSwitcher.USER_KEYCODE_LEFT_SYMBOL, KeyEvent.KEYCODE_H, KeyEvent.KEYCODE_S, KeyEvent.KEYCODE_P, KeyEvent.KEYCODE_DEL),

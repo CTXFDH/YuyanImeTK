@@ -300,31 +300,6 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val imeHideIcon = switch(R.string.ime_hide_icon, "ime_hide_icon_enable", false, R.string.ime_hide_icon_tips)
     }
 
-    inner class Handwriting : ManagedPreferenceCategory(R.string.setting_ime_input, sharedPreferences) {
-
-
-        val handWritingWidth = int(
-            R.string.paint_thickness,
-            "hand_writing_width",
-            40,
-            0,
-            100,
-            "%",
-            defaultLabel = R.string.system_default
-        )
-
-        val handWritingSpeed = int(
-            R.string.discern_sensitive,
-            "hand_writing_speed",
-            500,
-            300,
-            1300,
-            "毫秒",
-            100,
-            defaultLabel = R.string.number_500_ms
-        )
-    }
-
     inner class Clipboard : ManagedPreferenceCategory(R.string.clipboard, sharedPreferences) {
         val clipboardListening = switch(R.string.clipboard_listening, "clipboard_enable", true)
         val clipboardHistoryLimit = int(
@@ -366,7 +341,6 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
 
     val internal = Internal().register()
-    val handwriting = Handwriting().register()
     val input = Input().register()
     val clipboard = Clipboard().register()
     val keyboardSetting = KeyboardSetting().register()
@@ -389,9 +363,6 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             }
 
             input.managedPreferences.forEach {
-                it.value.putValueTo(this@edit)
-            }
-            handwriting.managedPreferences.forEach {
                 it.value.putValueTo(this@edit)
             }
             clipboard.managedPreferences.forEach {

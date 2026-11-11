@@ -181,12 +181,6 @@ class ImeSettingsFragment : PreferenceFragmentCompat() {
                     R.id.action_settingsFragment_to_inputSettingsFragment,
                 )
                 addDestinationPreference(
-                    R.string.ime_settings_handwriting,
-                    "手写识别与笔画轨迹设置",
-                    R.drawable.ic_menu_handwriting,
-                    R.id.action_settingsFragment_to_handwritingSettingsFragment,
-                )
-                addDestinationPreference(
                     "语音识别设置",
                     "离线语音识别引擎与模型设置",
                     R.drawable.ic_menu_voice,

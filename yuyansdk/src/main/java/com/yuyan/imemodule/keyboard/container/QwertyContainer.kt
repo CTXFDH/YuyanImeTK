@@ -5,7 +5,6 @@ import android.content.Context
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil.Companion.instance
 import com.yuyan.imemodule.keyboard.InputView
 import com.yuyan.imemodule.keyboard.TextKeyboard
-import com.yuyan.imemodule.keyboard.HandwritingKeyboard
 
 
 /**
@@ -27,7 +26,7 @@ class QwertyContainer(context: Context?, inputView: InputView, skbValue: Int = 0
      */
     override fun updateSkbLayout() {
         if (null == mMajorView) {
-            mMajorView = HandwritingKeyboard(context)
+            mMajorView = TextKeyboard(context)
             val params = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
             addView(mMajorView, params)
             mMajorView!!.setResponseKeyEvent(inputView)

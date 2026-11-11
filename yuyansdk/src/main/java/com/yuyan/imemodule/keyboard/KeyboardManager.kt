@@ -5,7 +5,6 @@ import com.yuyan.imemodule.manager.InputModeSwitcher
 import com.yuyan.imemodule.keyboard.container.BaseContainer
 import com.yuyan.imemodule.keyboard.container.CandidatesContainer
 import com.yuyan.imemodule.keyboard.container.ClipBoardContainer
-import com.yuyan.imemodule.keyboard.container.HandwritingContainer
 import com.yuyan.imemodule.keyboard.container.InputBaseContainer
 import com.yuyan.imemodule.keyboard.container.InputViewParent
 import com.yuyan.imemodule.keyboard.container.QwertyContainer
@@ -19,7 +18,7 @@ import com.yuyan.imemodule.prefs.AppPrefs
  */
 class KeyboardManager {
     enum class KeyboardType {
-        T9, QWERTY, LX17, QWERTYABC, NUMBER, SYMBOL, SETTINGS, HANDWRITING, CANDIDATES, ClipBoard, TEXTEDIT, VOICE
+        T9, QWERTY, LX17, QWERTYABC, NUMBER, SYMBOL, SETTINGS, CANDIDATES, ClipBoard, TEXTEDIT, VOICE
     }
     private lateinit var mInputView: InputView
     private lateinit var mKeyboardRootView: InputViewParent
@@ -61,7 +60,6 @@ class KeyboardManager {
         val keyboardName = when (layout) {
             0x1000 -> KeyboardType.QWERTY
             0x4000 -> KeyboardType.QWERTYABC
-            0x3000 -> KeyboardType.HANDWRITING
             0x5000 -> KeyboardType.NUMBER
             0x6000 -> KeyboardType.LX17
             0x8000 -> KeyboardType.TEXTEDIT
@@ -79,7 +77,6 @@ class KeyboardManager {
             val ctx = if (::mInputView.isInitialized) mInputView.context else Launcher.instance.context
             container = when (keyboardName) {
                 KeyboardType.CANDIDATES ->  CandidatesContainer(ctx, mInputView)
-                KeyboardType.HANDWRITING -> HandwritingContainer(ctx, mInputView)
                 KeyboardType.NUMBER -> T9TextContainer(ctx, mInputView, InputModeSwitcher.MASK_SKB_LAYOUT_NUMBER)
                 KeyboardType.QWERTY -> QwertyContainer(ctx, mInputView, InputModeSwitcher.MASK_SKB_LAYOUT_QWERTY_PINYIN)
                 KeyboardType.SETTINGS -> SettingsContainer(ctx, mInputView)

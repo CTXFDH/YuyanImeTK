@@ -42,8 +42,7 @@ object AppUtil {
             }
     }
 
-    fun launchSettingsToHandwriting(context: Context) =
-        launchMainToDest(context, R.id.handwritingSettingsFragment)
+
 
     fun launchSettingsToInput(context: Context) =
         launchMainToDest(context, R.id.inputSettingsFragment)

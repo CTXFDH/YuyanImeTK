@@ -218,7 +218,6 @@ class CustomThemeActivity : AppCompatActivity() {
         return when (rimeValue) {
             CustomConstant.SCHEMA_ZH_T9 -> "中文9键"
             CustomConstant.SCHEMA_ZH_QWERTY -> "拼音全键"
-            CustomConstant.SCHEMA_ZH_HANDWRITING -> "手写输入"
             CustomConstant.SCHEMA_ZH_DOUBLE_FLYPY -> "小鹤双拼"
             CustomConstant.SCHEMA_ZH_DOUBLE_LX17 -> "乱序17"
             CustomConstant.SCHEMA_ZH_STROKE -> "笔画键盘"
@@ -285,13 +284,12 @@ class CustomThemeActivity : AppCompatActivity() {
     private val btnKeyboardCapsule: TextView by lazy {
         val defaultName = getCurrentKeyboardName()
         createCapsuleButton(defaultName) { anchorView ->
-            val options = arrayOf("中文9键", "拼音全键", "手写输入", "小鹤双拼", "乱序17", "笔画键盘")
+            val options = arrayOf("中文9键", "拼音全键", "小鹤双拼", "乱序17", "笔画键盘")
             showCapsuleDropdown(anchorView, options) { selectedTitle ->
                 btnKeyboardCapsule.text = selectedTitle
                 val skbMode = when (selectedTitle) {
                     "中文9键" -> InputModeSwitcher.MASK_SKB_LAYOUT_T9_PINYIN
                     "拼音全键" -> InputModeSwitcher.MASK_SKB_LAYOUT_QWERTY_PINYIN
-                    "手写输入" -> InputModeSwitcher.MASK_SKB_LAYOUT_HANDWRITING
                     "小鹤双拼" -> InputModeSwitcher.MASK_SKB_LAYOUT_QWERTY_PINYIN
                     "乱序17" -> InputModeSwitcher.MASK_SKB_LAYOUT_LX17
                     "笔画键盘" -> InputModeSwitcher.MASK_SKB_LAYOUT_STROKE

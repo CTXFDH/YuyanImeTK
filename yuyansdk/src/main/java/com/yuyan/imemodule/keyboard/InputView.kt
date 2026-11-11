@@ -483,10 +483,6 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         if (mode == PopupMenuMode.Clear) resetToIdleState()
     }
 
-    override fun responseHandwritingResultEvent(words: Array<CandidateListItem>) {
-        DictDecoder.cacheCandidates(words)
-    }
-
     override fun responseKeyEvent(sKey: SoftKey) {
         val keyCode = sKey.code
         if (keyCode == KeyEvent.KEYCODE_SPACE || sKey.label == "cn" || sKey.label == "En" || sKey.labelSmall == "cn" || sKey.labelSmall == "En") {
