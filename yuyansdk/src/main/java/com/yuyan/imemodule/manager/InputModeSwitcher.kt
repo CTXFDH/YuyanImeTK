@@ -394,7 +394,8 @@ object InputModeSwitcher {
         val currentMode = getInstance().input.doublePYSchemaMode.getValue()
 
         if (targetView != null) {
-            val popup = androidx.appcompat.widget.PopupMenu(context, targetView)
+            val themedContext = android.view.ContextThemeWrapper(context, R.style.Theme_AppTheme)
+            val popup = androidx.appcompat.widget.PopupMenu(themedContext, targetView)
             modes.forEachIndexed { index, mode ->
                 val name = modeNames[index]
                 popup.menu.add(0, index, index, if (mode == currentMode) "✓ $name" else "   $name")
