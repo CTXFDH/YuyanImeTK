@@ -16,6 +16,7 @@ object CustomConstant {
     const val CURRENT_RIME_DICT_DATA_VERSIOM = 20261102
     const val YUYAN_IME_REPO = "https://github.com/kuangru52/YuyanImeK"
     const val ORIGINAL_YUYAN_REPO = "https://github.com/gurecn/YuyanIme"
+    const val XIME_REPO = "https://github.com/ximeiorg/Xime"
     const val LICENSE_URL = "https://www.gnu.org/licenses/gpl-3.0.html"
     const val FEEDBACK_TXC_REPO = "https://github.com/kuangru52/YuyanImeK/issues"
 

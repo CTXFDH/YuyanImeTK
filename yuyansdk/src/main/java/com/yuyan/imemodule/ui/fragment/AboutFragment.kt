@@ -112,6 +112,9 @@ class AboutFragment : PreferenceFragmentCompat() {
                 addPreference("语燕输入法原版开源仓库", CustomConstant.ORIGINAL_YUYAN_REPO) {
                     startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CustomConstant.ORIGINAL_YUYAN_REPO)))
                 }
+                addPreference("曦码输入法开源仓库", CustomConstant.XIME_REPO) {
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(CustomConstant.XIME_REPO)))
+                }
             }
             CardPreferenceStyler.stylePreferenceScreen(this)
         }
