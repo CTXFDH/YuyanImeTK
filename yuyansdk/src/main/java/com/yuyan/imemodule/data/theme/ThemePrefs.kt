@@ -157,17 +157,9 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
         "%"
     )
 
-    val importFont = customAction(
-        "导入字体",
-        "导入 TTF/OTF 字体文件自定义键盘文字",
-        "pref_import_font",
-        R.drawable.ic_menu_custom
-    )
-
-    val clearFont = customAction(
-        "恢复默认字体",
-        "清除已导入的自定义字体",
-        "pref_clear_font",
-        R.drawable.ic_menu_delete
+    val importFont = switch(
+        R.string.import_font_title,
+        "custom_font_enable",
+        false
     )
 }

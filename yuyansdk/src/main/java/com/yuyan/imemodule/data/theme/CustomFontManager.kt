@@ -11,7 +11,16 @@ object CustomFontManager {
     private var cachedTypeface: Typeface? = null
     private var cachedPath: String? = null
 
+    fun isCustomFontEnabled(): Boolean {
+        return AppPrefs.getInstance().internal.customFontEnable.getValue() && hasCustomFont()
+    }
+
+    fun setCustomFontEnabled(enabled: Boolean) {
+        AppPrefs.getInstance().internal.customFontEnable.setValue(enabled)
+    }
+
     fun getTypeface(context: Context): Typeface? {
+        if (!isCustomFontEnabled()) return null
         val path = AppPrefs.getInstance().internal.customFontPath.getValue()
         if (path.isEmpty()) return null
         if (path == cachedPath && cachedTypeface != null) return cachedTypeface
@@ -45,6 +54,7 @@ object CustomFontManager {
                 cachedTypeface = tf
                 AppPrefs.getInstance().internal.customFontPath.setValue(destFile.absolutePath)
                 AppPrefs.getInstance().internal.customFontName.setValue(fileName)
+                AppPrefs.getInstance().internal.customFontEnable.setValue(true)
                 true
             } else {
                 destFile.delete()
@@ -64,6 +74,7 @@ object CustomFontManager {
         cachedPath = null
         AppPrefs.getInstance().internal.customFontPath.setValue("")
         AppPrefs.getInstance().internal.customFontName.setValue("")
+        AppPrefs.getInstance().internal.customFontEnable.setValue(false)
     }
 
     fun hasCustomFont(): Boolean {

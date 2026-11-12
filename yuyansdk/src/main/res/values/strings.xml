@@ -216,4 +216,5 @@
     <string name="category_keys_gestures">按键与手势</string>
     <string name="category_symbols_peripherals">外设</string>
     <string name="setting_font_title">字体</string>
+    <string name="import_font_title">导入字体</string>
 </resources>

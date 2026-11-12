@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.preference.Preference
 import androidx.preference.PreferenceScreen
 import com.yuyan.imemodule.data.theme.CustomFontManager
 import com.yuyan.imemodule.data.theme.ThemeManager
@@ -13,6 +12,7 @@ import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.ui.fragment.base.ManagedPreferenceFragment
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.utils.queryFileName
+import com.yuyan.imemodule.view.preference.ImeSwitchPreference
 
 class ThemeSettingsFragment : ManagedPreferenceFragment(ThemeManager.prefs) {
 
@@ -53,35 +53,44 @@ class ThemeSettingsFragment : ManagedPreferenceFragment(ThemeManager.prefs) {
     }
 
     private fun setupFontPreferenceListeners() {
-        findPreference<Preference>("pref_import_font")?.setOnPreferenceClickListener {
+        val pref = findPreference<ImeSwitchPreference>("custom_font_enable") ?: return
+        pref.isIconSpaceReserved = false
+
+        pref.setOnPreferenceClickListener {
             fontImportLauncher.launch("*/*")
             true
         }
-        findPreference<Preference>("pref_clear_font")?.setOnPreferenceClickListener {
-            CustomFontManager.clearCustomFont()
-            Toast.makeText(requireContext(), "已恢复默认字体", Toast.LENGTH_SHORT).show()
-            refreshKeyboardFont()
-            updateFontPreferencesSummary()
-            true
+
+        pref.setOnPreferenceChangeListener { _, newValue ->
+            val enabled = newValue as Boolean
+            if (enabled) {
+                if (!CustomFontManager.hasCustomFont()) {
+                    fontImportLauncher.launch("*/*")
+                    false
+                } else {
+                    CustomFontManager.setCustomFontEnabled(true)
+                    refreshKeyboardFont()
+                    updateFontPreferencesSummary()
+                    true
+                }
+            } else {
+                CustomFontManager.setCustomFontEnabled(false)
+                refreshKeyboardFont()
+                updateFontPreferencesSummary()
+                true
+            }
         }
     }
 
     private fun updateFontPreferencesSummary() {
-        val importPref = findPreference<Preference>("pref_import_font")
-        if (importPref != null) {
-            importPref.summary = getFontSummary()
-        }
-        val clearPref = findPreference<Preference>("pref_clear_font")
-        if (clearPref != null) {
-            clearPref.isVisible = CustomFontManager.hasCustomFont()
-        }
-    }
-
-    private fun getFontSummary(): String {
-        return if (CustomFontManager.hasCustomFont()) {
+        val pref = findPreference<ImeSwitchPreference>("custom_font_enable") ?: return
+        pref.isIconSpaceReserved = false
+        val hasFont = CustomFontManager.hasCustomFont()
+        pref.isChecked = CustomFontManager.isCustomFontEnabled()
+        pref.summary = if (hasFont) {
             "已导入 ${CustomFontManager.getFontFileName()}"
         } else {
-            "导入 TTF/OTF 字体文件自定义键盘文字"
+            "未导入字体 (点击选择 TTF/OTF 文件)"
         }
     }
 
