@@ -44,21 +44,24 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
         summary = R.string.follow_system_day_night_theme_summary
     )
 
-    val lightModeTheme = themePreference(
-        R.string.light_mode_theme,
-        "light_mode_theme",
-        ThemePreset.MintSummer,
-        enableUiOn = {
-            followSystemDayNightTheme.getValue()
-        })
+    val lightModeTheme = ManagedThemePreference(
+        sharedPreferences, "light_mode_theme", ThemePreset.MintSummer
+    ).also { it.register() }
 
-    val darkModeTheme = themePreference(
+    val darkModeTheme = ManagedThemePreference(
+        sharedPreferences, "dark_mode_theme", ThemePreset.BlackGoldLuxury
+    ).also { it.register() }
+
+    val twinThemeSelect = twinTheme(
+        R.string.light_mode_theme,
         R.string.dark_mode_theme,
-        "dark_mode_theme",
-        ThemePreset.BlackGoldLuxury,
+        "twin_day_night_theme",
+        lightModeTheme,
+        darkModeTheme,
         enableUiOn = {
             followSystemDayNightTheme.getValue()
-        })
+        }
+    )
 
     val dayNightModePrefNames = setOf(
         followSystemDayNightTheme.key,

@@ -112,6 +112,19 @@ abstract class ManagedPreferenceCategory(
         return pref
     }
 
+    protected fun twinTheme(
+        @StringRes lightTitleRes: Int,
+        @StringRes darkTitleRes: Int,
+        key: String,
+        lightPref: com.yuyan.imemodule.data.theme.ManagedThemePreference,
+        darkPref: com.yuyan.imemodule.data.theme.ManagedThemePreference,
+        enableUiOn: (() -> Boolean)? = null
+    ): ManagedPreferenceUi.TwinTheme {
+        val ui = ManagedPreferenceUi.TwinTheme(lightTitleRes, darkTitleRes, key, lightPref, darkPref, enableUiOn)
+        ui.registerUi()
+        return ui
+    }
+
     protected fun bool(
         key: String,
         defaultValue: Boolean

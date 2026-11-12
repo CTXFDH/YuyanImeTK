@@ -239,6 +239,23 @@ abstract class ManagedPreferenceUi<T : Preference>(
         }
     }
 
+    class TwinTheme(
+        @StringRes val lightTitleRes: Int,
+        @StringRes val darkTitleRes: Int,
+        key: String,
+        val lightPref: com.yuyan.imemodule.data.theme.ManagedThemePreference,
+        val darkPref: com.yuyan.imemodule.data.theme.ManagedThemePreference,
+        enableUiOn: (() -> Boolean)? = null
+    ) : ManagedPreferenceUi<com.yuyan.imemodule.view.preference.TwinThemeSelectPreference>(key, enableUiOn) {
+        override fun createUi(context: Context) = com.yuyan.imemodule.view.preference.TwinThemeSelectPreference(context).apply {
+            key = this@TwinTheme.key
+            lightTitle = context.getString(lightTitleRes)
+            darkTitle = context.getString(darkTitleRes)
+            lightPref = this@TwinTheme.lightPref
+            darkPref = this@TwinTheme.darkPref
+        }
+    }
+
     class TwinSeekBarInt(
         @StringRes
         val title: Int,
