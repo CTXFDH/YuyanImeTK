@@ -5,7 +5,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.preference.Preference
-import androidx.preference.PreferenceGroup
+import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceScreen
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.data.theme.CustomFontManager
@@ -13,6 +13,7 @@ import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.ui.fragment.base.ManagedPreferenceFragment
+import com.yuyan.imemodule.utils.CardPreferenceStyler
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.utils.addPreference
 import com.yuyan.imemodule.utils.queryFileName
@@ -50,11 +51,15 @@ class ThemeSettingsFragment : ManagedPreferenceFragment(ThemeManager.prefs) {
 
     private fun updateFontPreferences() {
         val screen = preferenceScreen ?: return
-        val category = screen
+        val targetCategory = (0 until screen.preferenceCount)
+            .mapNotNull { screen.getPreference(it) as? PreferenceCategory }
+            .firstOrNull { it.title == getString(R.string.setting_ime_keyboard_show) || it.title == "键盘效果" }
+            ?: (if (screen.preferenceCount > 0) screen.getPreference(screen.preferenceCount - 1) as? PreferenceCategory else null)
+            ?: screen
 
-        val importPref = category.findPreference<Preference>("pref_import_font")
+        val importPref = targetCategory.findPreference<Preference>("pref_import_font")
         if (importPref == null) {
-            category.addPreference(
+            targetCategory.addPreference(
                 "导入字体",
                 summary = getFontSummary(),
                 key = "pref_import_font",
@@ -66,10 +71,10 @@ class ThemeSettingsFragment : ManagedPreferenceFragment(ThemeManager.prefs) {
             importPref.summary = getFontSummary()
         }
 
-        val clearPref = category.findPreference<Preference>("pref_clear_font")
+        val clearPref = targetCategory.findPreference<Preference>("pref_clear_font")
         if (CustomFontManager.hasCustomFont()) {
             if (clearPref == null) {
-                category.addPreference(
+                targetCategory.addPreference(
                     "恢复默认字体",
                     summary = "清除已导入的自定义字体",
                     key = "pref_clear_font",
@@ -82,8 +87,10 @@ class ThemeSettingsFragment : ManagedPreferenceFragment(ThemeManager.prefs) {
                 }
             }
         } else {
-            clearPref?.let { category.removePreference(it) }
+            clearPref?.let { targetCategory.removePreference(it) }
         }
+
+        CardPreferenceStyler.stylePreferenceScreen(screen)
     }
 
     private fun getFontSummary(): String {

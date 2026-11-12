@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.preference.Preference
+import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceScreen
 import com.yuyan.imemodule.R
 import com.yuyan.imemodule.data.theme.CustomFontManager
@@ -12,6 +13,7 @@ import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.ui.fragment.base.ManagedPreferenceFragment
+import com.yuyan.imemodule.utils.CardPreferenceStyler
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.utils.addPreference
 import com.yuyan.imemodule.utils.queryFileName
@@ -49,10 +51,14 @@ class KeyboardSettingFragment : ManagedPreferenceFragment(AppPrefs.getInstance()
 
     private fun updateFontPreferences() {
         val screen = preferenceScreen ?: return
+        val targetCategory = (0 until screen.preferenceCount)
+            .mapNotNull { screen.getPreference(it) as? PreferenceCategory }
+            .firstOrNull()
+            ?: screen
 
-        val importPref = screen.findPreference<Preference>("pref_import_font")
+        val importPref = targetCategory.findPreference<Preference>("pref_import_font")
         if (importPref == null) {
-            screen.addPreference(
+            targetCategory.addPreference(
                 "导入字体",
                 summary = getFontSummary(),
                 key = "pref_import_font",
@@ -64,10 +70,10 @@ class KeyboardSettingFragment : ManagedPreferenceFragment(AppPrefs.getInstance()
             importPref.summary = getFontSummary()
         }
 
-        val clearPref = screen.findPreference<Preference>("pref_clear_font")
+        val clearPref = targetCategory.findPreference<Preference>("pref_clear_font")
         if (CustomFontManager.hasCustomFont()) {
             if (clearPref == null) {
-                screen.addPreference(
+                targetCategory.addPreference(
                     "恢复默认字体",
                     summary = "清除已导入的自定义字体",
                     key = "pref_clear_font",
@@ -80,8 +86,10 @@ class KeyboardSettingFragment : ManagedPreferenceFragment(AppPrefs.getInstance()
                 }
             }
         } else {
-            clearPref?.let { screen.removePreference(it) }
+            clearPref?.let { targetCategory.removePreference(it) }
         }
+
+        CardPreferenceStyler.stylePreferenceScreen(screen)
     }
 
     private fun getFontSummary(): String {
