@@ -161,6 +161,10 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         } else {
             if (composingText.isNotBlank()) {
                 mComposingView.text = composingText
+                val customTypeface = com.yuyan.imemodule.data.theme.CustomFontManager.getTypeface(context)
+                if (customTypeface != null) {
+                    mComposingView.typeface = customTypeface
+                }
                 mComposingTagContainer.visibility = VISIBLE
                 updateComposingTagTheme()
             } else {
@@ -470,6 +474,10 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         mComposingTagContainer.background = tagBg
         mComposingView.setTextColor(if (isDark) Color.WHITE else Color.BLACK)
         mComposingView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13f)
+        val customTypeface = com.yuyan.imemodule.data.theme.CustomFontManager.getTypeface(context)
+        if (customTypeface != null) {
+            mComposingView.typeface = customTypeface
+        }
     }
 
     private fun onClick(view: View) {

@@ -122,6 +122,10 @@ class ClipBoardAdapter(context: Context, datas: MutableList<Clipboard>) :
     override fun onBindViewHolder(holder: SymbolHolder, position: Int) {
         val data = mDatas[position]
         holder.textView.text = data.content.replace("\n", "\\n")
+        val customTypeface = com.yuyan.imemodule.data.theme.CustomFontManager.getTypeface(holder.itemView.context)
+        if (customTypeface != null) {
+            holder.textView.typeface = customTypeface
+        }
         holder.ivTopTips.visibility = if(data.isKeep == 1 && !isMultiSelectMode)View.VISIBLE else View.GONE
 
         if (isMultiSelectMode) {

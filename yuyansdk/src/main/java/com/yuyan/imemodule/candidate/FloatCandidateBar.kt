@@ -115,6 +115,10 @@ class FloatCandidateBar(context: Context?, attrs: AttributeSet?) : RelativeLayou
             candidates.subList(0, displayedCandidates.size) == displayedCandidates
         displayedCandidates = candidates
         mComposingView.text = composing
+        val customTypeface = com.yuyan.imemodule.data.theme.CustomFontManager.getTypeface(context)
+        if (customTypeface != null) {
+            mComposingView.typeface = customTypeface
+        }
         if (!isAppend) {
             activeCandidatePosition = RecyclerView.NO_POSITION
             firstVisiblePosition = if (candidates.isEmpty()) 0 else {

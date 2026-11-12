@@ -533,6 +533,10 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         if (::mComposingTagContainer.isInitialized) {
             if (!isInputBoxDisplay && composingText.isNotBlank()) {
                 mComposingView.text = composingText
+                val customTypeface = com.yuyan.imemodule.data.theme.CustomFontManager.getTypeface(context)
+                if (customTypeface != null) {
+                    mComposingView.typeface = customTypeface
+                }
                 mComposingTagContainer.visibility = VISIBLE
             } else {
                 mComposingTagContainer.visibility = GONE
@@ -693,6 +697,10 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         if (::mComposingView.isInitialized) {
             mComposingView.setTextColor(if (activeTheme.isDark) android.graphics.Color.WHITE else android.graphics.Color.BLACK)
             mComposingView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14f)
+            val customTypeface = com.yuyan.imemodule.data.theme.CustomFontManager.getTypeface(context)
+            if (customTypeface != null) {
+                mComposingView.typeface = customTypeface
+            }
         }
 
         if (::mFlowerType.isInitialized) {

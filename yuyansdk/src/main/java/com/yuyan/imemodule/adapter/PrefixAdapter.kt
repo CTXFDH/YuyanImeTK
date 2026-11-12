@@ -25,6 +25,10 @@ class PrefixAdapter(context: Context?, private val mDatas: Array<String>) :
 
     override fun onBindViewHolder(holder: SymbolTypeHolder, position: Int) {
         holder.tvSymbolType.setText(sbc2dbcCase(mDatas[position]))
+        val customTypeface = com.yuyan.imemodule.data.theme.CustomFontManager.getTypeface(holder.itemView.context)
+        if (customTypeface != null) {
+            holder.tvSymbolType.typeface = customTypeface
+        }
     }
 
     override fun getItemCount(): Int {
@@ -37,6 +41,10 @@ class PrefixAdapter(context: Context?, private val mDatas: Array<String>) :
             tvSymbolType.scaleMode = AutoScaleTextView.Mode.Proportional
             tvSymbolType.gravity = android.view.Gravity.CENTER
             tvSymbolType.setTextColor(textColor)
+            val customTypeface = com.yuyan.imemodule.data.theme.CustomFontManager.getTypeface(view.context)
+            if (customTypeface != null) {
+                tvSymbolType.typeface = customTypeface
+            }
         }
     }
 }

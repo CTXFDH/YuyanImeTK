@@ -86,6 +86,11 @@ class SymbolAdapter(context: Context?, val viewType: SymbolMode, private val pag
             textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, instance.candidateTextSize * textSizeMultiplier)
             tVSdb = view.findViewById(R.id.tv_sdb_symbols_item)
             tVSdb.setTextColor(activeTheme.keyTextColor)
+            val customTypeface = com.yuyan.imemodule.data.theme.CustomFontManager.getTypeface(view.context)
+            if (customTypeface != null) {
+                textView.typeface = customTypeface
+                tVSdb.typeface = customTypeface
+            }
 
             val gridHeight = (EnvironmentSingleton.instance.skbHeight * 0.75f / 5f).toInt().coerceAtLeast(view.dp(36))
 

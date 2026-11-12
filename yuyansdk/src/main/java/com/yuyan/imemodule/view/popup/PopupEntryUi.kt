@@ -34,6 +34,10 @@ class PopupEntryUi(override val ctx: Context) : Ui {
 
     fun setText(text: String) {
         textView.text = text
+        val customTypeface = com.yuyan.imemodule.data.theme.CustomFontManager.getTypeface(ctx)
+        if (customTypeface != null) {
+            textView.typeface = customTypeface
+        }
     }
     fun setBackground( theme: Theme, radius: Float) {
         root.background = GradientDrawable().apply {
