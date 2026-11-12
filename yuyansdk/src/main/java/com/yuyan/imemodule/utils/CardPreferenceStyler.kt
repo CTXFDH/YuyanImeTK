@@ -485,7 +485,8 @@ open class CardDialogSeekBarPreference @JvmOverloads constructor(
                 }
 
                 val currentVal = getPersistedInt(defVal).coerceIn(pMin, pMax)
-                summaryTv?.text = "$currentVal $pUnit"
+                val formatSummary = { valVal: Int -> if (summaryPrefix.isNotEmpty()) "$summaryPrefix $valVal $pUnit" else "$valVal $pUnit" }
+                summaryTv?.text = formatSummary(currentVal)
 
                 val calcStep = pStep.coerceAtLeast(1)
                 val countStep = ((pMax - pMin) / calcStep).coerceAtLeast(1)
@@ -513,7 +514,7 @@ open class CardDialogSeekBarPreference @JvmOverloads constructor(
                     setOnProgressChangedListener(object : SignSeekBar.OnProgressChangedListener {
                         override fun onProgressChanged(signSeekBar: SignSeekBar?, progress: Int, progressFloat: Float, fromUser: Boolean) {
                             if (fromUser) {
-                                summaryTv?.text = "$progress $pUnit"
+                                summaryTv?.text = formatSummary(progress)
                                 persistInt(progress)
                                 callChangeListener(progress)
                             }
@@ -530,7 +531,7 @@ open class CardDialogSeekBarPreference @JvmOverloads constructor(
                     if (callChangeListener(defVal)) {
                         persistInt(defVal)
                         seekBar.setProgress(defVal.toFloat())
-                        summaryTv?.text = "$defVal $pUnit"
+                        summaryTv?.text = formatSummary(defVal)
                         isExpanded = false
                         notifyChanged()
                     }

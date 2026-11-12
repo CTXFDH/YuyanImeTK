@@ -76,11 +76,12 @@ abstract class ManagedPreferenceCategory(
         switchKey: String,
         switchDefaultValue: Boolean,
         switchPref: ManagedPreference.PBool? = null,
+        summaryPrefix: String = "",
         enableUiOn: (() -> Boolean)? = null
     ): ManagedPreference.PStringLike<T> {
         val pref = ManagedPreference.PStringLike(sharedPreferences, key, defaultValue, codec)
         val ui = ManagedPreferenceUi.SwitchList(
-            title, key, defaultValue, codec, entryValues, entryLabels, switchKey, switchDefaultValue, switchPref, enableUiOn
+            title, key, defaultValue, codec, entryValues, entryLabels, switchKey, switchDefaultValue, switchPref, summaryPrefix, enableUiOn
         )
         pref.register()
         ui.registerUi()
@@ -101,11 +102,12 @@ abstract class ManagedPreferenceCategory(
         switchKey: String,
         switchDefaultValue: Boolean,
         switchPref: ManagedPreference.PBool? = null,
+        summaryPrefix: String = "",
         enableUiOn: (() -> Boolean)? = null
     ): ManagedPreference.PInt {
         val pref = ManagedPreference.PInt(sharedPreferences, key, defaultValue)
         val ui = ManagedPreferenceUi.SwitchSeekBarInt(
-            title, key, defaultValue, min, max, unit, step, defaultLabel, switchKey, switchDefaultValue, switchPref, enableUiOn
+            title, key, defaultValue, min, max, unit, step, defaultLabel, switchKey, switchDefaultValue, switchPref, summaryPrefix, enableUiOn
         )
         pref.register()
         ui.registerUi()

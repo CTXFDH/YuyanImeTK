@@ -277,7 +277,8 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             ),
             "keyboard_symbol_show_enable",
             true,
-            keyboardSymbol
+            keyboardSymbol,
+            summaryPrefix = "灵敏度"
         )
 
         val spaceSwipeMoveCursor = bool("space_swipe_move_cursor", true)
@@ -291,7 +292,8 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             "px",
             switchKey = "space_swipe_move_cursor",
             switchDefaultValue = true,
-            switchPref = spaceSwipeMoveCursor
+            switchPref = spaceSwipeMoveCursor,
+            summaryPrefix = "触发所需距离"
         )
 
         val abcNumberLine = bool("keyboard_abc_number_line_enable", false)

@@ -103,6 +103,7 @@ abstract class ManagedPreferenceUi<T : Preference>(
         val switchKey: String,
         val switchDefaultValue: Boolean,
         val switchPref: ManagedPreference.PBool? = null,
+        val summaryPrefix: String = "",
         enableUiOn: (() -> Boolean)? = null
     ) : ManagedPreferenceUi<com.yuyan.imemodule.utils.CardSwitchListPreference>(key, enableUiOn) {
         override fun createUi(context: Context) = com.yuyan.imemodule.utils.CardSwitchListPreference(context).apply {
@@ -112,7 +113,11 @@ abstract class ManagedPreferenceUi<T : Preference>(
             isIconSpaceReserved = false
             isSingleLineTitle = false
             entryValues = this@SwitchList.entryValues.map { codec.encode(it) }.toTypedArray()
-            summaryProvider = ListPreference.SimpleSummaryProvider.getInstance()
+            val pPrefix = this@SwitchList.summaryPrefix
+            summaryProvider = Preference.SummaryProvider<ListPreference> { pref ->
+                val entry = pref.entry
+                if (entry.isNullOrEmpty()) "" else if (pPrefix.isNotEmpty()) "$pPrefix $entry" else "$entry"
+            }
             setDefaultValue(codec.encode(defaultValue))
             setTitle(this@SwitchList.title)
             entries = this@SwitchList.entryLabels.map { context.getString(it) }.toTypedArray()
@@ -134,12 +139,14 @@ abstract class ManagedPreferenceUi<T : Preference>(
         val switchKey: String,
         val switchDefaultValue: Boolean,
         val switchPref: ManagedPreference.PBool? = null,
+        val summaryPrefix: String = "",
         enableUiOn: (() -> Boolean)? = null
     ) : ManagedPreferenceUi<com.yuyan.imemodule.utils.CardSwitchSeekBarPreference>(key, enableUiOn) {
         override fun createUi(context: Context) = com.yuyan.imemodule.utils.CardSwitchSeekBarPreference(context).apply {
             key = this@SwitchSeekBarInt.key
             switchKey = this@SwitchSeekBarInt.switchKey
             switchPref = this@SwitchSeekBarInt.switchPref
+            summaryPrefix = this@SwitchSeekBarInt.summaryPrefix
             isIconSpaceReserved = false
             isSingleLineTitle = false
             summaryProvider = DialogSeekBarPreference.SimpleSummaryProvider

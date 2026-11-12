@@ -159,8 +159,10 @@ open class DialogSeekBarPreference @JvmOverloads constructor(
      */
     private fun valueForProgress(progress: Int) = (progress * step) + min
 
+    var summaryPrefix: String = ""
+
     private fun textForValue(value: Int = this@DialogSeekBarPreference.value): String =
-        if (value == default && defaultLabel != null) defaultLabel!! else "$value $unit"
+        if (value == default && defaultLabel != null) defaultLabel!! else if (summaryPrefix.isNotEmpty()) "$summaryPrefix $value $unit" else "$value $unit"
 
     object SimpleSummaryProvider : SummaryProvider<DialogSeekBarPreference> {
         override fun provideSummary(preference: DialogSeekBarPreference): CharSequence {
