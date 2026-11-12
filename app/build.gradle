@@ -113,7 +113,7 @@ android {
     }
     android.applicationVariants.configureEach { variant ->
         variant.outputs.configureEach {
-            outputFileName = "YuyanImeK-K${getKVersionCode()}_${versionCodeDate()}.apk"
+            outputFileName = "YuyanImeK-K${getKVersionCode()}_${versionCodeDate()}_${variant.buildType.name}.apk"
         }
     }
 }
