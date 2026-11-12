@@ -111,7 +111,9 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
             AppUtil.launchSettingsToPrefix(context, arguments)
         }
         mLlAddSymbol.addView(ivAddSymbol)
-        mSideSymbolsPinyin = DataBaseKT.getSideSymbolsPinyin()
+        val rawSymbols = DataBaseKT.getSideSymbolsPinyin()
+        val defaultSymbols = listOf("，", "。", "？", "！", "～", "：", "；", ".").map { SideSymbol(it, it) }
+        mSideSymbolsPinyin = if (rawSymbols.isNotEmpty()) rawSymbols else defaultSymbols
     }
 
     private fun initView(context: Context) {

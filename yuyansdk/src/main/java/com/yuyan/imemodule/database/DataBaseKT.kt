@@ -107,20 +107,26 @@ abstract class DataBaseKT : RoomDatabase() {
                 override fun onOpen(db: SupportSQLiteDatabase) {
                     super.onOpen(db)
                     ThreadPoolUtils.executeSingleton {
+                        initDb()
                         initPhrasesDb()
                     }
                 }
             })
             .build()
         private fun initDb() {  //初始化数据库数据
-            val symbolPinyin = listOf("，", "。", "？", "！", "～", "：", "；", ".").map {  symbolKey->
-                SideSymbol(symbolKey, symbolKey)
+            if (instance.sideSymbolDao().getAllSideSymbolPinyin().isEmpty()) {
+                val symbolPinyin = listOf("，", "。", "？", "！", "～", "：", "；", ".").map { symbolKey ->
+                    SideSymbol(symbolKey, symbolKey)
+                }
+                instance.sideSymbolDao().insertAll(symbolPinyin)
             }
-            instance.sideSymbolDao().insertAll(symbolPinyin)
-            val symbolNumber = listOf("%", "/", "-", "+", "*", "#", "@").map {  symbolKey->
-                SideSymbol(symbolKey, symbolKey, "number")
+            if (instance.sideSymbolDao().getAllSideSymbolNumber().isEmpty()) {
+                val symbolNumber = listOf("%", "/", "-", "+", "*", "#", "@").map { symbolKey ->
+                    SideSymbol(symbolKey, symbolKey, "number")
+                }
+                instance.sideSymbolDao().insertAll(symbolNumber)
             }
-            instance.sideSymbolDao().insertAll(symbolNumber)
+            invalidateSideSymbolsCache()
         }
 
         private fun initPhrasesDb() {  // 初始化常用语数据 (QuickPhrase)

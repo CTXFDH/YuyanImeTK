@@ -1,13 +1,14 @@
 package com.yuyan.imemodule.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import androidx.core.view.isNotEmpty
 import androidx.core.view.isVisible
-import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
@@ -99,6 +100,7 @@ interface ICardPreferenceItem {
     var isFirstInGroup: Boolean
     var isLastInGroup: Boolean
 
+    @SuppressLint("RestrictedApi")
     fun bindCardViewHolder(holder: PreferenceViewHolder, pref: Preference) {
         val context = holder.itemView.context
         val cardRoot = holder.findViewById(R.id.card_item_root)
@@ -107,15 +109,23 @@ interface ICardPreferenceItem {
         val iconView = holder.findViewById(android.R.id.icon) as? ImageView
         val arrowRight = holder.findViewById(R.id.arrow_right) as? ImageView
 
-        holder.itemView.isClickable = true
         holder.itemView.isLongClickable = false
         holder.itemView.setOnLongClickListener(null)
         holder.itemView.setOnCreateContextMenuListener(null)
 
-        cardContent?.isClickable = false
         cardContent?.isLongClickable = false
         cardContent?.setOnLongClickListener(null)
         cardContent?.setOnCreateContextMenuListener(null)
+
+        if (pref !is TestInputBoxPreference) {
+            val clickListener = android.view.View.OnClickListener {
+                if (pref.isEnabled) {
+                    pref.performClick()
+                }
+            }
+            cardContent?.setOnClickListener(clickListener)
+            cardRoot?.setOnClickListener(clickListener)
+        }
 
         holder.itemView.isEnabled = pref.isEnabled
         if (cardRoot != null) {
@@ -175,10 +185,10 @@ interface ICardPreferenceItem {
 
         if (arrowRight != null) {
             val widgetFrame = holder.findViewById(android.R.id.widget_frame) as? ViewGroup
-            val hasWidget = widgetFrame != null && widgetFrame.isVisible && widgetFrame.childCount > 0
+            val hasWidget = widgetFrame != null && widgetFrame.isVisible && widgetFrame.isNotEmpty()
             val isAction = (pref.intent != null || pref.onPreferenceClickListener != null || pref.fragment != null)
             arrowRight.setImageResource(R.drawable.ic_arrow_right_pretty)
-            arrowRight.setColorFilter(android.graphics.Color.parseColor("#9CA3AF"))
+            arrowRight.setColorFilter(ContextCompat.getColor(context, R.color.settings_summary_text))
             arrowRight.isVisible = isAction && !hasWidget
         }
     }
@@ -375,7 +385,7 @@ open class CardDialogSeekBarPreference @JvmOverloads constructor(
 
                 val pMin = if (minVal != 0 || maxVal != 100) minVal else min
                 val pMax = if (minVal != 0 || maxVal != 100) maxVal else max
-                val pUnit = if (unitVal.isNotEmpty()) unitVal else unit
+                val pUnit = unitVal.ifEmpty { unit }
                 val pStep = if (stepVal > 0) stepVal else step
 
                 val defVal = default ?: pMin
@@ -518,7 +528,7 @@ open class CardTwinSeekBarPreference(context: Context) : TwinSeekBarPreference(c
 
                 val pMin = if (minVal != 0 || maxVal != 100) minVal else min
                 val pMax = if (minVal != 0 || maxVal != 100) maxVal else max
-                val pUnit = if (unitVal.isNotEmpty()) unitVal else unit
+                val pUnit = unitVal.ifEmpty { unit }
                 val pStep = if (stepVal > 0) stepVal else step
                 val calcStep = pStep.coerceAtLeast(1)
                 val countStep = ((pMax - pMin) / calcStep).coerceAtLeast(1)

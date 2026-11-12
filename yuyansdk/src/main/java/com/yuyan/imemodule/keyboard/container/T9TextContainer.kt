@@ -70,8 +70,14 @@ open class T9TextContainer(context: Context?, inputView: InputView, skbValue: In
             AppUtil.launchSettingsToPrefix(context!!, arguments)
         }
         mLlAddSymbol.addView(ivAddSymbol)
-        mSideSymbolsPinyin = if(skbValue == InputModeSwitcher.MASK_SKB_LAYOUT_NUMBER) DataBaseKT.getSideSymbolsNumber()
-                else DataBaseKT.getSideSymbolsPinyin()
+        val rawSymbols = if (skbValue == InputModeSwitcher.MASK_SKB_LAYOUT_NUMBER) DataBaseKT.getSideSymbolsNumber()
+        else DataBaseKT.getSideSymbolsPinyin()
+        val defaultSymbols = if (skbValue == InputModeSwitcher.MASK_SKB_LAYOUT_NUMBER) {
+            listOf("%", "/", "-", "+", "*", "#", "@").map { SideSymbol(it, it, "number") }
+        } else {
+            listOf("，", "。", "？", "！", "～", "：", "；", ".").map { SideSymbol(it, it) }
+        }
+        mSideSymbolsPinyin = if (rawSymbols.isNotEmpty()) rawSymbols else defaultSymbols
     }
 
     /**
