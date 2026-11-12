@@ -61,6 +61,7 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
         val soundEffectReturn = string("sound_effect_return", "默认")
 
         val privacyPolicySure = bool("privacy_policy_sure", false) //是否同意隐私政策
+        val functionKeyEnglishEnable = bool("function_key_english_enable", false) // 功能按键英文化使能开关
         val customFontEnable = bool("custom_font_enable", true) // 自定义导入字体使能开关
         val customFontPath = string("custom_font_path", "") // 自定义导入字体文件路径
         val customFontName = string("custom_font_name", "") // 自定义导入字体文件名

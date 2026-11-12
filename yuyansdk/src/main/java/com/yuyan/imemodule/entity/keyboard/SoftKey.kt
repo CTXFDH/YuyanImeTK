@@ -58,14 +58,14 @@ open class SoftKey(var code: Int = 0, var label: String = "", var labelSmall: St
         get() = keyIconRecords[Objects.hash(code, stateId)]
 
     open val keyLabel: String
-        get() =  label
+        get() = convertFunctionKeyToEnglish(label)
 
     fun getmKeyLabelSmall(): String {
         return labelSmall
     }
 
     fun getkeyLabel(): String {
-        return label
+        return convertFunctionKeyToEnglish(label)
     }
 
     open fun changeCase(upperCase: Boolean) {
@@ -93,5 +93,26 @@ open class SoftKey(var code: Int = 0, var label: String = "", var labelSmall: St
 
     fun height(): Int {
         return mBottom - mTop
+    }
+}
+
+fun convertFunctionKeyToEnglish(label: String): String {
+    if (!com.yuyan.imemodule.prefs.AppPrefs.getInstance().internal.functionKeyEnglishEnable.getValue()) {
+        return label
+    }
+    return when (label) {
+        "符号" -> "Sym"
+        "重输" -> "Clear"
+        "返回" -> "Back"
+        "发送" -> "Send"
+        "回车" -> "Enter"
+        "去往", "进入" -> "Go"
+        "搜索" -> "Search"
+        "下一个", "下一项" -> "Next"
+        "上一个" -> "Prev"
+        "完成" -> "Done"
+        "分词" -> "Split"
+        "确定" -> "OK"
+        else -> label
     }
 }

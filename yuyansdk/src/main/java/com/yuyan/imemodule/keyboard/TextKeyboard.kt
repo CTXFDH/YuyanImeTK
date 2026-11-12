@@ -251,7 +251,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
 
     private fun isEnterKey(softKey: SoftKey): Boolean {
         return softKey.code == KeyEvent.KEYCODE_ENTER ||
-                softKey.label == "发送" || softKey.label == "回车" || softKey.label == "Enter"
+                softKey.label == "发送" || softKey.label == "回车" || softKey.label == "Enter" || softKey.keyLabel == "Send"
     }
 
     override fun isSpaceKey(key: SoftKey?): Boolean {
@@ -264,7 +264,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
     }
 
     private fun isSymbolKey(softKey: SoftKey): Boolean {
-        return softKey.code == InputModeSwitcher.USER_KEYCODE_SYMBOL || softKey.label == "符号"
+        return softKey.code == InputModeSwitcher.USER_KEYCODE_SYMBOL || softKey.label == "符号" || softKey.keyLabel == "Sym"
     }
 
     private fun isNumberKey(softKey: SoftKey): Boolean {
@@ -284,11 +284,11 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
     }
 
     private fun isClearKey(softKey: SoftKey): Boolean {
-        return softKey.code == KeyEvent.KEYCODE_CLEAR || softKey.label == "重输"
+        return softKey.code == KeyEvent.KEYCODE_CLEAR || softKey.label == "重输" || softKey.keyLabel == "Clear"
     }
 
     private fun isReturnKey(softKey: SoftKey): Boolean {
-        return softKey.code == InputModeSwitcher.USER_KEYCODE_RETURN || softKey.label == "返回"
+        return softKey.code == InputModeSwitcher.USER_KEYCODE_RETURN || softKey.label == "返回" || softKey.keyLabel == "Back"
     }
 
     private fun isAtKey(softKey: SoftKey): Boolean {
@@ -462,7 +462,7 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
         } else softKey.keyIcon
         val weightHeigth = softKey.height() / 4f
         if(softKey.code == KeyEvent.KEYCODE_SHIFT_LEFT && InputModeSwitcher.isChinese && !InputDispatcher.isFinish){
-            keyLabel = "分词"
+            keyLabel = com.yuyan.imemodule.entity.keyboard.convertFunctionKeyToEnglish("分词")
             keyIcon = null
         }
         if (keyboardSymbol && !TextUtils.isEmpty(keyLabelSmall)) {

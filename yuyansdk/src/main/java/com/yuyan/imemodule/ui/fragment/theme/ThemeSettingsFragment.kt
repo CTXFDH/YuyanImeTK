@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.preference.Preference
 import androidx.preference.PreferenceScreen
 import com.yuyan.imemodule.data.theme.CustomFontManager
 import com.yuyan.imemodule.data.theme.ThemeManager
@@ -53,31 +54,38 @@ class ThemeSettingsFragment : ManagedPreferenceFragment(ThemeManager.prefs) {
     }
 
     private fun setupFontPreferenceListeners() {
-        val pref = findPreference<CardSwitchActionPreference>("custom_font_enable") ?: return
-        pref.isIconSpaceReserved = false
+        val pref = findPreference<CardSwitchActionPreference>("custom_font_enable")
+        if (pref != null) {
+            pref.isIconSpaceReserved = false
 
-        pref.onRowClickListener = {
-            fontImportLauncher.launch("*/*")
-        }
+            pref.onRowClickListener = {
+                fontImportLauncher.launch("*/*")
+            }
 
-        pref.setOnPreferenceChangeListener { _, newValue ->
-            val enabled = newValue as Boolean
-            if (enabled) {
-                if (!CustomFontManager.hasCustomFont()) {
-                    fontImportLauncher.launch("*/*")
-                    false
+            pref.setOnPreferenceChangeListener { _, newValue ->
+                val enabled = newValue as Boolean
+                if (enabled) {
+                    if (!CustomFontManager.hasCustomFont()) {
+                        fontImportLauncher.launch("*/*")
+                        false
+                    } else {
+                        CustomFontManager.setCustomFontEnabled(true)
+                        refreshKeyboardFont()
+                        updateFontPreferencesSummary()
+                        true
+                    }
                 } else {
-                    CustomFontManager.setCustomFontEnabled(true)
+                    CustomFontManager.setCustomFontEnabled(false)
                     refreshKeyboardFont()
                     updateFontPreferencesSummary()
                     true
                 }
-            } else {
-                CustomFontManager.setCustomFontEnabled(false)
-                refreshKeyboardFont()
-                updateFontPreferencesSummary()
-                true
             }
+        }
+
+        findPreference<Preference>("function_key_english_enable")?.setOnPreferenceChangeListener { _, _ ->
+            refreshKeyboardFont()
+            true
         }
     }
 

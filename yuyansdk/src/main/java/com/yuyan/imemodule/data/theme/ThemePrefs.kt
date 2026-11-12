@@ -160,6 +160,13 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
         "%"
     )
 
+    val functionKeyEnglishEnable = switch(
+        R.string.function_key_english_title,
+        "function_key_english_enable",
+        false,
+        summary = R.string.function_key_english_summary
+    )
+
     val importFont = switchAction(
         R.string.import_font_title,
         "custom_font_enable",

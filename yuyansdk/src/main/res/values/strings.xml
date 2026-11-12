@@ -217,4 +217,6 @@
     <string name="category_symbols_peripherals">外设</string>
     <string name="setting_font_title">字体</string>
     <string name="import_font_title">导入字体</string>
+    <string name="function_key_english_title">功能按键英文显示</string>
+    <string name="function_key_english_summary">将符号、发送、重输、返回、分词等按键替换为英文，匹配英文字体</string>
 </resources>
