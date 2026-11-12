@@ -78,51 +78,6 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
         "dp"
     )
 
-    // 字体设置title
-    val titleFontSetting = category(R.string.setting_font_title)
-
-    val candidateTextSize = int(
-        R.string.candidate_size_input_setting,
-        "candidate_size",
-        100,
-        70,
-        130,
-        "%",
-        defaultLabel = R.string.system_default
-    )
-
-    val keyboardFontWeight = int(
-        R.string.keyboard_font_bold,
-        "keyboard_font_weight_level",
-        2,
-        1,
-        5,
-        "档"
-    )
-
-    val keyboardFontSize = int(
-        R.string.keyboard_font_size,
-        "keyboard_font_size",
-        100,
-        70,
-        170,
-        "%"
-    )
-
-    val importFont = customAction(
-        "导入字体",
-        "导入 TTF/OTF 字体文件自定义键盘文字",
-        "pref_import_font",
-        R.drawable.ic_menu_custom
-    )
-
-    val clearFont = customAction(
-        "恢复默认字体",
-        "清除已导入的自定义字体",
-        "pref_clear_font",
-        R.drawable.ic_menu_delete
-    )
-
     val keyboardBalloonShow = switch(
         R.string.keypopup_input_settings,
         "keyboard_balloon_show_enable",
@@ -169,5 +124,50 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
         0,
         60,
         "dp"
+    )
+
+    // 字体设置title
+    val titleFontSetting = category(R.string.setting_font_title)
+
+    val candidateTextSize = int(
+        R.string.candidate_size_input_setting,
+        "candidate_size",
+        100,
+        70,
+        130,
+        "%",
+        defaultLabel = R.string.system_default
+    )
+
+    val keyboardFontWeight = int(
+        R.string.keyboard_font_bold,
+        "keyboard_font_weight_level",
+        2,
+        1,
+        5,
+        "档"
+    )
+
+    val keyboardFontSize = int(
+        R.string.keyboard_font_size,
+        "keyboard_font_size",
+        100,
+        70,
+        170,
+        "%"
+    )
+
+    val importFont = customAction(
+        "导入字体",
+        "导入 TTF/OTF 字体文件自定义键盘文字",
+        "pref_import_font",
+        R.drawable.ic_menu_custom
+    )
+
+    val clearFont = customAction(
+        "恢复默认字体",
+        "清除已导入的自定义字体",
+        "pref_clear_font",
+        R.drawable.ic_menu_delete
     )
 }
