@@ -29,7 +29,7 @@ fun PreferenceGroup.addPreference(
     addPreference(CardPreference(context).apply {
         isSingleLineTitle = false
         setTitle(title)
-        isCopyingEnabled = true
+        isCopyingEnabled = false
         setSummary(summary)
         if (icon == null) {
             isIconSpaceReserved = false

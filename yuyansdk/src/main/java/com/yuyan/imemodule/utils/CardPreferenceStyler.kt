@@ -107,6 +107,16 @@ interface ICardPreferenceItem {
         val iconView = holder.findViewById(android.R.id.icon) as? ImageView
         val arrowRight = holder.findViewById(R.id.arrow_right) as? ImageView
 
+        holder.itemView.isClickable = true
+        holder.itemView.isLongClickable = false
+        holder.itemView.setOnLongClickListener(null)
+        holder.itemView.setOnCreateContextMenuListener(null)
+
+        cardContent?.isClickable = false
+        cardContent?.isLongClickable = false
+        cardContent?.setOnLongClickListener(null)
+        cardContent?.setOnCreateContextMenuListener(null)
+
         holder.itemView.isEnabled = pref.isEnabled
         if (cardRoot != null) {
             cardRoot.alpha = 1.0f
