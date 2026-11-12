@@ -14,6 +14,7 @@ import com.yuyan.imemodule.utils.CardPreference
 import com.yuyan.imemodule.utils.CardPreferenceStyler
 import com.yuyan.imemodule.utils.DevicesUtils
 import com.yuyan.imemodule.utils.ICardPreferenceItem
+import com.yuyan.imemodule.utils.addCategory
 
 class PrivacyPolicyFragment : PreferenceFragmentCompat() {
 
@@ -24,18 +25,27 @@ class PrivacyPolicyFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceScreen = preferenceManager.createPreferenceScreen(requireContext()).apply {
-            // Card 1: 顶部导言卡片
-            addPreference(CardPreference(context).apply {
-                summary = "欢迎使用语燕输入法APP，语燕输入法是由［王莹］（K版由kuangru52修改）提供的移动端输入法软件。语燕输入法不提供注册功能，无需登录即可使用。\n\n语燕输入法非常重视用户隐私安全，开发者谨遵最小、必要的原则开发。为确保输入法正常提供服务，语燕输入法需获取以下权限："
-            })
+            // 第一部分：顶部导言卡片
+            addCategory("") {
+                isIconSpaceReserved = false
+                addPreference(CardPreference(context).apply {
+                    summary = "欢迎使用语燕输入法APP，语燕输入法是由［王莹］（K版由kuangru52修改）提供的移动端输入法软件。语燕输入法不提供注册功能，无需登录即可使用。\n\n语燕输入法非常重视用户隐私安全，开发者谨遵最小、必要的原则开发。为确保输入法正常提供服务，语燕输入法需获取以下权限："
+                })
+            }
 
-            // Card 2: 中间权限汇总列表卡片 (包含：剪切板、设备运动与方向、媒体音量控制、麦克风)
-            addPreference(CardPermissionsGroupPreference(context))
+            // 第二部分：中间权限汇总列表卡片 (权限标题采用绿色字体)
+            addCategory("") {
+                isIconSpaceReserved = false
+                addPreference(CardPermissionsGroupPreference(context))
+            }
 
-            // Card 3: 底部隐私承诺卡片
-            addPreference(CardPreference(context).apply {
-                summary = "语燕输入法不搜集、上传、分析用户任何信息，请您放心使用。\n\n以上权限可以手动进入［系统设置］关闭，关闭后仅影响关联功能，语燕输入法不会因此停止提供服务。"
-            })
+            // 第三部分：底部隐私承诺卡片
+            addCategory("") {
+                isIconSpaceReserved = false
+                addPreference(CardPreference(context).apply {
+                    summary = "语燕输入法不搜集、上传、分析用户任何信息，请您放心使用。\n\n以上权限可以手动进入［系统设置］关闭，关闭后仅影响关联功能，语燕输入法不会因此停止提供服务。"
+                })
+            }
 
             // 底部同意/拒绝按钮栏
             addPreference(Preference(context).apply {
@@ -89,11 +99,12 @@ class CardPermissionsGroupPreference(context: Context) : Preference(context), IC
                     }
                 }
 
+                // 权限标题：采用语燕绿（R.color.settings_icon_tint）字体
                 val titleTv = TextView(context).apply {
                     text = pTitle
                     textSize = 15f
                     typeface = android.graphics.Typeface.DEFAULT_BOLD
-                    setTextColor(ContextCompat.getColor(context, R.color.settings_title_text))
+                    setTextColor(ContextCompat.getColor(context, R.color.settings_icon_tint))
                 }
 
                 val summaryTv = TextView(context).apply {
