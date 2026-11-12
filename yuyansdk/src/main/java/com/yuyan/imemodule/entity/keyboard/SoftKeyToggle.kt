@@ -37,7 +37,8 @@ class SoftKeyToggle(code: Int) : SoftKey(code = code) {
     override val keyLabel: String
         get() {
             val state = toggleState
-            return state?.label ?: super.getkeyLabel()
+            val rawLabel = state?.label ?: super.getkeyLabel()
+            return convertFunctionKeyToEnglish(rawLabel)
         }
 
     override fun changeCase(upperCase: Boolean) {
