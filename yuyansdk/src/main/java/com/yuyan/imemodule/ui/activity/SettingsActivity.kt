@@ -1,5 +1,7 @@
 package com.yuyan.imemodule.ui.activity
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -102,8 +104,13 @@ open class SettingsActivity : AppCompatActivity() {
                 AppPrefs.getInstance().internal.privacyPolicySure.setValue(true)
                 checkAndRequestMicrophonePermission()
             }
-            R.id.privacy_policy_cancel ->{
-                navController.navigateUp()
+            R.id.privacy_policy_cancel -> {
+                val pkgName = packageName
+                val intent = Intent(Intent.ACTION_DELETE).apply {
+                    data = Uri.parse("package:$pkgName")
+                }
+                startActivity(intent)
+                finish()
             }
         }
     }

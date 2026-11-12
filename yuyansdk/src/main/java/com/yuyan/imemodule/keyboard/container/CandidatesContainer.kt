@@ -113,7 +113,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         mLlAddSymbol.addView(ivAddSymbol)
         val rawSymbols = DataBaseKT.getSideSymbolsPinyin()
         val defaultSymbols = listOf("，", "。", "？", "！", "～", "：", "；", ".").map { SideSymbol(it, it) }
-        mSideSymbolsPinyin = if (rawSymbols.isNotEmpty()) rawSymbols else defaultSymbols
+        mSideSymbolsPinyin = rawSymbols.ifEmpty { defaultSymbols }
     }
 
     private fun initView(context: Context) {
@@ -121,7 +121,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         mRVSymbolsView.setHasFixedSize(true)
         mRVSymbolsView.itemAnimator = null
         mRVLeftPrefix.layoutManager = LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false)
-        mRVLeftPrefix.setBackgroundColor(ThemeManager.activeTheme.keyboardColor)
+        mRVLeftPrefix.setBackgroundColor(activeTheme.keyboardColor)
         val skbHeightMargins = (instance.skbHeight * 0.01).toInt()
 
         val softKeyboard = KeyboardLoaderUtil.instance.getSoftKeyboard(InputModeSwitcher.skbLayout)
@@ -144,7 +144,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         manager.flexDirection = FlexDirection.ROW //主轴为水平方向,起点在左端。
         manager.flexWrap = FlexWrap.WRAP //按正常方向换行
         manager.justifyContent = JustifyContent.SPACE_AROUND // 设置主轴对齐方式为居左
-        mRVSymbolsView.setLayoutManager(manager)
+        mRVSymbolsView.layoutManager = manager
         mRVSymbolsView.addOnScrollListener(object :RecyclerView.OnScrollListener(){
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
@@ -153,7 +153,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
                         if (!isLoadingMore) {
                             isLoadingMore = true
                             DictDecoder.activeCandidate = lastItem
-                            if (DictDecoder.candidateSize - lastItem <= 5) { // 未加载中、未加载完、向下滑动、还有数据滑动到底
+                            if ((DictDecoder.candidateSize - lastItem) <= 5) { // 未加载中、未加载完、向下滑动、还有数据滑动到底
                                 DictDecoder.nextPageCandidates
                             }
                             isLoadingMore = false
@@ -184,7 +184,7 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
             ivDelete.background = bg
         }
         ivDelete.isClickable = true
-        ivDelete.setEnabled(true)
+        ivDelete.isEnabled = true
         ivDelete.setOnTouchListener { _, motionEvent ->
             when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -238,8 +238,8 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
             }
 //            if(DecodingInfo.candidateSize > DecodingInfo.activeCandidate) mRVSymbolsView.scrollToPosition(DecodingInfo.activeCandidate)
             val prefixMode = AppPrefs.getInstance().keyboardSetting.lx17PrefixMode.getValue()
-            val showPrefix = InputModeSwitcher.isChineseT9 ||
-                (InputModeSwitcher.skbLayout == InputModeSwitcher.MASK_SKB_LAYOUT_LX17 && prefixMode != Lx17PrefixMode.None)
+            val showPrefix = (InputModeSwitcher.isChineseT9 ||
+                (InputModeSwitcher.skbLayout == InputModeSwitcher.MASK_SKB_LAYOUT_LX17 && prefixMode != Lx17PrefixMode.None))
             if (showPrefix) {
                 mRVLeftPrefix.visibility = VISIBLE
                 updatePrefixsView()
@@ -254,12 +254,12 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
         var prefixs = DictDecoder.prefixs
         val isPrefixs = prefixs.isNotEmpty()
         if (!isPrefixs) { // 有候选拼音显示候选拼音
-            prefixs = mSideSymbolsPinyin.map { it.symbolKey }.toTypedArray()
+            prefixs = mSideSymbolsPinyin.map { (symbolKey) -> symbolKey }.toTypedArray()
             if (mRVLeftPrefix.footerCount <= 0) mRVLeftPrefix.addFooterView(mLlAddSymbol)
         } else{
             if (mRVLeftPrefix.footerCount > 0) mRVLeftPrefix.removeFooterView(mLlAddSymbol)
         }
-        mRVLeftPrefix.setAdapter(null)
+        mRVLeftPrefix.adapter = null
         mRVLeftPrefix.setOnItemClickListener{ _: View?, position: Int ->
             if (isPrefixs) {
                 if (position in prefixs.indices) inputView.selectPrefix(position)
@@ -272,6 +272,6 @@ class CandidatesContainer(context: Context, inputView: InputView) : BaseContaine
                 }
             }
         }
-        mRVLeftPrefix.setAdapter(PrefixAdapter(context, prefixs))
+        mRVLeftPrefix.adapter = PrefixAdapter(context, prefixs)
     }
 }
