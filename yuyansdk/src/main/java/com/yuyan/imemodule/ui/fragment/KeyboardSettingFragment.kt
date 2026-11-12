@@ -94,7 +94,7 @@ class KeyboardSettingFragment : ManagedPreferenceFragment(AppPrefs.getInstance()
 
     private fun getFontSummary(): String {
         return if (CustomFontManager.hasCustomFont()) {
-            "已导入自定义字体 (点击更换)"
+            "已导入 ${CustomFontManager.getFontFileName()}"
         } else {
             "导入 TTF/OTF 字体文件自定义键盘文字"
         }

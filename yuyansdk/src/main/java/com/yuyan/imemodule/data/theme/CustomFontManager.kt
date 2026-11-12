@@ -44,6 +44,7 @@ object CustomFontManager {
                 cachedPath = destFile.absolutePath
                 cachedTypeface = tf
                 AppPrefs.getInstance().internal.customFontPath.setValue(destFile.absolutePath)
+                AppPrefs.getInstance().internal.customFontName.setValue(fileName)
                 true
             } else {
                 destFile.delete()
@@ -62,10 +63,20 @@ object CustomFontManager {
         cachedTypeface = null
         cachedPath = null
         AppPrefs.getInstance().internal.customFontPath.setValue("")
+        AppPrefs.getInstance().internal.customFontName.setValue("")
     }
 
     fun hasCustomFont(): Boolean {
         val path = AppPrefs.getInstance().internal.customFontPath.getValue()
         return path.isNotEmpty() && File(path).exists()
+    }
+
+    fun getFontFileName(): String {
+        val name = AppPrefs.getInstance().internal.customFontName.getValue()
+        if (name.isNotEmpty()) return name
+        val path = AppPrefs.getInstance().internal.customFontPath.getValue()
+        if (path.isEmpty()) return ""
+        val f = File(path)
+        return if (f.exists()) f.name else ""
     }
 }

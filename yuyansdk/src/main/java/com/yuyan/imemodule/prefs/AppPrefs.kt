@@ -62,6 +62,7 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
 
         val privacyPolicySure = bool("privacy_policy_sure", false) //是否同意隐私政策
         val customFontPath = string("custom_font_path", "") // 自定义导入字体文件路径
+        val customFontName = string("custom_font_name", "") // 自定义导入字体文件名
 
         val lockSymbolEnable = bool("lock_symbol_enable", false)
         val lockExpressionEnable = bool("lock_expression_enable", false)
