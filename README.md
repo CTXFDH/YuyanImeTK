@@ -66,3 +66,7 @@
 
 ## 又到了互联网要饭环节了，都看到这里了，打赏一瓶可乐不过分吧
 
+<p align="center">
+  <img src="WeChat.png" width="320" alt="微信打赏" />
+</p>
+
