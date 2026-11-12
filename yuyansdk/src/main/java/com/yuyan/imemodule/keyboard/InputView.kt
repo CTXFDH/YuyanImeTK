@@ -221,6 +221,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
                     height = env.skbHeight
                 }
             }
+            updateOneHandButtonsTheme()
         }
         mLlKeyboardBottomHolder.removeAllViews()
         mLlKeyboardBottomHolder.layoutParams.width = env.skbWidth
@@ -406,10 +407,7 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         }
 
         mSkbCandidatesBarView.updateTheme(keyTextColor)
-        if (::mOnehandHoderLayout.isInitialized) {
-            (mOnehandHoderLayout[0] as ImageButton).drawable?.setTint(keyTextColor)
-            (mOnehandHoderLayout[1] as ImageButton).drawable?.setTint(keyTextColor)
-        }
+        updateOneHandButtonsTheme()
         mFullDisplayKeyboardBar?.updateTheme(keyTextColor)
         mAddPhrasesLayout.updateTheme(activeTheme)
         updateComposingTagTheme()
@@ -418,6 +416,39 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         (mSkbRoot.findViewById<View>(R.id.skb_input_keyboard_view) as? ViewGroup)?.let { container ->
             for (i in 0 until container.childCount) {
                 (container.getChildAt(i) as? TextKeyboard)?.setTheme(activeTheme)
+            }
+        }
+    }
+
+    fun updateOneHandButtonsTheme() {
+        if (!::mOnehandHoderLayout.isInitialized) return
+        val activeTheme = ThemeManager.activeTheme
+        val isDark = activeTheme.isDark
+        val keyTextColor = activeTheme.keyTextColor
+
+        for (i in 0 until mOnehandHoderLayout.childCount) {
+            val btn = mOnehandHoderLayout.getChildAt(i) as? ImageButton ?: continue
+            val btnBg = GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setColor(activeTheme.functionKeyBackgroundColor)
+                if (isDark) {
+                    setStroke(dp(1), 0x40FFFFFF.toInt())
+                } else {
+                    setStroke(dp(1), 0x20000000.toInt())
+                }
+            }
+            btn.background = btnBg
+            btn.drawable?.mutate()?.setTint(keyTextColor)
+            val btnSize = dp(42)
+            val p = dp(9)
+            btn.setPadding(p, p, p, p)
+            val lp = btn.layoutParams as? LinearLayout.LayoutParams
+            if (lp != null) {
+                lp.width = btnSize
+                lp.height = btnSize
+                lp.weight = 0f
+                lp.setMargins(dp(4), dp(16), dp(4), dp(16))
+                btn.layoutParams = lp
             }
         }
     }

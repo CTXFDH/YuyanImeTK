@@ -100,6 +100,7 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
         getInstance().internal.clipboardUpdateContent.registerOnChangeListener(clipboardUpdateContentListener)
         handleHardwareKeyboard()
         DictDecoder.candidatesLiveData.observe(this, candidatesObserver)
+        InputDispatcher.initImeSchema(getInstance().internal.pinyinModeRime.getValue(), force = true)
     }
 
     override fun onCreateInputView(): View {
@@ -130,6 +131,7 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
         val start = SystemClock.elapsedRealtime()
         try {
             super.onStartInput(editorInfo, restarting)
+            InputDispatcher.initImeSchema(getInstance().internal.pinyinModeRime.getValue())
             if (editorInfo != null) {
                 YuyanEmojiCompat.setEditorInfo(editorInfo)
                 InputModeSwitcher.requestInputWithSkb(editorInfo)

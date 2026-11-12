@@ -245,9 +245,15 @@ object InputModeSwitcher {
         }
         val hasNoEnterAction = (editorInfo.imeOptions and EditorInfo.IME_FLAG_NO_ENTER_ACTION) != 0
         mToggleStates.imeAction = if(hasNoEnterAction) 0 else editorInfo.imeOptions and EditorInfo.IME_MASK_ACTION
-        if (newInputMode != mInputMode && MODE_UNSET != newInputMode) {
+
+        val currentSchema = InputDispatcher.getCurrentRimeSchema()
+        val targetSchema = if (newInputMode and MASK_LANGUAGE == MASK_LANGUAGE_EN) CustomConstant.SCHEMA_EN else getInstance().internal.pinyinModeRime.getValue()
+
+        if ((newInputMode != mInputMode && MODE_UNSET != newInputMode) || currentSchema.isEmpty() || currentSchema != targetSchema) {
             saveInputMode(newInputMode)
             KeyboardManager.instance.switchKeyboard()
+        } else {
+            InputDispatcher.initImeSchema(targetSchema)
         }
         (KeyboardManager.instance.currentContainer as? InputBaseContainer)?.updateStates()
     }
