@@ -1,55 +1,87 @@
-
 package com.yuyan.imemodule.ui.fragment.theme
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
+import android.view.Gravity
 import android.view.ViewOutlineProvider
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import com.yuyan.imemodule.R
+import com.yuyan.imemodule.utils.DevicesUtils
+import com.yuyan.imemodule.utils.DialogStyleUtils
 import splitties.dimensions.dp
 import splitties.resources.drawable
 import splitties.resources.styledDrawable
-import splitties.views.dsl.constraintlayout.above
-import splitties.views.dsl.constraintlayout.below
-import splitties.views.dsl.constraintlayout.bottomOfParent
-import splitties.views.dsl.constraintlayout.centerHorizontally
-import splitties.views.dsl.constraintlayout.constraintLayout
-import splitties.views.dsl.constraintlayout.lParams
-import splitties.views.dsl.constraintlayout.topOfParent
 import splitties.views.dsl.core.Ui
-import splitties.views.dsl.core.add
-import splitties.views.dsl.core.imageView
-import splitties.views.dsl.core.textView
-import splitties.views.dsl.core.wrapContent
-import splitties.views.imageDrawable
 
 class NewThemeEntryUi(override val ctx: Context) : Ui {
-    val text = textView {
-        setText(R.string.new_theme)
-        setTextColor(Color.WHITE)
-    }
+    private val isDark = DialogStyleUtils.isDarkUiMode(ctx)
 
-    val icon = imageView {
-        imageDrawable = ctx.drawable(R.drawable.ic_menu_plus)!!.apply {
-            setTint(Color.WHITE)
+    private val cardBgDrawable = GradientDrawable().apply {
+        shape = GradientDrawable.RECTANGLE
+        cornerRadius = ctx.dp(16f)
+        orientation = GradientDrawable.Orientation.TL_BR
+        if (isDark) {
+            colors = intArrayOf(
+                Color.parseColor("#1B2E24"),
+                Color.parseColor("#14211A"),
+                Color.parseColor("#0F1713")
+            )
+            setStroke(DevicesUtils.dip2px(1.5f), Color.parseColor("#2A4838"))
+        } else {
+            colors = intArrayOf(
+                Color.parseColor("#E6F7F0"),
+                Color.parseColor("#D8F3E8"),
+                Color.parseColor("#CAF0DF")
+            )
+            setStroke(DevicesUtils.dip2px(1.5f), Color.parseColor("#A3E6CA"))
         }
     }
 
-    override val root = constraintLayout {
-        foreground = styledDrawable(android.R.attr.selectableItemBackground)
-        background = ctx.drawable(R.drawable.bkg_theme_choose_image)
-        outlineProvider = ViewOutlineProvider.BOUNDS
-        elevation = dp(2f)
-        add(icon, lParams(dp(24), dp(24)) {
-            topOfParent()
-            centerHorizontally()
-            above(text, dp(4))
-            verticalChainStyle = ConstraintLayout.LayoutParams.CHAIN_PACKED
+    private val iconBadgeDrawable = GradientDrawable().apply {
+        shape = GradientDrawable.OVAL
+        setColor(if (isDark) Color.parseColor("#2610B981") else Color.parseColor("#3307C160"))
+    }
+
+    val icon = ImageView(ctx).apply {
+        val size = ctx.dp(18)
+        layoutParams = FrameLayout.LayoutParams(size, size).apply {
+            gravity = Gravity.CENTER
+        }
+        setImageDrawable(ctx.drawable(R.drawable.ic_menu_plus)?.apply {
+            setTint(if (isDark) Color.parseColor("#10B981") else Color.parseColor("#07C160"))
         })
-        add(text, lParams(wrapContent, wrapContent) {
-            below(icon)
-            centerHorizontally()
-            bottomOfParent()
-        })
+    }
+
+    val iconContainer = FrameLayout(ctx).apply {
+        val sz = ctx.dp(38)
+        layoutParams = LinearLayout.LayoutParams(sz, sz).apply {
+            bottomMargin = ctx.dp(6)
+        }
+        background = iconBadgeDrawable
+        addView(icon)
+    }
+
+    val text = TextView(ctx).apply {
+        setText(R.string.new_theme)
+        textSize = 13.5f
+        typeface = android.graphics.Typeface.DEFAULT_BOLD
+        setTextColor(if (isDark) Color.parseColor("#E4E4E7") else Color.parseColor("#18181B"))
+    }
+
+    override val root = LinearLayout(ctx).apply {
+        orientation = LinearLayout.VERTICAL
+        gravity = Gravity.CENTER
+        foreground = ctx.styledDrawable(android.R.attr.selectableItemBackground)
+        background = cardBgDrawable
+        outlineProvider = ViewOutlineProvider.BACKGROUND
+        clipToOutline = true
+        elevation = ctx.dp(2f)
+
+        addView(iconContainer)
+        addView(text)
     }
 }
