@@ -5,17 +5,13 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.preference.Preference
-import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceScreen
-import com.yuyan.imemodule.R
 import com.yuyan.imemodule.data.theme.CustomFontManager
 import com.yuyan.imemodule.data.theme.ThemeManager
 import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.ui.fragment.base.ManagedPreferenceFragment
-import com.yuyan.imemodule.utils.CardPreferenceStyler
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
-import com.yuyan.imemodule.utils.addPreference
 import com.yuyan.imemodule.utils.queryFileName
 
 class ThemeSettingsFragment : ManagedPreferenceFragment(ThemeManager.prefs) {
@@ -34,7 +30,7 @@ class ThemeSettingsFragment : ManagedPreferenceFragment(ThemeManager.prefs) {
                 if (success) {
                     Toast.makeText(ctx, "字体导入成功！", Toast.LENGTH_SHORT).show()
                     refreshKeyboardFont()
-                    updateFontPreferences()
+                    updateFontPreferencesSummary()
                 } else {
                     Toast.makeText(ctx, "字体文件格式不支持或已损坏", Toast.LENGTH_LONG).show()
                 }
@@ -46,51 +42,39 @@ class ThemeSettingsFragment : ManagedPreferenceFragment(ThemeManager.prefs) {
 
     override fun onPreferenceUiCreated(screen: PreferenceScreen) {
         super.onPreferenceUiCreated(screen)
-        updateFontPreferences()
+        setupFontPreferenceListeners()
+        updateFontPreferencesSummary()
     }
 
-    private fun updateFontPreferences() {
-        val screen = preferenceScreen ?: return
-        val targetCategory = (0 until screen.preferenceCount)
-            .mapNotNull { screen.getPreference(it) as? PreferenceCategory }
-            .firstOrNull { it.title == getString(R.string.setting_ime_keyboard_show) || it.title == "键盘效果" }
-            ?: (if (screen.preferenceCount > 0) screen.getPreference(screen.preferenceCount - 1) as? PreferenceCategory else null)
-            ?: screen
+    override fun onResume() {
+        super.onResume()
+        setupFontPreferenceListeners()
+        updateFontPreferencesSummary()
+    }
 
-        val importPref = targetCategory.findPreference<Preference>("pref_import_font")
-        if (importPref == null) {
-            targetCategory.addPreference(
-                "导入字体",
-                summary = getFontSummary(),
-                key = "pref_import_font",
-                icon = R.drawable.ic_menu_custom
-            ) {
-                fontImportLauncher.launch("*/*")
-            }
-        } else {
+    private fun setupFontPreferenceListeners() {
+        findPreference<Preference>("pref_import_font")?.setOnPreferenceClickListener {
+            fontImportLauncher.launch("*/*")
+            true
+        }
+        findPreference<Preference>("pref_clear_font")?.setOnPreferenceClickListener {
+            CustomFontManager.clearCustomFont()
+            Toast.makeText(requireContext(), "已恢复默认字体", Toast.LENGTH_SHORT).show()
+            refreshKeyboardFont()
+            updateFontPreferencesSummary()
+            true
+        }
+    }
+
+    private fun updateFontPreferencesSummary() {
+        val importPref = findPreference<Preference>("pref_import_font")
+        if (importPref != null) {
             importPref.summary = getFontSummary()
         }
-
-        val clearPref = targetCategory.findPreference<Preference>("pref_clear_font")
-        if (CustomFontManager.hasCustomFont()) {
-            if (clearPref == null) {
-                targetCategory.addPreference(
-                    "恢复默认字体",
-                    summary = "清除已导入的自定义字体",
-                    key = "pref_clear_font",
-                    icon = R.drawable.ic_menu_delete
-                ) {
-                    CustomFontManager.clearCustomFont()
-                    Toast.makeText(requireContext(), "已恢复默认字体", Toast.LENGTH_SHORT).show()
-                    refreshKeyboardFont()
-                    updateFontPreferences()
-                }
-            }
-        } else {
-            clearPref?.let { targetCategory.removePreference(it) }
+        val clearPref = findPreference<Preference>("pref_clear_font")
+        if (clearPref != null) {
+            clearPref.isVisible = CustomFontManager.hasCustomFont()
         }
-
-        CardPreferenceStyler.stylePreferenceScreen(screen)
     }
 
     private fun getFontSummary(): String {

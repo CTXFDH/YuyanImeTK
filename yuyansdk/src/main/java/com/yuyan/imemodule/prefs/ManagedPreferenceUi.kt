@@ -186,4 +186,27 @@ abstract class ManagedPreferenceUi<T : Preference>(
             summaryProvider = TwinSeekBarPreference.SimpleSummaryProvider
         }
     }
+
+    class CustomAction(
+        val titleStr: String,
+        val summaryStr: String,
+        key: String,
+        @androidx.annotation.DrawableRes val iconRes: Int? = null,
+        val onClick: ((Context, Preference) -> Unit)? = null
+    ) : ManagedPreferenceUi<Preference>(key) {
+        override fun createUi(context: Context) = com.yuyan.imemodule.utils.CardPreference(context).apply {
+            key = this@CustomAction.key
+            isIconSpaceReserved = iconRes != null
+            if (iconRes != null) setIcon(androidx.core.content.ContextCompat.getDrawable(context, iconRes))
+            isSingleLineTitle = false
+            setTitle(titleStr)
+            setSummary(summaryStr)
+            onClick?.let { listener ->
+                setOnPreferenceClickListener {
+                    listener.invoke(context, this)
+                    true
+                }
+            }
+        }
+    }
 }

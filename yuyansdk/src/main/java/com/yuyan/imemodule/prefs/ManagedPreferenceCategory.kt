@@ -21,6 +21,17 @@ abstract class ManagedPreferenceCategory(
         ui.registerUi()
     }
 
+    protected fun customAction(
+        titleStr: String,
+        summaryStr: String,
+        key: String,
+        @androidx.annotation.DrawableRes iconRes: Int? = null,
+        onClick: ((android.content.Context, androidx.preference.Preference) -> Unit)? = null
+    ) {
+        val ui = ManagedPreferenceUi.CustomAction(titleStr, summaryStr, key, iconRes, onClick)
+        ui.registerUi()
+    }
+
     protected fun switch(
         @StringRes
         title: Int,
