@@ -258,14 +258,10 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
             defaultLabel = R.string.number_400_ms
         )
 
-        val keyboardSymbol = switch(
-            R.string.keyboard_symbol_show,
-            "keyboard_symbol_show_enable",
-            true
-        )
+        val keyboardSymbol = bool("keyboard_symbol_show_enable", true)
 
-        val symbolSlideUpMod = list(
-            R.string.keyboard_symbol_slide_up_mod,
+        val symbolSlideUpMod = switchList(
+            R.string.keyboard_symbol_show,
             "keyboard_symbol_slide_up_mod",
             KeyboardSymbolSlideUpMod.MEDIUM,
             KeyboardSymbolSlideUpMod,
@@ -278,20 +274,24 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
                 R.string.keyboard_symbol_slide_up_short,
                 R.string.keyboard_symbol_slide_up_medium,
                 R.string.keyboard_symbol_slide_up_long
-            )
-        ) {
-            keyboardSymbol.getValue()
-        }
+            ),
+            "keyboard_symbol_show_enable",
+            true,
+            keyboardSymbol
+        )
 
-        val spaceSwipeMoveCursor = switch(R.string.space_swipe_move_cursor, "space_swipe_move_cursor", true)
+        val spaceSwipeMoveCursor = bool("space_swipe_move_cursor", true)
 
-        val spaceSwipeMoveCursorSpeed = int(
-            R.string.swipe_move_cursor_speed,
+        val spaceSwipeMoveCursorSpeed = switchSeekBarInt(
+            R.string.space_swipe_move_cursor,
             "swipe_move_cursor_speed",
             10,
             1,
             50,
-            "px"
+            "px",
+            switchKey = "space_swipe_move_cursor",
+            switchDefaultValue = true,
+            switchPref = spaceSwipeMoveCursor
         )
 
         val abcNumberLine = bool("keyboard_abc_number_line_enable", false)

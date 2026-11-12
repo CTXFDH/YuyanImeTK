@@ -91,6 +91,73 @@ abstract class ManagedPreferenceUi<T : Preference>(
         }
     }
 
+    class SwitchList<T : Any>(
+        @StringRes
+        val title: Int,
+        key: String,
+        val defaultValue: T,
+        val codec: ManagedPreference.StringLikeCodec<T>,
+        val entryValues: List<T>,
+        @StringRes
+        val entryLabels: List<Int>,
+        val switchKey: String,
+        val switchDefaultValue: Boolean,
+        val switchPref: ManagedPreference.PBool? = null,
+        enableUiOn: (() -> Boolean)? = null
+    ) : ManagedPreferenceUi<com.yuyan.imemodule.utils.CardSwitchListPreference>(key, enableUiOn) {
+        override fun createUi(context: Context) = com.yuyan.imemodule.utils.CardSwitchListPreference(context).apply {
+            key = this@SwitchList.key
+            switchKey = this@SwitchList.switchKey
+            switchPref = this@SwitchList.switchPref
+            isIconSpaceReserved = false
+            isSingleLineTitle = false
+            entryValues = this@SwitchList.entryValues.map { codec.encode(it) }.toTypedArray()
+            summaryProvider = ListPreference.SimpleSummaryProvider.getInstance()
+            setDefaultValue(codec.encode(defaultValue))
+            setTitle(this@SwitchList.title)
+            entries = this@SwitchList.entryLabels.map { context.getString(it) }.toTypedArray()
+            setDialogTitle(this@SwitchList.title)
+        }
+    }
+
+    class SwitchSeekBarInt(
+        @StringRes
+        val title: Int,
+        key: String,
+        val defaultValue: Int,
+        val min: Int,
+        val max: Int,
+        val unit: String = "",
+        val step: Int = 1,
+        @StringRes
+        val defaultLabel: Int? = null,
+        val switchKey: String,
+        val switchDefaultValue: Boolean,
+        val switchPref: ManagedPreference.PBool? = null,
+        enableUiOn: (() -> Boolean)? = null
+    ) : ManagedPreferenceUi<com.yuyan.imemodule.utils.CardSwitchSeekBarPreference>(key, enableUiOn) {
+        override fun createUi(context: Context) = com.yuyan.imemodule.utils.CardSwitchSeekBarPreference(context).apply {
+            key = this@SwitchSeekBarInt.key
+            switchKey = this@SwitchSeekBarInt.switchKey
+            switchPref = this@SwitchSeekBarInt.switchPref
+            isIconSpaceReserved = false
+            isSingleLineTitle = false
+            summaryProvider = DialogSeekBarPreference.SimpleSummaryProvider
+            this@SwitchSeekBarInt.defaultLabel?.let { defaultLabel = context.getString(it) }
+            setDefaultValue(this@SwitchSeekBarInt.defaultValue)
+            setTitle(this@SwitchSeekBarInt.title)
+            setDialogTitle(this@SwitchSeekBarInt.title)
+            min = this@SwitchSeekBarInt.min
+            max = this@SwitchSeekBarInt.max
+            unit = this@SwitchSeekBarInt.unit
+            step = this@SwitchSeekBarInt.step
+            minVal = this@SwitchSeekBarInt.min
+            maxVal = this@SwitchSeekBarInt.max
+            unitVal = this@SwitchSeekBarInt.unit
+            stepVal = this@SwitchSeekBarInt.step
+        }
+    }
+
     class StringList<T : Any>(
         @StringRes
         val title: Int,

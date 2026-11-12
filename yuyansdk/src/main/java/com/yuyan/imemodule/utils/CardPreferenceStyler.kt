@@ -349,6 +349,46 @@ open class CardListPreference @JvmOverloads constructor(
     }
 }
 
+open class CardSwitchListPreference @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : CardListPreference(context, attrs, defStyleAttr) {
+
+    var switchKey: String = ""
+    var switchPref: com.yuyan.imemodule.view.preference.ManagedPreference.PBool? = null
+
+    var isSwitchChecked: Boolean
+        get() = switchPref?.getValue() ?: (if (switchKey.isNotEmpty()) preferenceManager.sharedPreferences?.getBoolean(switchKey, true) ?: true else true)
+        set(value) {
+            switchPref?.setValue(value)
+            if (switchKey.isNotEmpty()) {
+                preferenceManager.sharedPreferences?.edit { putBoolean(switchKey, value) }
+            }
+        }
+
+    override fun onBindViewHolder(holder: PreferenceViewHolder) {
+        super.onBindViewHolder(holder)
+
+        val widgetFrame = holder.findViewById(android.R.id.widget_frame) as? ViewGroup
+        if (widgetFrame != null) {
+            widgetFrame.isVisible = true
+            val switchView = (0 until widgetFrame.childCount)
+                .mapNotNull { widgetFrame.getChildAt(it) as? androidx.appcompat.widget.SwitchCompat }
+                .firstOrNull() ?: androidx.appcompat.widget.SwitchCompat(context).also {
+                widgetFrame.removeAllViews()
+                widgetFrame.addView(it)
+            }
+            switchView.isChecked = isSwitchChecked
+            switchView.setOnClickListener {
+                val newChecked = switchView.isChecked
+                isSwitchChecked = newChecked
+                callChangeListener(newChecked)
+            }
+        }
+    }
+}
+
 open class CardEditTextIntPreference(context: Context) : EditTextIntPreference(context), ICardPreferenceItem {
     override var isFirstInGroup: Boolean = false
     override var isLastInGroup: Boolean = false
@@ -512,6 +552,46 @@ open class CardDialogSeekBarPreference @JvmOverloads constructor(
                 inlineContainer.addView(rowLayout)
             } else {
                 inlineContainer.isVisible = false
+            }
+        }
+    }
+}
+
+open class CardSwitchSeekBarPreference @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : CardDialogSeekBarPreference(context, attrs, defStyleAttr) {
+
+    var switchKey: String = ""
+    var switchPref: com.yuyan.imemodule.view.preference.ManagedPreference.PBool? = null
+
+    var isSwitchChecked: Boolean
+        get() = switchPref?.getValue() ?: (if (switchKey.isNotEmpty()) preferenceManager.sharedPreferences?.getBoolean(switchKey, true) ?: true else true)
+        set(value) {
+            switchPref?.setValue(value)
+            if (switchKey.isNotEmpty()) {
+                preferenceManager.sharedPreferences?.edit { putBoolean(switchKey, value) }
+            }
+        }
+
+    override fun onBindViewHolder(holder: PreferenceViewHolder) {
+        super.onBindViewHolder(holder)
+
+        val widgetFrame = holder.findViewById(android.R.id.widget_frame) as? ViewGroup
+        if (widgetFrame != null) {
+            widgetFrame.isVisible = true
+            val switchView = (0 until widgetFrame.childCount)
+                .mapNotNull { widgetFrame.getChildAt(it) as? androidx.appcompat.widget.SwitchCompat }
+                .firstOrNull() ?: androidx.appcompat.widget.SwitchCompat(context).also {
+                widgetFrame.removeAllViews()
+                widgetFrame.addView(it)
+            }
+            switchView.isChecked = isSwitchChecked
+            switchView.setOnClickListener {
+                val newChecked = switchView.isChecked
+                isSwitchChecked = newChecked
+                callChangeListener(newChecked)
             }
         }
     }
