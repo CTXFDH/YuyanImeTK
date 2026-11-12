@@ -37,20 +37,40 @@ object ThemePreset {
         functionKeyPressHighlightColor = 0x1fffffff,
     )
 
-    val AMOLEDBlack = Theme.Builtin(
-        name = "AMOLEDBlack",
+    val MintSummer = Theme.Builtin(
+        name = "薄荷夏日",
+        isDark = false,
+        keyboardResources = 0,
+        barColor = 0xffDCEDC8.toInt(),
+        keyboardColor = 0xffE8F5E9.toInt(),
+        keyBackgroundColor = 0xffFFFFFF.toInt(),
+        keyTextColor = 0xff2E7D32.toInt(),
+        accentKeyBackgroundColor = 0xff10B981.toInt(),
+        accentKeyTextColor = 0xffFFFFFF.toInt(),
+        keyPressHighlightColor = 0x1f000000,
+        popupBackgroundColor = 0xffC8E6C9.toInt(),
+        functionKeyBackgroundColor = 0xffC8E6C9.toInt(),
+        functionKeyPressHighlightColor = 0x1f000000,
+        toolbarTextColor = 0xff1B5E20.toInt(),
+        toolbarActiveIconColor = 0xff10B981.toInt(),
+    )
+
+    val BlackGoldLuxury = Theme.Builtin(
+        name = "黑金尊享",
         isDark = true,
-        keyboardResources = 0x0,
-        barColor = 0xff373737,
-        keyboardColor = 0xff000000,
-        keyBackgroundColor = 0xff2e2e2e,
-        keyTextColor = 0xffffffff,
-        accentKeyBackgroundColor = 0xff80cbc4,
-        accentKeyTextColor = 0xffffffff,
+        keyboardResources = 0,
+        barColor = 0xff222222.toInt(),
+        keyboardColor = 0xff181818.toInt(),
+        keyBackgroundColor = 0xff2A2A2A.toInt(),
+        keyTextColor = 0xffF5D061.toInt(),
+        accentKeyBackgroundColor = 0xffD4AF37.toInt(),
+        accentKeyTextColor = 0xff121212.toInt(),
         keyPressHighlightColor = 0x33ffffff,
-        popupBackgroundColor = 0xff373737,
-        functionKeyBackgroundColor = 0xff727272,
+        popupBackgroundColor = 0xff222222.toInt(),
+        functionKeyBackgroundColor = 0xff333333.toInt(),
         functionKeyPressHighlightColor = 0x1fffffff,
+        toolbarTextColor = 0xffF5D061.toInt(),
+        toolbarActiveIconColor = 0xffD4AF37.toInt(),
     )
 
     val NordLight = Theme.Builtin(

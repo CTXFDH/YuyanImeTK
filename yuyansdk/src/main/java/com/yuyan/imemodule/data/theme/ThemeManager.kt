@@ -14,12 +14,13 @@ object ThemeManager {
     }
 
     val BuiltinThemes = listOf(
+        ThemePreset.MintSummer,
+        ThemePreset.BlackGoldLuxury,
         ThemePreset.PixelLight,
         ThemePreset.PixelDark,
         ThemePreset.NordLight,
         ThemePreset.NordDark,
         ThemePreset.CustomRed,
-        ThemePreset.AMOLEDBlack,
         ThemePreset.CustomBlue,
         ThemePreset.CustomPink,
         ThemePreset.CustomCrimson,
@@ -27,7 +28,7 @@ object ThemeManager {
         ThemePreset.CustomPurple,
     )
 
-    val DefaultTheme = ThemePreset.PixelLight
+    val DefaultTheme = ThemePreset.MintSummer
 
     private val customThemes: java.util.concurrent.CopyOnWriteArrayList<Theme.Custom> =
         java.util.concurrent.CopyOnWriteArrayList(ThemeFilesManager.listThemes())
