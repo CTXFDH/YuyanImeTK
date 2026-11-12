@@ -157,9 +157,9 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
         "%"
     )
 
-    val importFont = switch(
+    val importFont = switchAction(
         R.string.import_font_title,
         "custom_font_enable",
-        false
+        true
     )
 }

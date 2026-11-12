@@ -64,6 +64,33 @@ abstract class ManagedPreferenceUi<T : Preference>(
         }
     }
 
+    class SwitchAction(
+        @StringRes
+        val title: Int,
+        key: String,
+        val defaultValue: Boolean,
+        @StringRes
+        val summary: Int? = null,
+        enableUiOn: (() -> Boolean)? = null,
+        val pref: ManagedPreference.PBool? = null
+    ) : ManagedPreferenceUi<com.yuyan.imemodule.utils.CardSwitchActionPreference>(key, enableUiOn) {
+        override fun createUi(context: Context) = com.yuyan.imemodule.utils.CardSwitchActionPreference(context).apply {
+            key = this@SwitchAction.key
+            isIconSpaceReserved = false
+            isSingleLineTitle = false
+            setDefaultValue(defaultValue)
+            if (this@SwitchAction.summary != null)
+                setSummary(this@SwitchAction.summary)
+            setTitle(this@SwitchAction.title)
+            setOnPreferenceChangeListener { _, newValue ->
+                (newValue as? Boolean)?.let { boolVal ->
+                    pref?.setValue(boolVal)
+                }
+                true
+            }
+        }
+    }
+
     class StringList<T : Any>(
         @StringRes
         val title: Int,

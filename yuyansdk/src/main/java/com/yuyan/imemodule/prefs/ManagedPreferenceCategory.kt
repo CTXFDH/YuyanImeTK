@@ -48,6 +48,22 @@ abstract class ManagedPreferenceCategory(
         return pref
     }
 
+    protected fun switchAction(
+        @StringRes
+        title: Int,
+        key: String,
+        defaultValue: Boolean,
+        @StringRes
+        summary: Int? = null,
+        enableUiOn: (() -> Boolean)? = null
+    ): ManagedPreference.PBool {
+        val pref = ManagedPreference.PBool(sharedPreferences, key, defaultValue)
+        val ui = ManagedPreferenceUi.SwitchAction(title, key, defaultValue, summary, enableUiOn, pref)
+        pref.register()
+        ui.registerUi()
+        return pref
+    }
+
     protected fun bool(
         key: String,
         defaultValue: Boolean

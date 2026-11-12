@@ -230,6 +230,45 @@ open class CardSwitchPreference(context: Context) : ImeSwitchPreference(context)
     }
 }
 
+open class CardSwitchActionPreference(context: Context) : ImeSwitchPreference(context), ICardPreferenceItem {
+    override var isFirstInGroup: Boolean = false
+    override var isLastInGroup: Boolean = false
+
+    var onRowClickListener: (() -> Unit)? = null
+
+    init {
+        layoutResource = R.layout.sdk_item_preference_card_single
+        isIconSpaceReserved = false
+        isSingleLineTitle = false
+    }
+
+    override fun onBindViewHolder(holder: PreferenceViewHolder) {
+        super.onBindViewHolder(holder)
+        bindCardViewHolder(holder, this)
+
+        val cardContent = holder.findViewById(R.id.card_item_content)
+        val arrowRight = holder.findViewById(R.id.arrow_right) as? ImageView
+        val widgetFrame = holder.findViewById(android.R.id.widget_frame)
+
+        arrowRight?.isVisible = true
+
+        cardContent?.setOnClickListener {
+            if (isEnabled) {
+                onRowClickListener?.invoke()
+            }
+        }
+
+        widgetFrame?.setOnClickListener {
+            if (isEnabled) {
+                val newChecked = !isChecked
+                if (callChangeListener(newChecked)) {
+                    isChecked = newChecked
+                }
+            }
+        }
+    }
+}
+
 open class CardListPreference @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

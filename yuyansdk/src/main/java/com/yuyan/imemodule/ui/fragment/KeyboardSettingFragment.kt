@@ -10,9 +10,9 @@ import com.yuyan.imemodule.keyboard.KeyboardManager
 import com.yuyan.imemodule.prefs.AppPrefs
 import com.yuyan.imemodule.singleton.EnvironmentSingleton
 import com.yuyan.imemodule.ui.fragment.base.ManagedPreferenceFragment
+import com.yuyan.imemodule.utils.CardSwitchActionPreference
 import com.yuyan.imemodule.utils.KeyboardLoaderUtil
 import com.yuyan.imemodule.utils.queryFileName
-import com.yuyan.imemodule.view.preference.ImeSwitchPreference
 
 class KeyboardSettingFragment : ManagedPreferenceFragment(AppPrefs.getInstance().keyboardSetting) {
 
@@ -53,12 +53,11 @@ class KeyboardSettingFragment : ManagedPreferenceFragment(AppPrefs.getInstance()
     }
 
     private fun setupFontPreferenceListeners() {
-        val pref = findPreference<ImeSwitchPreference>("custom_font_enable") ?: return
+        val pref = findPreference<CardSwitchActionPreference>("custom_font_enable") ?: return
         pref.isIconSpaceReserved = false
 
-        pref.setOnPreferenceClickListener {
+        pref.onRowClickListener = {
             fontImportLauncher.launch("*/*")
-            true
         }
 
         pref.setOnPreferenceChangeListener { _, newValue ->
@@ -83,7 +82,7 @@ class KeyboardSettingFragment : ManagedPreferenceFragment(AppPrefs.getInstance()
     }
 
     private fun updateFontPreferencesSummary() {
-        val pref = findPreference<ImeSwitchPreference>("custom_font_enable") ?: return
+        val pref = findPreference<CardSwitchActionPreference>("custom_font_enable") ?: return
         pref.isIconSpaceReserved = false
         val hasFont = CustomFontManager.hasCustomFont()
         pref.isChecked = CustomFontManager.isCustomFontEnabled()
