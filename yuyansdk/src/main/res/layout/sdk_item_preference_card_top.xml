@@ -67,24 +67,24 @@
                 tools:text="按键音效和振动反馈" />
         </LinearLayout>
 
-        <!-- 右侧 Switch / Widget 容器或跳转箭头 -->
-        <LinearLayout
-            android:id="@android:id/widget_frame"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal" />
-
+        <!-- 右侧跳转箭头 与 Switch / Widget 容器 -->
         <ImageView
             android:id="@+id/arrow_right"
             android:layout_width="16dp"
             android:layout_height="16dp"
-            android:layout_marginStart="6dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="6dp"
             android:src="@drawable/ic_arrow_right_pretty"
             app:tint="#9CA3AF"
             android:visibility="gone"
             tools:visibility="visible" />
+
+        <LinearLayout
+            android:id="@android:id/widget_frame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal" />
     </LinearLayout>
 
     <!-- 内联展开选项容器 (不弹窗，直接展开) -->
