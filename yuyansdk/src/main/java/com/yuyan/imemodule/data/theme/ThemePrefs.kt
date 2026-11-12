@@ -66,7 +66,7 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
         darkModeTheme.key
     )
 
-    // 键盘设置title
+    // 键盘效果title
     val titleKeyboardSetting = category(R.string.setting_ime_keyboard_show)
 
     val windowCornerRadiusDp = int(
@@ -77,6 +77,9 @@ class ThemePrefs(sharedPreferences: SharedPreferences) :
         30,
         "dp"
     )
+
+    // 字体设置title
+    val titleFontSetting = category(R.string.setting_font_title)
 
     val candidateTextSize = int(
         R.string.candidate_size_input_setting,

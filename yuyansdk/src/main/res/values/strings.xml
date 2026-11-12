@@ -215,4 +215,5 @@
     <string name="composing_display_input_box">输入框显示</string>
     <string name="category_keys_gestures">按键与手势</string>
     <string name="category_symbols_peripherals">外设</string>
+    <string name="setting_font_title">字体</string>
 </resources>
