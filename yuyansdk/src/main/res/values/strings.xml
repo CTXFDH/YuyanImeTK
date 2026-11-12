@@ -210,6 +210,9 @@
 
     <!-- 键盘设置分类标题 -->
     <string name="category_layout_habit">布局与习惯</string>
+    <string name="composing_display_mode">编码显示</string>
+    <string name="composing_display_floating">悬浮显示</string>
+    <string name="composing_display_input_box">输入框显示</string>
     <string name="category_keys_gestures">按键与手势</string>
     <string name="category_symbols_peripherals">外设</string>
 </resources>

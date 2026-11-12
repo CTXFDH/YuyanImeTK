@@ -488,12 +488,19 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
     }
 
     /**
-     * 向输入框提交预选词
+     * 向输入框提交预选词 (设置下划线并标注 SPAN_COMPOSING，防范微信等第三方输入框留存拼音编码)
      */
     fun setComposingText(text: CharSequence) {
-        currentInputConnection?.setComposingText(text, 1)
+        val ic = currentInputConnection ?: return
+        if (text.isNotEmpty()) {
+            val spannable = android.text.SpannableString(text)
+            val flag = android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE or android.text.Spanned.SPAN_COMPOSING
+            spannable.setSpan(android.text.style.UnderlineSpan(), 0, text.length, flag)
+            ic.setComposingText(spannable, 1)
+        } else {
+            ic.setComposingText("", 1)
+        }
     }
-
 
     /**
      * 结束提交预选词
@@ -506,15 +513,18 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
      * 发送字符串给编辑框 (安全空判断，防范 Activity/预览模式下白屏闪退)
      */
     fun commitText(text: String) {
-        currentInputConnection?.commitText(StringUtils.converted2FlowerTypeface(text), 1)
+        commitText(text, 1)
     }
 
     /**
      * 发送字符串给编辑框
      */
-    @Suppress("unused")
     fun commitText(text: String, newCursorPosition: Int) {
-        currentInputConnection?.commitText(StringUtils.converted2FlowerTypeface(text), newCursorPosition)
+        val ic = currentInputConnection ?: return
+        if (getInstance().keyboardSetting.composingDisplayMode.getValue() == com.yuyan.imemodule.prefs.behavior.ComposingDisplayMode.INPUT_BOX) {
+            ic.setComposingText("", 1)
+        }
+        ic.commitText(StringUtils.converted2FlowerTypeface(text), newCursorPosition)
     }
 
     fun getTextBeforeCursor(length:Int) : String {

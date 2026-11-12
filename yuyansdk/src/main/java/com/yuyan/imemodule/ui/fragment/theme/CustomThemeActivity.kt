@@ -675,7 +675,7 @@ class CustomThemeActivity : AppCompatActivity() {
 
     // 2. 侧边符号选择区
     private val sideSymbolKeyBgColorRow by lazy { createColorPickerItem("【侧边符号区】按键背景色", { theme.sideSymbolKeyBackgroundColor }) { color -> updateColorTheme { it.copy(sideSymbolKeyBackgroundColor = color) } } }
-    private val sideSymbolKeyTextColorRow by lazy { createColorPickerItem("【符号颜色】", { theme.sideSymbolKeyTextColor }) { color -> updateColorTheme { it.copy(sideSymbolKeyTextColor = color) } } }
+    private val sideSymbolKeyTextColorRow by lazy { createColorPickerItem("【侧边符号区】符号颜色", { theme.sideSymbolKeyTextColor }) { color -> updateColorTheme { it.copy(sideSymbolKeyTextColor = color) } } }
 
     // 3. 删除键
     private val deleteKeyBgColorRow by lazy { createColorPickerItem("【删除键】按键背景色", { theme.deleteKeyBackgroundColor }) { color -> updateColorTheme { it.copy(deleteKeyBackgroundColor = color) } } }

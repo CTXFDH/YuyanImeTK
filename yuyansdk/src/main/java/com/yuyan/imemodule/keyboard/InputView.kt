@@ -150,12 +150,22 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     override fun onCandidateChanged() {
         updateCandidateBar()
         val composingText = DictDecoder.composingStrForDisplay
-        if (composingText.isNotBlank()) {
-            mComposingView.text = composingText
-            mComposingTagContainer.visibility = VISIBLE
-            updateComposingTagTheme()
-        } else {
+        val isInputBoxDisplay = appPrefs.keyboardSetting.composingDisplayMode.getValue() == com.yuyan.imemodule.prefs.behavior.ComposingDisplayMode.INPUT_BOX
+        if (isInputBoxDisplay) {
             mComposingTagContainer.visibility = GONE
+            if (composingText.isNotBlank()) {
+                setComposingText(composingText)
+            } else {
+                setComposingText("")
+            }
+        } else {
+            if (composingText.isNotBlank()) {
+                mComposingView.text = composingText
+                mComposingTagContainer.visibility = VISIBLE
+                updateComposingTagTheme()
+            } else {
+                mComposingTagContainer.visibility = GONE
+            }
         }
         val container = KeyboardManager.instance.currentContainer as? InputBaseContainer
         if (container != null && container.isCandidatesExpanded()) {
@@ -835,6 +845,10 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
         DictDecoder.reset()
         InputDispatcher.reset()
         (KeyboardManager.instance.currentContainer as? T9TextContainer)?.updateSymbolListView()
+        if (appPrefs.keyboardSetting.composingDisplayMode.getValue() == com.yuyan.imemodule.prefs.behavior.ComposingDisplayMode.INPUT_BOX) {
+            setComposingText("")
+        }
+        hideComposingTag()
     }
 
     inner class ChoiceNotifier internal constructor() : CandidateViewListener {

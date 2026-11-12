@@ -11,6 +11,7 @@ import com.yuyan.imemodule.application.Launcher
 import com.yuyan.imemodule.application.CustomConstant
 import com.yuyan.imemodule.manager.InputModeSwitcher
 import com.yuyan.imemodule.prefs.behavior.ChineseAssociationMode
+import com.yuyan.imemodule.prefs.behavior.ComposingDisplayMode
 import com.yuyan.imemodule.prefs.behavior.DoublePinyinSchemaMode
 import com.yuyan.imemodule.prefs.behavior.FullDisplayCenterMode
 import com.yuyan.imemodule.prefs.behavior.FullDisplayKeyMode
@@ -184,6 +185,21 @@ class AppPrefs(private val sharedPreferences: SharedPreferences) {
     inner class KeyboardSetting : ManagedPreferenceCategory(R.string.setting_ime_keyboard, sharedPreferences) {
 
         val categoryLayout = category(R.string.category_layout_habit)
+
+        val composingDisplayMode = list(
+            R.string.composing_display_mode,
+            "composing_display_mode",
+            ComposingDisplayMode.FLOATING,
+            ComposingDisplayMode,
+            listOf(
+                ComposingDisplayMode.FLOATING,
+                ComposingDisplayMode.INPUT_BOX
+            ),
+            listOf(
+                R.string.composing_display_floating,
+                R.string.composing_display_input_box
+            )
+        )
 
         val oneHandedMod = list(
             R.string.holding_habit,

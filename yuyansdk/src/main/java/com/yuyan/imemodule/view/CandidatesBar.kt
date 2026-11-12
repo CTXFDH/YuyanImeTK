@@ -529,8 +529,9 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
      */
     fun showCandidates() {
         val composingText = DictDecoder.composingStrForDisplay
+        val isInputBoxDisplay = AppPrefs.getInstance().keyboardSetting.composingDisplayMode.getValue() == com.yuyan.imemodule.prefs.behavior.ComposingDisplayMode.INPUT_BOX
         if (::mComposingTagContainer.isInitialized) {
-            if (composingText.isNotBlank()) {
+            if (!isInputBoxDisplay && composingText.isNotBlank()) {
                 mComposingView.text = composingText
                 mComposingTagContainer.visibility = VISIBLE
             } else {
@@ -660,6 +661,12 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
         updateLogoView()
 
         val activeTheme = activeTheme
+        if (::mCandidatesAdapter.isInitialized) {
+            mCandidatesAdapter.activeTheme = activeTheme
+        }
+        if (::mCandidatesMenuAdapter.isInitialized) {
+            mCandidatesMenuAdapter.activeTheme = activeTheme
+        }
         // 1. 工具栏背景全透明，与输入区按键共享同一张大壁纸/渐变背景！
         background = null
         if (::mCandidatesMenuContainer.isInitialized) mCandidatesMenuContainer.background = null

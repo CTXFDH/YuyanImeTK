@@ -33,7 +33,12 @@ class CandidatesMenuAdapter(context: Context?) : RecyclerView.Adapter<Candidates
     private var mOnItemClickListener: OnRecyclerItemClickListener? = null
     private var itemHeight: Int = (instance.heightForCandidatesArea * 0.8f).toInt()
     private var mMenuPadding: Int = (instance.heightForCandidatesArea * 0.05f).toInt()
-    var activeTheme: Theme = ThemeManager.activeTheme
+    private var overrideTheme: Theme? = null
+    var activeTheme: Theme
+        get() = overrideTheme ?: ThemeManager.activeTheme
+        set(value) {
+            overrideTheme = value
+        }
     var items: List<SkbFunItem> = emptyList()
         set(value) {
             val diffResult = DiffUtil.calculateDiff(MyDiffCallback(field, value))
