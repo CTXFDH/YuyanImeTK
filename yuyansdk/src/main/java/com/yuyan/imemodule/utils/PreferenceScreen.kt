@@ -24,9 +24,11 @@ fun PreferenceGroup.addPreference(
     title: String,
     summary: String? = null,
     @DrawableRes icon: Int? = null,
+    key: String? = null,
     onClick: (() -> Unit)? = null
 ) {
     addPreference(CardPreference(context).apply {
+        if (key != null) this.key = key
         isSingleLineTitle = false
         setTitle(title)
         isCopyingEnabled = false
@@ -52,7 +54,7 @@ fun PreferenceGroup.addPreference(
     onClick: (() -> Unit)? = null
 ) {
     val ctx = context
-    addPreference(ctx.getString(title), summaryStr, icon, onClick)
+    addPreference(ctx.getString(title), summaryStr, icon, null, onClick)
 }
 
 fun PreferenceGroup.addPreference(
@@ -62,7 +64,7 @@ fun PreferenceGroup.addPreference(
     onClick: (() -> Unit)? = null
 ) {
     val ctx = context
-    addPreference(ctx.getString(title), summaryRes?.let(ctx::getString), icon, onClick)
+    addPreference(ctx.getString(title), summaryRes?.let(ctx::getString), icon, null, onClick)
 }
 
 fun PreferenceGroup.addSwitchPreference(

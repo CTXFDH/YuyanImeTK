@@ -512,6 +512,8 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
     }
 
     private fun applyFontWeightToPaint(paint: Paint, weightLevel: Int) {
+        val customTypeface = com.yuyan.imemodule.data.theme.CustomFontManager.getTypeface(context)
+        val baseTypeface = customTypeface ?: Typeface.DEFAULT
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             val targetWeight = when (weightLevel) {
                 1 -> 300
@@ -521,28 +523,28 @@ open class TextKeyboard(context: Context?) : BaseKeyboardView(context){
                 5 -> 900
                 else -> 400
             }
-            paint.typeface = Typeface.create(Typeface.DEFAULT, targetWeight, false)
+            paint.typeface = Typeface.create(baseTypeface, targetWeight, false)
             paint.isFakeBoldText = weightLevel >= 4
         } else {
             when (weightLevel) {
                 1 -> {
-                    paint.typeface = Typeface.create("sans-serif-light", Typeface.NORMAL)
+                    paint.typeface = if (customTypeface != null) customTypeface else Typeface.create("sans-serif-light", Typeface.NORMAL)
                     paint.isFakeBoldText = false
                 }
                 2 -> {
-                    paint.typeface = Typeface.DEFAULT
+                    paint.typeface = baseTypeface
                     paint.isFakeBoldText = false
                 }
                 3 -> {
-                    paint.typeface = Typeface.DEFAULT_BOLD
+                    paint.typeface = if (customTypeface != null) customTypeface else Typeface.DEFAULT_BOLD
                     paint.isFakeBoldText = false
                 }
                 4, 5 -> {
-                    paint.typeface = Typeface.DEFAULT_BOLD
+                    paint.typeface = if (customTypeface != null) customTypeface else Typeface.DEFAULT_BOLD
                     paint.isFakeBoldText = true
                 }
                 else -> {
-                    paint.typeface = Typeface.DEFAULT
+                    paint.typeface = baseTypeface
                     paint.isFakeBoldText = false
                 }
             }

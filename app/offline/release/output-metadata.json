@@ -11,9 +11,9 @@
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 2026111219,
+      "versionCode": 2026111220,
       "versionName": "K61",
-      "outputFile": "YuyanImeK-K61_2026111219_release.apk"
+      "outputFile": "YuyanImeK-K61_2026111220_release.apk"
     }
   ],
   "elementType": "File",
@@ -22,14 +22,14 @@
       "minApi": 28,
       "maxApi": 30,
       "baselineProfiles": [
-        "baselineProfiles/1/YuyanImeK-K61_2026111219_release.dm"
+        "baselineProfiles/1/YuyanImeK-K61_2026111220_release.dm"
       ]
     },
     {
       "minApi": 31,
       "maxApi": 2147483647,
       "baselineProfiles": [
-        "baselineProfiles/0/YuyanImeK-K61_2026111219_release.dm"
+        "baselineProfiles/0/YuyanImeK-K61_2026111220_release.dm"
       ]
     }
   ],

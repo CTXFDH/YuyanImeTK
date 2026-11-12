@@ -57,6 +57,10 @@ class CandidatesBarAdapter(context: Context?) :
         if (DictDecoder.isCandidatesEmpty || (position !in DictDecoder.candidates.indices)) return
         holder.textView.text = DictDecoder.candidates[position].text
         holder.textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, instance.candidateTextSize)
+        val customTypeface = com.yuyan.imemodule.data.theme.CustomFontManager.getTypeface(holder.textView.context)
+        if (customTypeface != null) {
+            holder.textView.typeface = customTypeface
+        }
 
         val view = holder.textView
         val lp = view.layoutParams as? ViewGroup.MarginLayoutParams
