@@ -1,10 +1,15 @@
 package com.yuyan.imemodule.ui.fragment.theme
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.RelativeLayout
+import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -159,8 +164,55 @@ class ThemeListFragment : Fragment() {
             "📋  " + getString(R.string.duplicate_builtin_theme),
             "📦  导入皮肤 (.yus)"
         )
+
+        // 自定义标题栏（包含“新增主题”标题与右上角“购物车”按钮）
+        val titleLayout = RelativeLayout(ctx).apply {
+            setPadding(dp(20), dp(18), dp(20), dp(8))
+        }
+
+        val titleTv = TextView(ctx).apply {
+            text = getString(R.string.new_theme)
+            textSize = 18f
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+            setTextColor(ContextCompat.getColor(ctx, R.color.settings_title_text))
+            val params = RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                addRule(RelativeLayout.ALIGN_PARENT_LEFT)
+                addRule(RelativeLayout.CENTER_VERTICAL)
+            }
+            layoutParams = params
+        }
+
+        val cartBtn = ImageView(ctx).apply {
+            setImageResource(R.drawable.ic_shopping_cart)
+            setColorFilter(ContextCompat.getColor(ctx, R.color.settings_icon_tint))
+            val typedVal = android.util.TypedValue()
+            if (ctx.theme.resolveAttribute(android.R.attr.selectableItemBackgroundBorderless, typedVal, true) && typedVal.resourceId != 0) {
+                background = ContextCompat.getDrawable(ctx, typedVal.resourceId)
+            }
+            val sz = dp(30)
+            setPadding(dp(3), dp(3), dp(3), dp(3))
+            val params = RelativeLayout.LayoutParams(sz, sz).apply {
+                addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+                addRule(RelativeLayout.CENTER_VERTICAL)
+            }
+            layoutParams = params
+            isClickable = true
+            isFocusable = true
+            setOnClickListener {
+                val url = "https://github.com/kuangru52/YuyanImeK/tree/master/theme"
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                ctx.startActivity(intent)
+            }
+        }
+
+        titleLayout.addView(titleTv)
+        titleLayout.addView(cartBtn)
+
         val dialog = AlertDialog.Builder(ctx)
-            .setTitle(R.string.new_theme)
+            .setCustomTitle(titleLayout)
             .setItems(actions) { _, i ->
                 when (i) {
                     0 -> imageLauncher.launch(null)
