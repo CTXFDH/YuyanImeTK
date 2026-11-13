@@ -1139,7 +1139,13 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
     override fun updatePosition(anchor: FloatArray) {}
 
     override fun getKeyboardRect(): IntArray {
-        val location = intArrayOf(0, 0).also { if (isAddPhrases) mAddPhrasesLayout.getLocationInWindow(it) else mSkbRoot.getLocationInWindow(it) }
+        val location = intArrayOf(0, 0).also {
+            if (isAddPhrases) {
+                mAddPhrasesLayout.getLocationInWindow(it)
+            } else {
+                mLlMainKeyboardCard.getLocationInWindow(it)
+            }
+        }
         val height = EnvironmentSingleton.instance.systemNavbarWindowsBottom + EnvironmentSingleton.instance.heightForFullDisplayBar + EnvironmentSingleton.instance.skbHeight + EnvironmentSingleton.instance.heightForCandidatesArea
         var y = location[1]
         if (y <= 0) {

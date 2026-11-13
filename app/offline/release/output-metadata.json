@@ -11,9 +11,9 @@
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 2026111223,
+      "versionCode": 2026111307,
       "versionName": "K62",
-      "outputFile": "YuyanImeK-K62_2026111223_release.apk"
+      "outputFile": "YuyanImeK-K62_2026111307_release.apk"
     }
   ],
   "elementType": "File",
@@ -22,14 +22,14 @@
       "minApi": 28,
       "maxApi": 30,
       "baselineProfiles": [
-        "baselineProfiles/1/YuyanImeK-K62_2026111223_release.dm"
+        "baselineProfiles/1/YuyanImeK-K62_2026111307_release.dm"
       ]
     },
     {
       "minApi": 31,
       "maxApi": 2147483647,
       "baselineProfiles": [
-        "baselineProfiles/0/YuyanImeK-K62_2026111223_release.dm"
+        "baselineProfiles/0/YuyanImeK-K62_2026111307_release.dm"
       ]
     }
   ],

@@ -349,8 +349,7 @@ class ImeService : InputMethodService(), LifecycleOwner, SavedStateRegistryOwner
                 contentTopInsets = y
                 touchableInsets = Insets.TOUCHABLE_INSETS_CONTENT
                 touchableRegion.setEmpty()
-                val composingOffset = if (!DictDecoder.isCandidatesEmpty) dp(32) else 0
-                visibleTopInsets = y - composingOffset
+                visibleTopInsets = y
             }
         }
     }
