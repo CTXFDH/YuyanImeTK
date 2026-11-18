@@ -243,11 +243,12 @@ fun VoiceKeyboardLayout(
             // 下矩形框（2号框）：核心语音交互按键
             val isClickToggle = triggerMode == com.yuyan.imemodule.prefs.behavior.VoiceInputTriggerMode.CLICK_TO_TOGGLE
             val voiceBtnBg = if (isRecordingActive) activePressedBgColor else normalAccentBgColor
-            val voiceBtnText = if (isRecordingActive) {
-                if (isClickToggle) "点击结束" else "松开结束"
+            val rawBtnText = if (isRecordingActive) {
+                if (isClickToggle) "点 击 结 束" else "松 开 结 束"
             } else {
                 if (isClickToggle) "点 击 说 话" else "按 住 说 话"
             }
+            val voiceBtnText = com.yuyan.imemodule.entity.keyboard.convertFunctionKeyToEnglish(rawBtnText)
 
             Box(
                 modifier = Modifier

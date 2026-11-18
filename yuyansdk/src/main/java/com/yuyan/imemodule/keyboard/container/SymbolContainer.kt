@@ -90,14 +90,14 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
         "最近", "中文", "英文", "数学", "括号", "序号", "箭头", "图形", "希俄", "拼音", "注音", "平假", "片假", "俄文", "单位"
     )
 
-    // Emoji 底部分类列表 (完全对齐原版 12 个分类结构)
+    // Emoji 底部分类列表 (完全对齐 CyIME 10 个分类结构)
     private val emojiCategories = listOf(
-        "最近", "微信", "热门", "笑脸", "人物", "动物", "食物", "出行", "活动", "物品", "符号", "旗帜"
+        "最近", "笑脸", "手势", "动物", "食物", "出行", "活动", "物品", "符号", "旗帜"
     )
 
-    // 颜文字 底部分类列表 (依据 emoticon_1 至 emoticon_5 编号保留分类)
+    // 颜文字 底部分类列表 (完全对齐 CyIME 分类结构)
     private val kaomojiCategories = listOf(
-        "最近", "分类1", "分类2", "分类3", "分类4", "分类5"
+        "最近", "经典", "微笑", "爱你", "拥抱", "展示肌肉", "动物", "惊讶", "跳舞", "摊手耸肩", "掀桌子", "反对", "哭泣", "紧张", "方向", "打招呼", "感谢", "加油", "害羞", "生气", "为难", "困了", "玩耍"
     )
 
     companion object {
@@ -295,27 +295,14 @@ class SymbolContainer(context: Context, inputView: InputView) : BaseContainer(co
             if(!isLockSymbol) KeyboardManager.instance.switchKeyboard()
             inputView?.responseKeyEvent(softKey)
         } else {  // 表情、颜文字
-            if (!YuyanEmojiCompat.isWeChatInput || mVPSymbolsView.currentItem != 1) {
-                val typeStr = if (mShowType == SymbolMode.Emoticon) "emoticon" else "emoji"
-                DataBaseKT.instance.usedSymbolDao().insert(UsedSymbol(symbol = result, type = typeStr))
-                val num = max(DataBaseKT.instance.usedSymbolDao().getCount(typeStr) - 50, 0)
-                DataBaseKT.instance.usedSymbolDao().deleteOldest(typeStr, num)
-                if (!isLockExpression) {
-                    KeyboardManager.instance.switchKeyboardToMain()
-                }
-                inputView?.responseKeyEvent(softKey)
-            } else {
-                val emojions = EmojiconData.wechatEmojiconData[value]
-                if (emojions?.isNotEmpty() == true) {
-                    kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main).launch {
-                        emojions[kotlin.random.Random.nextInt(emojions.size)].forEach {
-                            inputView?.responseKeyEvent(SoftKey(label = it))
-                            inputView?.performEditorAction(android.view.inputmethod.EditorInfo.IME_ACTION_SEND)
-                            kotlinx.coroutines.delay(100)
-                        }
-                    }
-                }
+            val typeStr = if (mShowType == SymbolMode.Emoticon) "emoticon" else "emoji"
+            DataBaseKT.instance.usedSymbolDao().insert(UsedSymbol(symbol = result, type = typeStr))
+            val num = max(DataBaseKT.instance.usedSymbolDao().getCount(typeStr) - 50, 0)
+            DataBaseKT.instance.usedSymbolDao().deleteOldest(typeStr, num)
+            if (!isLockExpression) {
+                KeyboardManager.instance.switchKeyboardToMain()
             }
+            inputView?.responseKeyEvent(softKey)
         }
     }
 

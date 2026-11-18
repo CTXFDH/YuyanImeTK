@@ -113,6 +113,10 @@ fun convertFunctionKeyToEnglish(label: String): String {
         "完成" -> "Done"
         "分词" -> "Split"
         "确定" -> "OK"
+        "按 住 说 话", "按住说话" -> "Hold to Talk"
+        "松 开 结 束", "松开结束" -> "Release to End"
+        "点 击 说 话", "点击说话" -> "Tap to Talk"
+        "点 击 结 束", "点击结束" -> "Tap to Stop"
         else -> label
     }
 }

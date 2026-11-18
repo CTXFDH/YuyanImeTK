@@ -22,6 +22,7 @@ class ImeGlassBlurWindow(private val context: Context) {
 
     companion object {
         private var globalBlurDialog: Dialog? = null
+        private var currentWindowToken: IBinder? = null
 
         fun dismissGlobal() {
             try {
@@ -32,6 +33,7 @@ class ImeGlassBlurWindow(private val context: Context) {
                 e.printStackTrace()
             } finally {
                 globalBlurDialog = null
+                currentWindowToken = null
             }
         }
     }
@@ -51,6 +53,10 @@ class ImeGlassBlurWindow(private val context: Context) {
             if (!blurEnable || Build.VERSION.SDK_INT < Build.VERSION_CODES.S || windowToken == null || !anchorView.isAttachedToWindow) {
                 dismissGlobal()
                 return
+            }
+
+            if (globalBlurDialog != null && (currentWindowToken != windowToken || globalBlurDialog?.isShowing != true)) {
+                dismissGlobal()
             }
 
             val width = anchorView.width
@@ -101,6 +107,7 @@ class ImeGlassBlurWindow(private val context: Context) {
             }
 
             if (globalBlurDialog == null) {
+                currentWindowToken = windowToken
                 globalBlurDialog = Dialog(windowContext, android.R.style.Theme_Translucent_NoTitleBar).apply {
                     requestWindowFeature(Window.FEATURE_NO_TITLE)
                     setCancelable(false)
@@ -265,6 +272,6 @@ class ImeGlassBlurWindow(private val context: Context) {
     }
 
     fun dismiss() {
-        // Keep global blur dialog active during dragging/recreation; dismiss only when service destroys.
+        dismissGlobal()
     }
 }
