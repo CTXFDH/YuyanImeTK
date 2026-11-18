@@ -739,20 +739,13 @@ class InputView(context: Context, private val service: ImeService) : IKeyboardVi
 
     fun updateComposingTagTheme() {
         val activeTheme = ThemeManager.activeTheme
-        val isDark = activeTheme.isDark
         val tagBg = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
-            cornerRadius = dp(12f)
-            if (isDark) {
-                setColor(0xCC1E1E1E.toInt())
-                setStroke(dp(1), 0x40FFFFFF.toInt())
-            } else {
-                setColor(0xE6FFFFFF.toInt())
-                setStroke(dp(1), 0x30000000.toInt())
-            }
+            cornerRadius = dp(6f)
+            setColor(activeTheme.keyBackgroundColor)
         }
         mComposingTagContainer.background = tagBg
-        mComposingView.setTextColor(if (isDark) Color.WHITE else Color.BLACK)
+        mComposingView.setTextColor(activeTheme.keyTextColor)
         mComposingView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13f)
         mComposingView.typeface = android.graphics.Typeface.DEFAULT
     }

@@ -141,6 +141,18 @@ open class T9TextContainer(context: Context?, inputView: InputView, skbValue: In
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         }
         mRVLeftPrefix.layoutManager = prefixLayoutManager
+        if (bottomSymbol) {
+            val keyXMargin = softKeyboard.keyXMargin
+            val horizontalPadding = keyXMargin + DevicesUtils.dip2px(14f)
+            val verticalPadding = softKeyboard.keyYMargin
+            mRVLeftPrefix.setPadding(horizontalPadding, verticalPadding, horizontalPadding, verticalPadding)
+            mRVLeftPrefix.clipToPadding = true
+            mRVLeftPrefix.clipChildren = true
+        } else {
+            mRVLeftPrefix.setPadding(0, 0, 0, 0)
+            mRVLeftPrefix.clipToPadding = true
+            mRVLeftPrefix.clipChildren = true
+        }
         if (mRVLeftPrefix.parent == null) {
             addView(mRVLeftPrefix, prefixLayoutParams)
         } else if (mRVLeftPrefix.parent !== this) {

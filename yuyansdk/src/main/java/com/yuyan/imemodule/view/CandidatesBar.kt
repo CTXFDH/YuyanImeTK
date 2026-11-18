@@ -289,9 +289,10 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
                 isEnabled = true
                 setOnClickListener {
                     val currentContainer = KeyboardManager.instance.currentContainer
-                    val isMainInput = currentContainer is InputBaseContainer &&
+                    val isVoice = currentContainer is com.yuyan.imemodule.keyboard.container.VoiceKeyboardContainer
+                    val isMainInput = (currentContainer is InputBaseContainer &&
                                      !InputModeSwitcher.isNumberSkb &&
-                                     !InputModeSwitcher.isTextEditSkb
+                                     !InputModeSwitcher.isTextEditSkb) || isVoice
                     if (!isMainInput) {
                         KeyboardManager.instance.switchKeyboardToMain()
                     } else if (isEditMode) {
@@ -763,23 +764,16 @@ class CandidatesBar(context: Context?, attrs: AttributeSet?) : RelativeLayout(co
 
         // 2. 悬浮拼音胶囊背景与文字样式更新
         if (::mComposingTagContainer.isInitialized) {
-            val isDark = activeTheme.isDark
             val tagBg = GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
-                cornerRadius = dp(14f)
-                if (isDark) {
-                    setColor(0xCC1E1E1E.toInt())
-                    setStroke(dp(1), 0x40FFFFFF.toInt())
-                } else {
-                    setColor(0xE6FFFFFF.toInt())
-                    setStroke(dp(1), 0x30000000.toInt())
-                }
+                cornerRadius = dp(6f)
+                setColor(activeTheme.keyBackgroundColor)
             }
             mComposingTagContainer.background = tagBg
         }
 
         if (::mComposingView.isInitialized) {
-            mComposingView.setTextColor(if (activeTheme.isDark) android.graphics.Color.WHITE else android.graphics.Color.BLACK)
+            mComposingView.setTextColor(activeTheme.keyTextColor)
             mComposingView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14f)
             mComposingView.typeface = android.graphics.Typeface.DEFAULT
         }

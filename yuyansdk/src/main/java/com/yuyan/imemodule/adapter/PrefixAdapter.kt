@@ -29,6 +29,28 @@ class PrefixAdapter(
     }
 
     private val inflater: LayoutInflater = LayoutInflater.from(context)
+    private var mRecyclerView: RecyclerView? = null
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        mRecyclerView = recyclerView
+    }
+
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+        mRecyclerView = null
+    }
+
+    private fun getItemWidth(recyclerView: RecyclerView): Int {
+        val totalWidth = recyclerView.width.takeIf { it > 0 }
+            ?: recyclerView.layoutParams?.width?.takeIf { it > 0 }
+            ?: (recyclerView.context.resources.displayMetrics.widthPixels * 0.33f).toInt()
+        val paddingLeft = recyclerView.paddingLeft
+        val paddingRight = recyclerView.paddingRight
+        val availableWidth = (totalWidth - paddingLeft - paddingRight).coerceAtLeast(1)
+        val visibleCount = if (isPrefixs) 3 else 4
+        return availableWidth / visibleCount
+    }
 
     fun updateData(newDatas: Array<String>, isPrefixs: Boolean = false) {
         this.mDatas = newDatas
@@ -82,10 +104,9 @@ class PrefixAdapter(
         }
 
         val view = inflater.inflate(R.layout.sdk_item_list_alpha_symbol_noraml, parent, false)
-        val isHorizontal = (parent as? RecyclerView)?.layoutManager?.canScrollHorizontally() == true
-        if (isHorizontal) {
-            val totalWidth = parent.width.takeIf { it > 0 } ?: (parent.context.resources.displayMetrics.widthPixels * 0.375f).toInt()
-            val itemWidth = totalWidth / 4
+        val recyclerView = (parent as? RecyclerView) ?: mRecyclerView
+        if (recyclerView?.layoutManager?.canScrollHorizontally() == true) {
+            val itemWidth = getItemWidth(recyclerView)
             view.layoutParams = RecyclerView.LayoutParams(
                 itemWidth,
                 ViewGroup.LayoutParams.MATCH_PARENT
@@ -106,6 +127,15 @@ class PrefixAdapter(
             return
         }
         if (holder is SymbolTypeHolder && position in mDatas.indices) {
+            val recyclerView = mRecyclerView ?: (holder.itemView.parent as? RecyclerView)
+            if (recyclerView?.layoutManager?.canScrollHorizontally() == true) {
+                val itemWidth = getItemWidth(recyclerView)
+                if (holder.itemView.layoutParams.width != itemWidth) {
+                    holder.itemView.layoutParams = holder.itemView.layoutParams.apply {
+                        width = itemWidth
+                    }
+                }
+            }
             val label = mDatas[position]
             holder.tvSymbolType.setText(sbc2dbcCase(label))
             holder.tvSymbolType.typeface = android.graphics.Typeface.DEFAULT
