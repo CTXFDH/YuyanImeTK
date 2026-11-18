@@ -1,0 +1,37 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.yuyan.pinyin.offline.release",
+  "variantName": "offlineRelease",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 2026111709,
+      "versionName": "K70",
+      "outputFile": "YuyanImeK-K70_2026111709_release.apk"
+    }
+  ],
+  "elementType": "File",
+  "baselineProfiles": [
+    {
+      "minApi": 28,
+      "maxApi": 30,
+      "baselineProfiles": [
+        "baselineProfiles/1/YuyanImeK-K70_2026111709_release.dm"
+      ]
+    },
+    {
+      "minApi": 31,
+      "maxApi": 2147483647,
+      "baselineProfiles": [
+        "baselineProfiles/0/YuyanImeK-K70_2026111709_release.dm"
+      ]
+    }
+  ],
+  "minSdkVersionForDexing": 23
+}
